@@ -18,18 +18,18 @@ export function Header(){
         <Separator orientation="vertical" className="h-6"  />
 
         <nav className="space-x-6">
-          <NavLink href="/" className="font-medium text-sm">
+          <NavLink href="/">
             <Home className="size-4 inline"/>
-            <span className="align-middle"> Entrar </span>
+            <span className="align-middle text-sm"> Home </span>
           </NavLink>
-          <NavLink href="/wallet" className="font-medium text-sm">
+          <NavLink href="/wallet">
             <Wallet className="size-4 inline"/>
-            <span className="align-middle"> Carteira </span>
+            <span className="align-middle text-sm"> Carteira </span>
           </NavLink>
 
-          <NavLink href="/dividends" className="font-medium text-sm">
+          <NavLink href="/dividends">
             <DollarSign className="size-4 inline"/>
-            <span className="align-middle"> Proventos </span>
+            <span className="align-middle text-sm"> Proventos </span>
           </NavLink>
         </nav>
       </div>

@@ -6,7 +6,7 @@ export default function AppLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex flex-col max-w-7xl mx-auto">
+    <div className="flex flex-col max-w-7xl mx-auto space-y-6">
       <Header/>
       <main className="w-full">
         {children}

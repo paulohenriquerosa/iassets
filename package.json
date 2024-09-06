@@ -12,6 +12,17 @@
     "turbo": "^2.1.1",
     "typescript": "^5.4.5"
   },
+  "dependencies": {
+    "react-dom": "19.0.0-rc-a7d1240c-20240731",
+    "react": "19.0.0-rc-a7d1240c-20240731",
+    "react-is": "19.0.0-rc-a7d1240c-20240731",
+    "recharts": "2.13.0-alpha.4"
+  },
+  "pnpm": {
+    "overrides": {
+      "react-is": "$react-is"
+    }
+  },
   "packageManager": "pnpm@8.15.6",
   "engines": {
     "node": ">=18"
