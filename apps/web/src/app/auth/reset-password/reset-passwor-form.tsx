@@ -4,7 +4,6 @@ import Logo from "../../../assets/logo.svg"
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 export function ResetPasswordForm(){
 
@@ -29,12 +28,6 @@ export function ResetPasswordForm(){
           <Input name="confirm_password" type="password" id="confirm_password" />
         </div>
         <Button type="submit" className="w-full">Redefinir senha</Button>
-        <div className="text-center">
-          <Link href="/auth/sign-in" className="text-xs text-center group font-normal text-muted-foreground">
-            Já tem uma conta?  {" "}
-            <span className=" group-hover:underline"> Acessar conta</span>
-          </Link>
-          </div>
       </form>
     </div>
   )
