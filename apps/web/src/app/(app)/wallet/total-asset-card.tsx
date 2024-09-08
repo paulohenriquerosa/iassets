@@ -1,3 +1,4 @@
+
 "use client"
 
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
@@ -36,43 +37,24 @@ const chartData = [
 const chartConfig = {
   value: {
     label: "value",
-    color: "hsl(var(--chart-1))",
+    color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig
 
-export function AssetGrowthChart() {
+export function TotalAssetCard() {
   return (
     <Card>
       <CardHeader className="flex items-center gap-2 space-y-0 py-5 sm:flex-row">
       <div className="grid flex-1 gap-1 text-center sm:text-left">
-        <CardTitle className="text-base text-foreground font-semibold">Evolução do Patrimônio</CardTitle>
-        <CardDescription className="text-xs text-muted-foreground font-medium">Evolução patrimonial do últimos 12 meses</CardDescription>
+        <CardTitle className="text-base text-foreground font-semibold">Evolução do Patrimônio</CardTitle> <CardDescription className="text-xs text-muted-foreground font-medium">Evolução patrimonial do últimos 12 meses</CardDescription>
       </div>
-        <Select value={"90d"}>
-          <SelectTrigger
-            className="w-[160px] rounded-lg sm:ml-auto"
-            aria-label="Select a value"
-          >
-            <SelectValue placeholder="Last 3 months" />
-          </SelectTrigger>
-          <SelectContent className="rounded-xl">
-            <SelectItem value="90d" className="rounded-lg">
-              último 1 ano
-            </SelectItem>
-            <SelectItem value="30d" className="rounded-lg">
-              últimos 3 anos
-            </SelectItem>
-            <SelectItem value="7d" className="rounded-lg">
-              últimos 5 anos 
-            </SelectItem>
-            <SelectItem value="7d" className="rounded-lg">
-              Tudo
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <p className="text-xs text-muted-foreground">
+          <span className="text-emerald-500 dark:text-emerald-400">+2%</span> de
+          variação em 24h
+        </p>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="max-h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="max-h-[250px] w-full">
           <LineChart
             accessibilityLayer
             data={chartData}

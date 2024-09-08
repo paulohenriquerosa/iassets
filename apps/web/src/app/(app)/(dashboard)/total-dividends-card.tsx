@@ -13,8 +13,7 @@ export function TotalDividendsCard(){
       <CardContent className="space-y-1">
         <span className="text-2xl font-bold tracking-tight">R$ 4.252,07</span>
         <p className="text-xs text-muted-foreground">
-          <span className="text-emerald-500 dark:text-emerald-400">+15,8%</span> de 
-          variação em relação ao ano anterior
+          <span className="text-emerald-500 dark:text-emerald-400">+15,8%</span> em relação ao ano anterior
         </p>
       </CardContent>
     </Card>

@@ -1,6 +1,7 @@
+
 "use client"
 
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -19,34 +20,46 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 
 const chartData = [
-  { month: "Janeiro", value: 16000 },
-  { month: "Fevereiro", value: 17000 },
-  { month: "Março", value: 14000 },
-  { month: "Abril", value: 19000 },
-  { month: "Maio", value: 11000 },
-  { month: "Junho", value: 21000 },
-  { month: "Julho", value: 20000 },
-  { month: "Agosto", value: 23000 },
-  { month: "Setembro", value: 24000 },
-  { month: "Outubro", value: 22000 },
-  { month: "Novembro", value: 26000 },
-  { month: "Dezembro", value: 27000 },
+  { month: "Janeiro", wallet: 16000, cdi: 10000, ibov: 12000, sp: 13000 },
+  { month: "Fevereiro", wallet: 17000, cdi: 16000, ibov: 12000, sp: 18000 },
+  { month: "Março", wallet: 14000,cdi: 13500, ibov: 16000, sp: 15000  },
+  { month: "Abril", wallet: 19000, cdi: 18000, ibov: 21000, sp: 21500  },
+  { month: "Maio", wallet: 11000, cdi: 10500, ibov: 12500, sp: 3500  },
+  { month: "Junho", wallet: 21000, cdi: 22000, ibov: 22500, sp: 25000  },
+  { month: "Julho", wallet: 20000, cdi: 20000, ibov: 22000, sp: 22500  },
+  { month: "Agosto", wallet: 23000, cdi: 24000, ibov: 24500, sp: 20000  },
+  { month: "Setembro", wallet: 24000, cdi: 21000, ibov: 20500, sp: 27000  },
+  { month: "Outubro", wallet: 22000, cdi: 24000, ibov: 24500, sp: 30000  },
+  { month: "Novembro", wallet: 26000, cdi: 21000, ibov: 23000, sp: 31000  },
+  { month: "Dezembro", wallet: 22000, cdi: 19000, ibov: 25500, sp: 30500  },
 ]
 
 const chartConfig = {
-  value: {
-    label: "value",
+  wallet: {
+    label: "wallet",
     color: "hsl(var(--chart-1))",
+  },
+  cdi: {
+    label: "cdi",
+    color: "hsl(var(--chart-2))",
+  },
+  ibov: {
+    label: "ibov",
+    color: "hsl(var(--chart-3))",
+  },
+  sp: {
+    label: "sp",
+    color: "hsl(var(--chart-4))",
   },
 } satisfies ChartConfig
 
-export function AssetGrowthChart() {
+export function WalletPerformanceChart() {
   return (
     <Card>
       <CardHeader className="flex items-center gap-2 space-y-0 py-5 sm:flex-row">
       <div className="grid flex-1 gap-1 text-center sm:text-left">
-        <CardTitle className="text-base text-foreground font-semibold">Evolução do Patrimônio</CardTitle>
-        <CardDescription className="text-xs text-muted-foreground font-medium">Evolução patrimonial do últimos 12 meses</CardDescription>
+        <CardTitle className="text-base text-foreground font-semibold">Desempenho</CardTitle>
+        <CardDescription className="text-xs text-muted-foreground font-medium">Desempenho da carteira</CardDescription>
       </div>
         <Select value={"90d"}>
           <SelectTrigger
@@ -90,7 +103,6 @@ export function AssetGrowthChart() {
               tickFormatter={(value) => value.slice(0, 3)}
             />
             <YAxis
-              dataKey="value"
               tickLine={false}
               axisLine={false}
               width={80}
@@ -106,12 +118,48 @@ export function AssetGrowthChart() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Line
-              dataKey="value"
+              dataKey="wallet"
               type="natural"
-              stroke="var(--color-value)"
+              stroke="var(--color-wallet)"
               strokeWidth={2}
               dot={{
-                fill: "var(--color-value)",
+                fill: "var(--color-wallet)",
+              }}
+              activeDot={{
+                r: 6,
+              }}
+            />
+            <Line
+              dataKey="cdi"
+              type="natural"
+              stroke="var(--color-cdi)"
+              strokeWidth={2}
+              dot={{
+                fill: "var(--color-cdi)",
+              }}
+              activeDot={{
+                r: 6,
+              }}
+            />
+            <Line
+              dataKey="ibov"
+              type="natural"
+              stroke="var(--color-ibov)"
+              strokeWidth={2}
+              dot={{
+                fill: "var(--color-ibov)",
+              }}
+              activeDot={{
+                r: 6,
+              }}
+            />
+            <Line
+              dataKey="sp"
+              type="natural"
+              stroke="var(--color-sp)"
+              strokeWidth={2}
+              dot={{
+                fill: "var(--color-sp)",
               }}
               activeDot={{
                 r: 6,

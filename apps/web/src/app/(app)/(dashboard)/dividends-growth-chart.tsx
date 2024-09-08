@@ -1,7 +1,7 @@
 "use client"
 
 import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -52,7 +52,7 @@ const chartConfig = {
 export function DividendsGrowthChart() {
   return (
     <Card>
-      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+      <CardHeader className="flex items-center gap-2 space-y-0 py-5 sm:flex-row">
         <div className="grid flex-1 gap-1 text-center sm:text-left">
           <CardTitle className="text-base text-foreground font-semibold">Evolução dos Proventos</CardTitle>
           <CardDescription className="text-xs text-muted-foreground font-medium">Evolução dos proventos recebidos em comparação ao último ano</CardDescription>
@@ -66,13 +66,16 @@ export function DividendsGrowthChart() {
           </SelectTrigger>
           <SelectContent className="rounded-xl">
             <SelectItem value="90d" className="rounded-lg">
-            últimos 3 meses
+              último 1 ano
             </SelectItem>
             <SelectItem value="30d" className="rounded-lg">
-            últimos 30 dias
+              últimos 3 anos
             </SelectItem>
             <SelectItem value="7d" className="rounded-lg">
-            últimos 7 dias
+              últimos 5 anos 
+            </SelectItem>
+            <SelectItem value="7d" className="rounded-lg">
+              Tudo
             </SelectItem>
           </SelectContent>
         </Select>
@@ -88,6 +91,17 @@ export function DividendsGrowthChart() {
               tickMargin={10}
               axisLine={false}
               tickFormatter={(value) => value.slice(0, 3)}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              width={80}
+              tickFormatter={(value: number) =>
+                value.toLocaleString('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL',
+                })
+              }
             />
             <ChartTooltip
               cursor={false}
