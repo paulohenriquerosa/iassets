@@ -1,6 +1,5 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { LastestTradeTableRow } from "./lastest-trade-table-row";
 import { AssetsTableRow } from "./assets-table-row";
 
 
@@ -16,7 +15,7 @@ export function AssetsTable() {
       <div>
         <Card>
           <CardContent className="py-4">
-            <Table>
+            <Table className="table-auto">
               <TableHeader>
                 <TableRow>
                 <TableHead></TableHead>

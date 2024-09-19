@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import Logo from "@/assets/logo.svg"
-import { DollarSign, Home,  Wallet } from "lucide-react";
+import { Bot, DollarSign, Home,  Wallet } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { NavLink } from "./nav-link";
 import { ProfileButton } from "./profile-button";
@@ -30,6 +30,10 @@ export function Header(){
           <NavLink href="/dividends">
             <DollarSign className="size-4 inline"/>
             <span className="align-middle text-sm"> Proventos </span>
+          </NavLink>
+          <NavLink href="/assistant">
+            <Bot className="size-4 inline"/>
+            <span className="align-middle text-sm"> IA </span>
           </NavLink>
         </nav>
       </div>
