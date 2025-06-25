@@ -1,0 +1,51 @@
+# Robots.txt para iAssets - Portal de Notícias Financeiras
+# https://iassets.com.br
+
+User-agent: *
+Allow: /
+Allow: /mercados
+Allow: /crypto
+Allow: /internacional
+Allow: /analises
+Allow: /educacao
+Allow: /calculadoras
+Allow: /carteiras
+Allow: /analise-tecnica
+
+# Permitir bots específicos
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 2
+
+# Bloquear arquivos desnecessários
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: /private/
+Disallow: *.json$
+Disallow: /*?*utm_*
+Disallow: /*?*fbclid*
+Disallow: /*?*gclid*
+
+# Permitir recursos importantes
+Allow: /api/og/
+Allow: /_next/static/
+Allow: /_next/image/
+
+# Sitemaps
+Sitemap: https://iassets.com.br/sitemap.xml
+Sitemap: https://iassets.com.br/sitemap-posts.xml
+Sitemap: https://iassets.com.br/sitemap-pages.xml
+
+# Informações do site
+# Portal de notícias financeiras do Brasil
+# Atualizado: 2024-12-19
+# Contato: contato@iassets.com.br 

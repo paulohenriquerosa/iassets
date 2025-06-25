@@ -1,0 +1,114 @@
+{
+  "name": "iAssets - Portal de Notícias Financeiras",
+  "short_name": "iAssets",
+  "description": "Portal líder em notícias financeiras do Brasil. Análises de ações, criptomoedas, fundos imobiliários e investimentos.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["finance", "news", "business", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mercados",
+      "short_name": "Mercados",
+      "description": "Cotações e análises de mercado em tempo real",
+      "url": "/mercados",
+      "icons": [{ "src": "/icons/shortcut-mercados.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Criptomoedas",
+      "short_name": "Crypto",
+      "description": "Notícias e cotações de criptomoedas",
+      "url": "/crypto",
+      "icons": [{ "src": "/icons/shortcut-crypto.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Calculadoras",
+      "short_name": "Calc",
+      "description": "Ferramentas de cálculo para investimentos",
+      "url": "/calculadoras",
+      "icons": [{ "src": "/icons/shortcut-calc.png", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Homepage do iAssets no desktop"
+    },
+    {
+      "src": "/screenshots/mobile-home.png",
+      "sizes": "375x812",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Homepage do iAssets no mobile"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+finance",
+      "url": "/mercados?symbol=%s"
+    }
+  ]
+} 
