@@ -1,9 +1,0 @@
-{
-  "build": {
-    "env": {
-      "VERCEL_PNPM_VERSION": "8"
-    },
-    "installCommand": "pnpm install --frozen-lockfile",
-    "buildCommand": "pnpm run build"
-  }
-}
