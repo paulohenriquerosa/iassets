@@ -6,7 +6,12 @@ import {
   getPostsByCategory,
 } from "@/lib/notion";
 import { CategorySection } from "@/components/sections/category-section";
-import { HomePageClient, MarketTicker, FeaturedPost, Sidebar } from "@/components/HomePageClient";
+import {
+  HomePageClient,
+  MarketTicker,
+  FeaturedPost,
+  Sidebar,
+} from "@/components/HomePageClient";
 
 export const metadata: Metadata = {
   title: "iAssets - Portal Líder em Notícias e Análises do Mercado Financeiro",
@@ -37,8 +42,6 @@ const marketData = [
   { symbol: "BBDC4", value: "R$ 14.67", change: "+1.5%", positive: true },
 ];
 
-
-
 export default async function HomePage() {
   // Buscar dados dinâmicos do Notion
   const [allPosts, categories] = await Promise.all([
@@ -63,7 +66,7 @@ export default async function HomePage() {
     <>
       {/* Componente invisível que inicializa os hooks de tracking */}
       <HomePageClient />
-      
+
       <div className="min-h-screen bg-white dark:bg-gray-900">
         {/* Market Data Ticker com tracking */}
         <MarketTicker marketData={marketData} />
@@ -89,9 +92,6 @@ export default async function HomePage() {
               return (
                 <div key={category}>
                   <CategorySection category={category} posts={posts} />
-                  {index < categories.length - 1 && (
-                    <Separator className="space-y-4" />
-                  )}
                 </div>
               );
             })}
@@ -101,4 +101,3 @@ export default async function HomePage() {
     </>
   );
 }
-
