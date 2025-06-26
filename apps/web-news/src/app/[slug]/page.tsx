@@ -23,8 +23,8 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArticleClientTracker } from "@/components/ArticleClientTracker";
-import { ShareButtonsInline } from "@/components/social-share-inline";
-import { NewsletterWithTracking } from "@/components/newsletter-with-tracking";
+import { SocialShareClient } from "@/components/SocialShareClient";
+import { NewsletterClient } from "@/components/NewsletterClient";
 
 interface PostPageProps {
   params: Promise<{
@@ -364,7 +364,7 @@ export default async function PostPage({ params }: PostPageProps) {
                 </div>
 
                     {/* Ações de Compartilhamento com Tracking */}
-                    <ShareButtonsInline 
+                    <SocialShareClient 
                       title={post.title}
                       url={`/${post.slug}`}
                       category={post.category || 'Geral'}
@@ -551,7 +551,7 @@ export default async function PostPage({ params }: PostPageProps) {
                 </Card>
 
                 {/* Newsletter com Tracking */}
-                <NewsletterWithTracking 
+                <NewsletterClient 
                   location="article_sidebar"
                   variant="sidebar"
                 />
