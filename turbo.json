@@ -1,7 +1,12 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "globalEnv": ["NOTION_TOKEN", "NOTION_DATABASE_ID", "NODE_ENV"],
+  "globalEnv": [
+    "NOTION_TOKEN",
+    "NOTION_DATABASE_ID",
+    "NODE_ENV",
+    "REVALIDATE_SECRET"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
