@@ -22,7 +22,7 @@ import {
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArticleTracker } from "@/components/analytics/article-tracker";
+import { ArticleClientTracker } from "@/components/ArticleClientTracker";
 import { ShareButtonsInline } from "@/components/social-share-inline";
 import { NewsletterWithTracking } from "@/components/newsletter-with-tracking";
 
@@ -235,7 +235,7 @@ export default async function PostPage({ params }: PostPageProps) {
     return (
       <>
         {/* Tracking do artigo */}
-        <ArticleTracker 
+        <ArticleClientTracker 
           articleTitle={post.title}
           articleCategory={post.category || 'Geral'}
           articleAuthor={post.author?.name}

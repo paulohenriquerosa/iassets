@@ -1,5 +1,5 @@
 // lib/notion.ts
-import { Client } from "@notionhq/client"
+import { Client } from "@notionhq/client";
 import { type ExtendedRecordMap } from "notion-types";
 import { NotionCompatAPI } from "notion-compat";
 import { unstable_cache } from "next/cache";
@@ -243,12 +243,12 @@ export async function getAllCategories(): Promise<string[]> {
       });
 
       const categories = new Set<string>();
-      
+
       response.results.filter(isFullPage).forEach((page) => {
         const category = extractProperty(
           page.properties["Category"] as NotionProperty,
         ) as string;
-        
+
         if (category && category.trim() !== "") {
           categories.add(category);
         }
@@ -265,7 +265,10 @@ export async function getAllCategories(): Promise<string[]> {
 }
 
 // Nova função para buscar posts por categoria
-export async function getPostsByCategory(category: string, limit?: number): Promise<Post[]> {
+export async function getPostsByCategory(
+  category: string,
+  limit?: number,
+): Promise<Post[]> {
   return unstable_cache(
     async () => {
       const databaseId = process.env.NOTION_DATABASE_ID!;

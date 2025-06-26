@@ -9,7 +9,7 @@ import { Metadata } from "next";
 import { Separator } from "@/components/ui/separator";
 import { generateCategoryMetadata, siteConfig } from "@/lib/seo";
 import { CategoryBreadcrumbs } from "@/components/seo/breadcrumbs";
-import { CategoryTracker } from "@/components/analytics/category-tracker";
+import { CategoryPageClient } from "@/components/CategoryPageClient";
 
 interface CategoryPageProps {
   params: Promise<{
@@ -250,7 +250,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Tracking da categoria */}
-      <CategoryTracker 
+      <CategoryPageClient 
         categoryName={matchingCategory}
         postsCount={posts.length}
       />

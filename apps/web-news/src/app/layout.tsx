@@ -3,6 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { FooterWithTracking } from "@/components/footer-with-tracking";
 import { siteConfig, organizationSchema, websiteSchema } from "@/lib/seo";
 
@@ -311,7 +312,6 @@ export default function RootLayout({
 
           {/* Footer com tracking integrado */}
           <FooterWithTracking />
-
         </div>
 
         {/* Analytics e Scripts otimizados */}
@@ -399,8 +399,8 @@ export default function RootLayout({
           `}
         </Script>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
 }
-
