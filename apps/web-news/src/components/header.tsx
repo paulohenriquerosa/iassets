@@ -8,14 +8,12 @@ import {
   Menu, 
   X, 
   Search, 
-  TrendingUp, 
-  TrendingDown,
   Globe,
   BarChart3,
   DollarSign,
   Bitcoin,
-  Calculator,
-  Users,
+  // Calculator,
+  // Users,
   ChevronDown
 } from "lucide-react";
 import {
@@ -48,40 +46,33 @@ const navigationItems = [
       { label: "Indicadores", href: "/economia/indicadores" }
     ]
   },
-  { 
-    label: "Colunas", 
-    href: "/colunas",
-    icon: Users,
-    submenu: [
-      { label: "Análise Técnica", href: "/colunas/analise-tecnica" },
-      { label: "Estratégias", href: "/colunas/estrategias" },
-      { label: "Opiniões", href: "/colunas/opinioes" }
-    ]
-  },
+  // { 
+  //   label: "Colunas", 
+  //   href: "/colunas",
+  //   icon: Users,
+  //   submenu: [
+  //     { label: "Análise Técnica", href: "/colunas/analise-tecnica" },
+  //     { label: "Estratégias", href: "/colunas/estrategias" },
+  //     { label: "Opiniões", href: "/colunas/opinioes" }
+  //   ]
+  // },
   { 
     label: "Cripto", 
     href: "/cripto",
     icon: Bitcoin
   },
-  { 
-    label: "Ferramentas", 
-    href: "/ferramentas",
-    icon: Calculator,
-    submenu: [
-      { label: "Simulador de Investimentos", href: "/ferramentas/simulador" },
-      { label: "Calculadora de Renda Fixa", href: "/ferramentas/renda-fixa" },
-      { label: "Conversor de Moedas", href: "/ferramentas/conversor" }
-    ]
-  }
+  // { 
+  //   label: "Ferramentas", 
+  //   href: "/ferramentas",
+  //   icon: Calculator,
+  //   submenu: [
+  //     { label: "Simulador de Investimentos", href: "/ferramentas/simulador" },
+  //     { label: "Calculadora de Renda Fixa", href: "/ferramentas/renda-fixa" },
+  //     { label: "Conversor de Moedas", href: "/ferramentas/conversor" }
+  //   ]
+  // }
 ];
 
-// Live market data
-const liveData = [
-  { symbol: "IBOV", price: "130.247", change: "+1.25%", isPositive: true },
-  { symbol: "USD/BRL", price: "5.48", change: "-0.32%", isPositive: false },
-  { symbol: "BTC", price: "$71.234", change: "+3.45%", isPositive: true },
-  { symbol: "EUR/BRL", price: "5.95", change: "+0.18%", isPositive: true }
-];
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -89,36 +80,6 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/80 dark:supports-[backdrop-filter]:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 shadow-sm">
       
-      {/* Live Market Ticker */}
-      <div className="bg-slate-900 dark:bg-slate-950 text-white">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center overflow-x-auto py-2 gap-6">
-           
-            <div className="flex items-center gap-2 animate-scroll whitespace-nowrap overflow-hidden w-full">
-            {liveData.map((item) => (
-              <div key={item.symbol} className="flex items-center gap-3 whitespace-nowrap text-sm">
-                <span className="font-semibold text-white">
-                  {item.symbol}
-                </span>
-                <span className="font-mono font-semibold text-white">
-                  {item.price}
-                </span>
-                <span className={`font-semibold flex items-center gap-1 ${
-                  item.isPositive ? "text-green-400" : "text-red-400"
-                }`}>
-                  {item.isPositive ? (
-                    <TrendingUp className="w-3 h-3" />
-                  ) : (
-                    <TrendingDown className="w-3 h-3" />
-                  )}
-                  {item.change}
-                </span>
-              </div>
-            ))}
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Main Header */}
       <div className="container mx-auto px-4">
@@ -126,8 +87,8 @@ export function Header() {
           
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
-              <DollarSign className="w-6 h-6 text-white font-bold" />
+            <div className="w-10 h-10 bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-100 dark:to-gray-200 rounded-xl flex items-center justify-center shadow-lg">
+              <DollarSign className="w-6 h-6 text-white dark:text-gray-900 font-bold" />
             </div>
             <div className="flex flex-col">
               <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">iAssets</span>
@@ -142,7 +103,7 @@ export function Header() {
                 {item.submenu ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-colors">
+                      <Button variant="ghost" className="font-medium text-slate-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                         <item.icon className="w-4 h-4 mr-2" />
                         {item.label}
                         <ChevronDown className="w-4 h-4 ml-1" />
@@ -161,7 +122,7 @@ export function Header() {
                 ) : (
                   <Link 
                     href={item.href}
-                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50"
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
                   >
                     <item.icon className="w-4 h-4 mr-2" />
                     {item.label}
@@ -180,7 +141,7 @@ export function Header() {
               <Input
                 type="search"
                 placeholder="Buscar notícias..."
-                className="pl-10 w-64 border-slate-200 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-400 bg-slate-50 dark:bg-slate-800"
+                className="pl-10 w-64 border-slate-200 dark:border-slate-700 focus:border-gray-900 dark:focus:border-gray-100 bg-slate-50 dark:bg-slate-800"
               />
             </div>
 
@@ -224,7 +185,7 @@ export function Header() {
                 <div key={item.label} className="space-y-1">
                   <Link
                     href={item.href}
-                    className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-lg transition-colors font-medium"
+                    className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors font-medium"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <item.icon className="w-5 h-5" />
@@ -238,7 +199,7 @@ export function Header() {
                         <Link
                           key={subItem.label}
                           href={subItem.href}
-                          className="block px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-lg transition-colors"
+                          className="block px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           {subItem.label}

@@ -9,12 +9,8 @@ import {
   Linkedin, 
   Youtube, 
   Instagram,
-  Facebook,
   Mail,
-  MapPin,
-  Phone,
   Shield,
-  Award,
   Users,
   Globe
 } from "lucide-react";
@@ -178,146 +174,108 @@ export default function RootLayout({
           </main>
           
           {/* Professional Footer */}
-          <footer className="bg-slate-900 text-white" role="contentinfo">
-            <div className="container mx-auto px-4">
+          <footer className="bg-gray-900 text-white border-t border-gray-800" role="contentinfo">
+            <div className="max-w-7xl mx-auto px-6">
               
               {/* Main Footer Content */}
               <div className="py-16">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
                   
                   {/* Company Info */}
                   <div className="lg:col-span-1">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center">
-                        <DollarSign className="w-6 h-6 text-white font-bold" />
+                    <div className="flex items-center gap-3 mb-8">
+                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+                        <DollarSign className="w-6 h-6 text-gray-900 font-bold" />
                       </div>
                       <div>
                         <span className="text-2xl font-bold text-white">iAssets</span>
-                        <p className="text-blue-300 text-sm -mt-1">Portal Financeiro</p>
+                        <p className="text-gray-400 text-sm -mt-1">Portal Financeiro</p>
                       </div>
                     </div>
-                    <p className="text-slate-300 mb-6 leading-relaxed">
+                    <p className="text-gray-300 mb-8 leading-relaxed text-sm">
                       O portal mais confiável do Brasil em notícias financeiras. 
-                      Análises profissionais, ferramentas exclusivas e educação 
-                      financeira para mais de 500.000 investidores.
+                      Análises profissionais e educação financeira para investidores.
                     </p>
                     
                     {/* Trust Indicators */}
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       <div className="flex items-center gap-3 text-sm">
-                        <Shield className="w-4 h-4 text-green-400" />
-                        <span className="text-slate-300">Dados 100% Seguros</span>
+                        <Shield className="w-4 h-4 text-gray-400" />
+                        <span className="text-gray-300">Dados 100% Seguros</span>
                       </div>
                       <div className="flex items-center gap-3 text-sm">
-                        <Award className="w-4 h-4 text-yellow-400" />
-                        <span className="text-slate-300">Portal Premiado 2024</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm">
-                        <Users className="w-4 h-4 text-blue-400" />
-                        <span className="text-slate-300">+500k Investidores</span>
+                        <Users className="w-4 h-4 text-gray-400" />
+                        <span className="text-gray-300">+500k Investidores</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Navigation Links */}
                   <div>
-                    <h4 className="font-bold text-lg mb-6 text-white">Mercados</h4>
+                    <h4 className="font-semibold text-lg mb-6 text-white">Mercados</h4>
                     <ul className="space-y-3">
-                      <li><Link href="/mercados/acoes-brasileiras" className="text-slate-300 hover:text-blue-400 transition-colors text-sm">Ações Brasileiras</Link></li>
-                      <li><Link href="/mercados/acoes-americanas" className="text-slate-300 hover:text-blue-400 transition-colors text-sm">Ações Americanas</Link></li>
-                      <li><Link href="/mercados/fiis" className="text-slate-300 hover:text-blue-400 transition-colors text-sm">Fundos Imobiliários</Link></li>
-                      <li><Link href="/mercados/renda-fixa" className="text-slate-300 hover:text-blue-400 transition-colors text-sm">Renda Fixa</Link></li>
-                      <li><Link href="/cripto" className="text-slate-300 hover:text-blue-400 transition-colors text-sm">Criptomoedas</Link></li>
-                      <li><Link href="/economia" className="text-slate-300 hover:text-blue-400 transition-colors text-sm">Economia</Link></li>
+                      <li><Link href="/mercados/acoes-brasileiras" className="text-gray-300 hover:text-white transition-colors text-sm">Ações Brasileiras</Link></li>
+                      <li><Link href="/mercados/acoes-americanas" className="text-gray-300 hover:text-white transition-colors text-sm">Ações Americanas</Link></li>
+                      <li><Link href="/mercados/fiis" className="text-gray-300 hover:text-white transition-colors text-sm">Fundos Imobiliários</Link></li>
+                      <li><Link href="/mercados/renda-fixa" className="text-gray-300 hover:text-white transition-colors text-sm">Renda Fixa</Link></li>
+                      <li><Link href="/cripto" className="text-gray-300 hover:text-white transition-colors text-sm">Criptomoedas</Link></li>
                     </ul>
                   </div>
 
                   {/* Tools & Resources */}
                   <div>
-                    <h4 className="font-bold text-lg mb-6 text-white">Ferramentas</h4>
+                    <h4 className="font-semibold text-lg mb-6 text-white">Ferramentas</h4>
                     <ul className="space-y-3">
-                      <li><Link href="/ferramentas/calculadora-dividendos" className="text-slate-300 hover:text-blue-400 transition-colors text-sm">Calculadora de Dividendos</Link></li>
-                      <li><Link href="/ferramentas/simulador-carteira" className="text-slate-300 hover:text-blue-400 transition-colors text-sm">Simulador de Carteira</Link></li>
-                      <li><Link href="/ferramentas/analise-fiis" className="text-slate-300 hover:text-blue-400 transition-colors text-sm">Análise de FIIs</Link></li>
-                      <li><Link href="/cotacoes" className="text-slate-300 hover:text-blue-400 transition-colors text-sm">Cotações em Tempo Real</Link></li>
-                      <li><Link href="/educacao" className="text-slate-300 hover:text-blue-400 transition-colors text-sm">Educação Financeira</Link></li>
-                      <li><Link href="/especialistas" className="text-slate-300 hover:text-blue-400 transition-colors text-sm">Nossos Especialistas</Link></li>
+                      <li><Link href="/ferramentas/calculadora-dividendos" className="text-gray-300 hover:text-white transition-colors text-sm">Calculadora de Dividendos</Link></li>
+                      <li><Link href="/ferramentas/simulador-carteira" className="text-gray-300 hover:text-white transition-colors text-sm">Simulador de Carteira</Link></li>
+                      <li><Link href="/cotacoes" className="text-gray-300 hover:text-white transition-colors text-sm">Cotações em Tempo Real</Link></li>
+                      <li><Link href="/educacao" className="text-gray-300 hover:text-white transition-colors text-sm">Educação Financeira</Link></li>
                     </ul>
                   </div>
 
-                  {/* Contact & Support */}
+                  {/* Company */}
                   <div>
-                    <h4 className="font-bold text-lg mb-6 text-white">Contato</h4>
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-3">
-                        <Mail className="w-4 h-4 text-blue-400 mt-0.5" />
-                        <div>
-                          <p className="text-slate-300 text-sm">Email</p>
-                          <a href="mailto:contato@iassets.com.br" className="text-blue-400 hover:text-blue-300 text-sm">
-                            contato@iassets.com.br
-                          </a>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-start gap-3">
-                        <Phone className="w-4 h-4 text-blue-400 mt-0.5" />
-                        <div>
-                          <p className="text-slate-300 text-sm">Telefone</p>
-                          <a href="tel:+551134567890" className="text-blue-400 hover:text-blue-300 text-sm">
-                            (11) 3456-7890
-                          </a>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-start gap-3">
-                        <MapPin className="w-4 h-4 text-blue-400 mt-0.5" />
-                        <div>
-                          <p className="text-slate-300 text-sm">Endereço</p>
-                          <p className="text-slate-400 text-sm">
-                            Av. Faria Lima, 3144<br />
-                            São Paulo - SP
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                    <h4 className="font-semibold text-lg mb-6 text-white">Empresa</h4>
+                    <ul className="space-y-3">
+                      <li><Link href="/sobre" className="text-gray-300 hover:text-white transition-colors text-sm">Sobre nós</Link></li>
+                      <li><Link href="/equipe" className="text-gray-300 hover:text-white transition-colors text-sm">Nossa equipe</Link></li>
+                      <li><Link href="/contato" className="text-gray-300 hover:text-white transition-colors text-sm">Contato</Link></li>
+                      <li><Link href="/newsletter" className="text-gray-300 hover:text-white transition-colors text-sm">Newsletter</Link></li>
+                    </ul>
                   </div>
                 </div>
               </div>
 
-              {/* Social Media & Newsletter */}
-              <div className="border-t border-slate-700 py-8">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              {/* Social Media */}
+              <div className="border-t border-gray-800 py-12">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-8">
                   <div>
-                    <h4 className="font-bold text-white mb-4">Siga nossas redes sociais</h4>
+                    <h4 className="font-semibold text-white mb-4">Siga nossas redes sociais</h4>
                     <div className="flex items-center gap-4">
                       <a href="https://twitter.com/iassets_br" target="_blank" rel="noopener noreferrer" 
-                         className="w-10 h-10 bg-slate-800 hover:bg-blue-600 rounded-full flex items-center justify-center transition-colors">
-                        <Twitter className="w-5 h-5 text-white" />
+                         className="w-10 h-10 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center transition-colors">
+                        <Twitter className="w-5 h-5 text-gray-300" />
                       </a>
                       <a href="https://www.linkedin.com/company/iassets" target="_blank" rel="noopener noreferrer"
-                         className="w-10 h-10 bg-slate-800 hover:bg-blue-600 rounded-full flex items-center justify-center transition-colors">
-                        <Linkedin className="w-5 h-5 text-white" />
+                         className="w-10 h-10 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center transition-colors">
+                        <Linkedin className="w-5 h-5 text-gray-300" />
                       </a>
                       <a href="https://www.youtube.com/c/iassets" target="_blank" rel="noopener noreferrer"
-                         className="w-10 h-10 bg-slate-800 hover:bg-red-600 rounded-full flex items-center justify-center transition-colors">
-                        <Youtube className="w-5 h-5 text-white" />
+                         className="w-10 h-10 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center transition-colors">
+                        <Youtube className="w-5 h-5 text-gray-300" />
                       </a>
                       <a href="https://www.instagram.com/iassets_br" target="_blank" rel="noopener noreferrer"
-                         className="w-10 h-10 bg-slate-800 hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors">
-                        <Instagram className="w-5 h-5 text-white" />
-                      </a>
-                      <a href="https://www.facebook.com/iassets.br" target="_blank" rel="noopener noreferrer"
-                         className="w-10 h-10 bg-slate-800 hover:bg-blue-800 rounded-full flex items-center justify-center transition-colors">
-                        <Facebook className="w-5 h-5 text-white" />
+                         className="w-10 h-10 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center transition-colors">
+                        <Instagram className="w-5 h-5 text-gray-300" />
                       </a>
                     </div>
                   </div>
                   
                   <div className="text-center md:text-right">
-                    <h4 className="font-bold text-white mb-2">Newsletter VIP Gratuita</h4>
-                    <p className="text-slate-300 text-sm mb-4">Mais de 250.000 assinantes</p>
+                    <h4 className="font-semibold text-white mb-2">Newsletter</h4>
+                    <p className="text-gray-300 text-sm mb-4">Receba as principais notícias</p>
                     <Link href="/newsletter" 
-                          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                          className="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-gray-900 px-6 py-3 rounded-lg font-medium transition-colors text-sm">
                       <Mail className="w-4 h-4" />
                       Assinar Newsletter
                     </Link>
@@ -326,59 +284,40 @@ export default function RootLayout({
               </div>
 
               {/* Copyright & Legal */}
-              <div className="border-t border-slate-700 py-6">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="border-t border-gray-800 py-8">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                   <div className="text-center md:text-left">
-                    <p className="text-slate-400 text-sm">
-                      © 2025 iAssets Portal Financeiro Ltda. Todos os direitos reservados.
-                    </p>
-                    <p className="text-slate-500 text-xs mt-1">
-                      CNPJ: 12.345.678/0001-90 • Registro CVM em andamento
+                    <p className="text-gray-400 text-sm">
+                      © 2025 iAssets. Todos os direitos reservados.
                     </p>
                   </div>
                   
-                  <div className="flex items-center gap-6 text-xs">
-                    <Link href="/termos" className="text-slate-400 hover:text-white transition-colors">
+                  <div className="flex items-center gap-6 text-sm">
+                    <Link href="/termos" className="text-gray-400 hover:text-white transition-colors">
                       Termos de Uso
                     </Link>
-                    <Link href="/privacidade" className="text-slate-400 hover:text-white transition-colors">
-                      Política de Privacidade
+                    <Link href="/privacidade" className="text-gray-400 hover:text-white transition-colors">
+                      Privacidade
                     </Link>
-                    <Link href="/cookies" className="text-slate-400 hover:text-white transition-colors">
+                    <Link href="/cookies" className="text-gray-400 hover:text-white transition-colors">
                       Cookies
-                    </Link>
-                    <Link href="/sitemap.xml" className="text-slate-400 hover:text-white transition-colors">
-                      Sitemap
                     </Link>
                   </div>
                 </div>
               </div>
 
               {/* Legal Disclaimer */}
-              <div className="border-t border-slate-700 pt-6">
-                <div className="bg-slate-800/50 rounded-lg p-6">
-                  <div className="flex items-start gap-3 mb-4">
-                    <Globe className="w-5 h-5 text-yellow-400 mt-0.5" />
+              <div className="border-t border-gray-800 pt-8 pb-6">
+                <div className="bg-gray-800 rounded-xl p-6">
+                  <div className="flex items-start gap-3">
+                    <Globe className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
                     <div>
-                      <h5 className="font-bold text-white mb-2">Aviso Legal e Disclaimer</h5>
-                      <p className="text-slate-300 text-sm leading-relaxed">
-                        <strong>As informações contidas neste portal são apenas para fins educacionais e informativos.</strong> 
-                        Não constituem recomendação de investimento, oferta ou solicitação de compra ou venda de qualquer ativo financeiro. 
-                        O investimento em ações, fundos e outros ativos envolve riscos, incluindo a possível perda do capital investido. 
-                        Rentabilidade passada não garante resultados futuros. Sempre consulte um profissional qualificado antes de tomar decisões de investimento.
+                      <h5 className="font-semibold text-white mb-3">Aviso Legal</h5>
+                      <p className="text-gray-300 text-sm leading-relaxed">
+                        As informações contidas neste portal são apenas para fins educacionais e informativos. 
+                        Não constituem recomendação de investimento. O investimento em ações e outros ativos envolve riscos. 
+                        Sempre consulte um profissional qualificado antes de tomar decisões de investimento.
                       </p>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-400 mt-4 pt-4 border-t border-slate-700">
-                    <div>
-                      <strong className="text-slate-300">Dados de Mercado:</strong> Informações fornecidas por parceiros licenciados. Pode haver atrasos de até 15 minutos.
-                    </div>
-                    <div>
-                      <strong className="text-slate-300">Responsabilidade:</strong> O iAssets não se responsabiliza por decisões de investimento baseadas no conteúdo publicado.
-                    </div>
-                    <div>
-                      <strong className="text-slate-300">Compliance:</strong> Seguimos as melhores práticas de transparência e ética jornalística.
                     </div>
                   </div>
                 </div>

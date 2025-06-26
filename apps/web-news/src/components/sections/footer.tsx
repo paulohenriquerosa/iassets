@@ -84,7 +84,7 @@ export function Footer() {
                 placeholder="Digite seu email" 
                 className="flex-1"
               />
-              <Button>
+              <Button className="bg-gray-900 hover:bg-gray-800 dark:bg-gray-100 dark:hover:bg-gray-200 text-white dark:text-gray-900">
                 <Mail className="w-4 h-4 mr-2" />
                 Inscrever-se
               </Button>
@@ -102,8 +102,8 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-primary-foreground font-bold" />
+              <div className="w-8 h-8 bg-gray-900 dark:bg-gray-100 rounded-lg flex items-center justify-center">
+                <DollarSign className="w-5 h-5 text-white dark:text-gray-900 font-bold" />
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-bold text-foreground">iAssets</span>

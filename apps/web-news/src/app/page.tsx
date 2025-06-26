@@ -1,21 +1,10 @@
-import Link from "next/link";
+import { Clock, TrendingUp, ArrowRight } from "lucide-react";
 import Image from "next/image";
-import { getAllPosts, Post } from "@/lib/notion";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { 
-  Clock, 
-  ArrowRight,
-  BarChart3,
-  Target,
-  DollarSign,
-  TrendingUp
-} from "lucide-react";
-import { Metadata } from "next";
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Metadata } from "next";
+import { Separator } from "@/components/ui/separator";
 
 export const metadata: Metadata = {
   title: "iAssets - Portal Líder em Notícias e Análises do Mercado Financeiro",
@@ -34,349 +23,611 @@ export const metadata: Metadata = {
   ]
 };
 
-// Mock Post Data (caso não tenha posts do Notion)
-const mockPosts = [
+const marketData = [
+  { symbol: "IBOV", value: "130.247", change: "+1.25%", positive: true },
+  { symbol: "USD/BRL", value: "5.48", change: "-0.32%", positive: false },
+  { symbol: "BTC", value: "$71.234", change: "+3.45%", positive: true },
+  { symbol: "EUR/BRL", value: "5.95", change: "+0.18%", positive: true },
+  { symbol: "PETR4", value: "R$ 38.42", change: "+2.1%", positive: true },
+  { symbol: "VALE3", value: "R$ 65.89", change: "-1.2%", positive: false },
+  { symbol: "ITUB4", value: "R$ 32.15", change: "+0.8%", positive: true },
+  { symbol: "BBDC4", value: "R$ 14.67", change: "+1.5%", positive: true }
+];
+
+const featuredPost = {
+  title: "Senado derruba aumento da IOF e concessões vão atrás da Casa para aprovar projeto",
+  excerpt: "Senadores rejeitaram a medida provisória que aumentaria a alíquota do Imposto sobre Operações Financeiras. Empresas de concessão mobilizam lobby para reverter decisão.",
+  date: "Há 3 horas",
+  image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop&crop=center",
+  slug: "senado-derruba-aumento-iof",
+  readTime: "5 min"
+};
+
+const sidebarPosts = [
   {
-    id: "1",
-    slug: "petrobras-divindendo-extraordinario-analise",
-    title: "Petrobras Anuncia Dividendo Extraordinário de R$ 2,5 Bilhões: Nossa Análise Completa",
-    description: "Entenda o impacto do dividendo extraordinário da Petrobras nos investidores e como isso afeta o preço da ação. Análise técnica e fundamentalista completa.",
-    status: "Published",
-    date: new Date().toISOString(),
-    createdTime: new Date().toISOString(),
-    tags: ["Petrobras", "Dividendos", "PETR4"],
-    author: { name: "Carlos Monteiro", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
-    coverImage: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop&crop=entropy"
+    title: "Petrobras anuncia dividendo extraordinário de R$ 2,5 bilhões",
+    time: "Há 2 horas",
+    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=80&h=60&fit=crop",
+    slug: "petrobras-dividendo-extraordinario"
   },
   {
-    id: "2", 
-    slug: "ibovespa-dispara-3-porcento-analise-tecnica",
-    title: "Ibovespa Dispara 3% em Sessão Histórica: Análise Técnica Indica Continuação da Alta",
-    description: "O índice brasileiro rompeu resistência importante. Veja os níveis de suporte e resistência para os próximos dias.",
-    status: "Published",
-    date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    createdTime: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    tags: ["Ibovespa", "Análise Técnica", "Bolsa"],
-    author: { name: "Ana Paula Silva", avatar: "https://images.unsplash.com/photo-1494790108755-2616b9e1bbba?w=150&h=150&fit=crop&crop=face" },
-    coverImage: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop&crop=entropy"
+    title: "Ibovespa opera em alta de 1,2% com otimismo do mercado",
+    time: "Há 3 horas", 
+    image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=80&h=60&fit=crop",
+    slug: "ibovespa-alta-otimismo"
   },
   {
-    id: "3",
-    slug: "nubank-resultados-q4-acao-dispara",
-    title: "Nubank Supera Expectativas no Q4 e Ação Dispara 8%: Vale a Pena Comprar?",
-    description: "Fintech brasileira apresenta resultados excepcionais. Análise dos números e perspectivas para 2025.",
-    status: "Published", 
-    date: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-    createdTime: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-    tags: ["Nubank", "NUBR33", "Fintechs"],
-    author: { name: "Ricardo Santos", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" },
-    coverImage: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=400&fit=crop&crop=entropy"
+    title: "Fed mantém juros e sinaliza política mais branda",
+    time: "Há 4 horas",
+    image: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=80&h=60&fit=crop", 
+    slug: "fed-mantem-juros"
   },
   {
-    id: "4",
-    slug: "fed-ultima-alta-juros-ciclo-impactos",
-    title: "Fed Sinaliza Última Alta de Juros do Ciclo: Impactos para Mercados Emergentes",
-    description: "Jerome Powell indica fim do ciclo de altas. Entenda os impactos para Brasil e mercados emergentes.",
-    status: "Published",
-    date: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), 
-    createdTime: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-    tags: ["Fed", "Juros", "Mercados Emergentes"],
-    author: { name: "Carlos Monteiro", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
-    coverImage: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&h=400&fit=crop&crop=entropy"
-  },
-  {
-    id: "5",
-    slug: "vale-maior-alta-6-meses-recompra-acoes",
-    title: "Vale Registra Maior Alta em 6 Meses Após Anúncio de Recompra de Ações",
-    description: "Mineradora anuncia programa de recompra de R$ 5 bilhões. Análise do impacto nos fundamentos da empresa.",
-    status: "Published",
-    date: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
-    createdTime: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(), 
-    tags: ["Vale", "VALE3", "Mineração"],
-    author: { name: "Ana Paula Silva", avatar: "https://images.unsplash.com/photo-1494790108755-2616b9e1bbba?w=150&h=150&fit=crop&crop=face" },
-    coverImage: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=400&fit=crop&crop=entropy"
+    title: "Bitcoin supera US$ 45 mil com entrada de ETFs",
+    time: "Há 5 horas",
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=80&h=60&fit=crop",
+    slug: "bitcoin-supera-45-mil"
   }
 ];
 
-export default async function HomePage() {
-  // Fetch posts
-  let posts: Post[] = [];
-  
-  try {
-    posts = await getAllPosts();
-    // Se não tiver posts do Notion, usa os dados mockup
-    if (posts.length === 0) {
-      posts = mockPosts;
-    }
-  } catch (err) {
-    console.error("Error fetching posts:", err);
-    // Fallback para dados mockup
-    posts = mockPosts;
+// Seção Mercados
+const mercadosPosts = [
+  {
+    category: "Economia",
+    title: "Powell faz alerta contra fim do poder do Fed de pagar juros sobre reservas",
+    time: "Há 1 hora",
+    image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=240&fit=crop",
+    slug: "powell-alerta-fed-juros-reservas"
+  },
+  {
+    category: "Mercados",
+    title: "Petróleo sobe, recuperando parte da perda após tombo em 2 dias, com tensões no radar",
+    time: "Há 2 horas",
+    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=240&fit=crop",
+    slug: "petroleo-sobe-recuperando-perda"
+  },
+  {
+    category: "Economia", 
+    title: "BofA eleva previsão de crescimento global após alívio sobre EUA e China nas tarifas",
+    time: "Há 3 horas",
+    image: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=400&h=240&fit=crop",
+    slug: "bofa-eleva-previsao-crescimento"
+  },
+  {
+    category: "Mercados",
+    title: "UBS BB corta preço-alvo de BBSE e ONSE após revisar rural, previdência e vida crédito",
+    time: "Há 4 horas",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=240&fit=crop",
+    slug: "ubs-corta-preco-alvo-bbse"
   }
+];
 
-  const featuredPost = posts[0];
-  const latestPosts = posts.slice(0, 8);
-  const popularPosts = posts.slice(0, 5);
+// Seção Guia de Investimentos
+const guiaInvestimentosPosts = [
+  {
+    category: "Guia de Investimento",
+    title: "Como escolher as melhores ações para iniciantes em 2024",
+    badge: "Carteiras Automatizadas: Fundos Imobiliários",
+    time: "Há 2 horas",
+    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=240&fit=crop",
+    slug: "como-escolher-acoes-iniciantes"
+  },
+  {
+    category: "Guia de Investimento", 
+    title: "Renda fixa vs variável: qual a melhor estratégia para seu perfil",
+    badge: "Fundos de Investimentos",
+    time: "Há 4 hours",
+    image: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=240&fit=crop",
+    slug: "renda-fixa-vs-variavel"
+  },
+  {
+    category: "Guia de Investimento",
+    title: "Fundos imobiliários: guia completo para investir em FIIs",
+    badge: "Carteiras Automatizadas: Fundos Imobiliários", 
+    time: "Há 6 horas",
+    image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=240&fit=crop",
+    slug: "fundos-imobiliarios-guia-completo"
+  },
+  {
+    category: "Guia de Investimento",
+    title: "Diversificação de carteira: estratégias para reduzir riscos",
+    badge: "Fundos de Investimentos",
+    time: "Há 8 hours",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=240&fit=crop",
+    slug: "diversificacao-carteira-estrategias"
+  }
+];
 
+// Outras seções mantendo estrutura similar
+const acoesPosts = [
+  {
+    category: "Ações",
+    title: "Vale registra alta de 3% após resultado trimestral surpreender analistas",
+    time: "Há 1 hora",
+    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=240&fit=crop",
+    slug: "vale-alta-resultado-trimestral"
+  },
+  {
+    category: "Ações",
+    title: "Magazine Luiza apresenta plano de reestruturação para 2025",
+    time: "Há 3 horas",
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=240&fit=crop",
+    slug: "magalu-reestruturacao-2025"
+  },
+  {
+    category: "Ações",
+    title: "Ação da Embraer dispara com novo contrato internacional",
+    time: "Há 5 horas",
+    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&h=240&fit=crop",
+    slug: "embraer-dispara-novo-contrato"
+  },
+  {
+    category: "Ações", 
+    title: "WEG anuncia expansão internacional e investe R$ 500 mi",
+    time: "Há 7 horas",
+    image: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=240&fit=crop",
+    slug: "weg-expansao-internacional-500mi"
+  }
+];
+
+const fiisPosts = [
+  {
+    category: "FIIs",
+    title: "HGLG11 anuncia aquisição de shopping center em São Paulo",
+    time: "Há 2 horas",
+    image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=240&fit=crop",
+    slug: "hglg11-aquisicao-shopping-sp"
+  },
+  {
+    category: "FIIs",
+    title: "Fundos imobiliários de logística lideram rentabilidade em 2024",
+    time: "Há 4 horas",
+    image: "https://images.unsplash.com/photo-1448630360428-65456885c650?w=400&h=240&fit=crop",
+    slug: "fiis-logistica-lideram-rentabilidade"
+  },
+  {
+    category: "FIIs",
+    title: "Taxa de vacância de escritórios cai 15% em São Paulo",
+    time: "Há 6 horas",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=240&fit=crop",
+    slug: "taxa-vacancia-escritorios-cai-15"
+  },
+  {
+    category: "FIIs",
+    title: "BTLG11 registra dividend yield de 9,2% e surpreende mercado",
+    time: "Há 8 horas",
+    image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=240&fit=crop",
+    slug: "btlg11-dividend-yield-9-2-surpreende"
+  }
+];
+
+const economiaPosts = [
+  {
+    category: "Economia",
+    title: "IPCA de outubro fica em 0,56%, acima das expectativas do mercado",
+    time: "Há 2 horas",
+    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=240&fit=crop",
+    slug: "ipca-outubro-acima-expectativas"
+  },
+  {
+    category: "Economia",
+    title: "PIB do terceiro trimestre supera projeções e cresce 0,9%",
+    time: "Há 4 horas",
+    image: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=400&h=240&fit=crop",
+    slug: "pib-terceiro-trimestre-supera-projecoes"
+  },
+  {
+    category: "Economia",
+    title: "Balança comercial registra superávit de US$ 2,8 bilhões",
+    time: "Há 6 horas",
+    image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=240&fit=crop",
+    slug: "balanca-comercial-superavit-2-8-bi"
+  },
+  {
+    category: "Economia",
+    title: "Taxa de desemprego cai para 8,5% no trimestre encerrado",
+    time: "Há 8 horas",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=240&fit=crop",
+    slug: "taxa-desemprego-cai-8-5-trimestre"
+  }
+];
+
+const criptomoedasPosts = [
+  {
+    category: "Criptomoedas",
+    title: "Ethereum atinge novo patamar com upgrade da rede para PoS",
+    time: "Há 1 hora",
+    image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400&h=240&fit=crop",
+    slug: "ethereum-upgrade-rede-pos"
+  },
+  {
+    category: "Criptomoedas",
+    title: "Solana ganha destaque no mercado de NFTs e DeFi",
+    time: "Há 3 horas",
+    image: "https://images.unsplash.com/photo-1640161704729-cbe966a08476?w=400&h=240&fit=crop",
+    slug: "solana-destaque-nfts-defi"
+  },
+  {
+    category: "Criptomoedas",
+    title: "Binance lança novo produto DeFi exclusivo para o Brasil",
+    time: "Há 5 horas",
+    image: "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=400&h=240&fit=crop",
+    slug: "binance-produto-defi-brasil"
+  },
+  {
+    category: "Criptomoedas",
+    title: "Cardano implementa smart contracts avançados em nova atualização",
+    time: "Há 7 horas",
+    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=240&fit=crop",
+    slug: "cardano-smart-contracts-atualizacao"
+  }
+];
+
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
 
-      <div className="container mx-auto px-4 py-8">
-        
-        {/* Hero Section com Post Principal + Mais Lidas */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
-          {/* Post Principal */}
-          <div className="lg:col-span-3">
-            {featuredPost && (
-              <Card className="overflow-hidden border-0 shadow-xl">
-                <div className="relative h-96 md:h-[400px]">
-                  {featuredPost.coverImage ? (
-                    <Image
-                      src={featuredPost.coverImage}
-                      alt={featuredPost.title}
-                      fill
-                      className="object-cover"
-                      priority
-                    />
-                  ) : (
-                    <div className="h-full bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 flex items-center justify-center">
-                      <DollarSign className="w-32 h-32 text-white/20" />
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                  
-                  <div className="absolute top-6 left-6">
-                    <Badge className="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2">
-                      DESTAQUE PRINCIPAL
-                    </Badge>
-                  </div>
+      {/* Market Data Ticker */}
+      <div className="bg-gray-900 text-white py-2 sm:py-3 overflow-hidden">
+        <div className="animate-scroll whitespace-nowrap">
+          <div className="inline-flex items-center space-x-6 sm:space-x-8">
+            {/* Duplicate the data for seamless loop */}
+            {[...marketData, ...marketData].map((item, index) => (
+              <div key={index} className="inline-flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm font-medium">
+                <span className="text-gray-300">{item.symbol}</span>
+                <span className="text-white">{item.value}</span>
+                <span className={`${item.positive ? 'text-green-400' : 'text-red-400'}`}>
+                  {item.change}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-                  <div className="absolute bottom-0 left-0 right-0 p-8">
-                    <div className="max-w-4xl">
-                      <h1 className="text-2xl md:text-3xl font-black text-white mb-4 leading-tight">
-                        <Link href={`/${featuredPost.slug}`} className="hover:underline">
-                          {featuredPost.title}
-                        </Link>
-                      </h1>
-                      {featuredPost.description && (
-                        <p className="text-lg text-white/90 mb-4 leading-relaxed">
-                          {featuredPost.description}
-                        </p>
-                      )}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-6 text-white/80">
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-5 h-5" />
-                            <time dateTime={featuredPost.date}>
-                              {format(new Date(featuredPost.date), "dd 'de' MMMM, HH:mm", { locale: ptBR })}
-                            </time>
-                          </div>
-                        </div>
-                        <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white font-bold">
-                          <ArrowRight className="w-5 h-5 mr-2" />
-                          Ler Análise
-                        </Button>
-                      </div>
-                    </div>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        {/* Hero Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+          {/* Featured Post */}
+          <div className="lg:col-span-2">
+            <Link href={`/${featuredPost.slug}`}>
+              <div className="relative w-full h-80 sm:h-96 md:h-[500px] lg:h-[600px] rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group border border-gray-200 dark:border-gray-800">
+                <Image
+                  src={featuredPost.image}
+                  alt={featuredPost.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 lg:p-10">
+                  <div className="flex items-center gap-2 mb-3 sm:mb-4 text-sm text-white/80">
+                    <Clock className="w-4 h-4" />
+                    <span>{featuredPost.date}</span>
+                    <span className="mx-2">•</span>
+                    <span>{featuredPost.readTime}</span>
                   </div>
+                  <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4 leading-tight">
+                    {featuredPost.title}
+                  </h1>
+                  <p className="text-white/90 text-sm sm:text-base md:text-lg line-clamp-2 mb-4 sm:mb-6 lg:mb-8">
+                    {featuredPost.excerpt}
+                  </p>
+                  <Button className="bg-white hover:bg-gray-100 text-gray-900 text-sm px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium transition-all duration-200">
+                    Ler mais
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
                 </div>
-              </Card>
-            )}
+              </div>
+            </Link>
           </div>
 
-          {/* Mais Lidas - Sidebar */}
+          {/* Sidebar */}
           <div className="lg:col-span-1">
-            <Card className="h-full">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <TrendingUp className="w-5 h-5 text-green-500" />
-                  Mais Lidas Hoje
+            <Card className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 h-full flex flex-col">
+              <CardHeader className="pb-4 sm:pb-6">
+                <CardTitle className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" />
+                  Mais Lidas
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {popularPosts.map((post, index) => (
-                  <div key={post.slug} className="flex gap-3 group cursor-pointer pb-4 border-b border-slate-100 last:border-b-0 last:pb-0">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
-                      index === 0 ? 'bg-yellow-100 text-yellow-700' :
-                      index === 1 ? 'bg-slate-100 text-slate-700' :
-                      index === 2 ? 'bg-orange-100 text-orange-700' :
-                      'bg-slate-50 text-slate-600'
-                    }`}>
-                      {index + 1}
+              <CardContent className="space-y-4 sm:space-y-6 flex-1">
+                {sidebarPosts.map((post, index) => (
+                  <Link
+                    key={index}
+                    href={`/${post.slug}`}
+                    className="flex gap-3 sm:gap-4 hover:bg-gray-50 dark:hover:bg-gray-700 p-3 sm:p-4 rounded-xl transition-colors group"
+                  >
+                    <div className="relative w-16 h-12 sm:w-20 sm:h-16 flex-shrink-0 rounded-xl overflow-hidden">
+                      <Image
+                        src={post.image}
+                        alt={post.title}
+                        fill
+                        className="object-cover"
+                      />
                     </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-sm line-clamp-3 group-hover:text-blue-600 transition-colors leading-tight">
-                        <Link href={`/${post.slug}`}>
-                          {post.title}
-                        </Link>
-                      </h4>
-                      <div className="flex items-center gap-2 text-xs text-slate-600 mt-2">
-                        <time dateTime={post.date}>
-                          {format(new Date(post.date), "HH:mm", { locale: ptBR })}
-                        </time>
-                      </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors leading-tight mb-1 sm:mb-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-gray-500 font-medium">{post.time}</p>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </CardContent>
             </Card>
           </div>
         </div>
 
-        {/* Seções de Conteúdo */}
-        <div className="space-y-12">
-          
-          {/* Ações Brasileiras */}
+        {/* Content Sections */}
+        <div className="space-y-12 sm:space-y-14">
+          {/* Mercados Section */}
           <section>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
-                <BarChart3 className="w-6 h-6 text-green-600" />
-                Ações Brasileiras
-              </h2>
-              <Button variant="outline" size="sm">
-                Ver todas <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+            <div className="border-l-4 border-blue-600 pl-4 sm:pl-6 mb-8 sm:mb-12">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100">Mercados</h2>
+                <Link 
+                  href="/mercados" 
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 text-base sm:text-lg font-medium hover:underline transition-colors"
+                >
+                  Ver todos
+                </Link>
+              </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {latestPosts.slice(1, 4).map((post) => (
-                <Card key={post.slug} className="hover:shadow-lg transition-all duration-300 group">
-                  <div className="relative h-48 overflow-hidden">
-                    {post.coverImage ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {mercadosPosts.map((post, index) => (
+                <Link key={index} href={`/${post.slug}`}>
+                  <Card className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group border border-gray-200 dark:border-gray-800 h-full">
+                    <div className="relative h-48 sm:h-52 overflow-hidden">
                       <Image
-                        src={post.coverImage}
+                        src={post.image}
                         alt={post.title}
                         fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
-                    ) : (
-                      <div className="h-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 flex items-center justify-center">
-                        <BarChart3 className="w-12 h-12 text-blue-600" />
-                      </div>
-                    )}
-                  </div>
-                  <CardContent className="p-6">
-                    <h3 className="font-bold text-lg line-clamp-2 mb-3 group-hover:text-blue-600 transition-colors">
-                      <Link href={`/${post.slug}`}>
-                        {post.title}
-                      </Link>
-                    </h3>
-                    <p className="text-slate-600 text-sm line-clamp-2 mb-3">
-                      {post.description}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <time className="text-xs text-slate-500" dateTime={post.date}>
-                        {format(new Date(post.date), "dd MMM", { locale: ptBR })}
-                      </time>
-                      <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700 p-0 h-auto">
-                        Ler mais <ArrowRight className="w-4 h-4 ml-1" />
-                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="mb-3 sm:mb-4">
+                        <span className="text-xs sm:text-sm font-semibold text-blue-600 bg-blue-50 px-2 sm:px-3 py-1 rounded-full">
+                          {post.category}
+                        </span>
+                      </div>
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 line-clamp-3-no-ellipsis group-hover:text-blue-600 transition-colors leading-tight mb-3 sm:mb-4">
+                        {post.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-gray-500 font-medium">{post.time}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           </section>
 
-          {/* Fundos Imobiliários */}
+          <Separator  />
+
+          {/* Guia de Investimentos Section */}
           <section>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
-                <Target className="w-6 h-6 text-purple-600" />
-                Fundos Imobiliários
-              </h2>
-              <Button variant="outline" size="sm">
-                Ver todos <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+            <div className="border-l-4 border-green-600 pl-4 sm:pl-6 mb-8 sm:mb-12">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100">Guia de investimentos</h2>
+                <Link 
+                  href="/guia-investimentos" 
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 text-base sm:text-lg font-medium hover:underline transition-colors"
+                >
+                  Ver todos
+                </Link>
+              </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {latestPosts.slice(4, 7).map((post) => (
-                <Card key={post.slug} className="hover:shadow-lg transition-all duration-300 group">
-                  <div className="relative h-48 overflow-hidden">
-                    {post.coverImage ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {guiaInvestimentosPosts.map((post, index) => (
+                <Link key={index} href={`/${post.slug}`}>
+                  <Card className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group border border-gray-200 dark:border-gray-800 h-full">
+                    <div className="relative h-48 sm:h-52 overflow-hidden">
                       <Image
-                        src={post.coverImage}
+                        src={post.image}
                         alt={post.title}
                         fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
-                    ) : (
-                      <div className="h-full bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900 dark:to-purple-800 flex items-center justify-center">
-                        <Target className="w-12 h-12 text-purple-600" />
+                      <div className="absolute top-3 sm:top-4 left-3 sm:left-4">
+                        <span className="text-xs font-semibold text-white bg-red-600 px-2 sm:px-3 py-1 rounded-full">
+                          {post.badge}
+                        </span>
                       </div>
-                    )}
-                  </div>
-                  <CardContent className="p-6">
-                    <h3 className="font-bold text-lg line-clamp-2 mb-3 group-hover:text-purple-600 transition-colors">
-                      <Link href={`/${post.slug}`}>
-                        {post.title}
-                      </Link>
-                    </h3>
-                    <p className="text-slate-600 text-sm line-clamp-2 mb-3">
-                      {post.description}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <time className="text-xs text-slate-500" dateTime={post.date}>
-                        {format(new Date(post.date), "dd MMM", { locale: ptBR })}
-                      </time>
-                      <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 p-0 h-auto">
-                        Ler mais <ArrowRight className="w-4 h-4 ml-1" />
-                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="mb-3 sm:mb-4">
+                        <span className="text-xs sm:text-sm font-semibold text-green-600 bg-green-50 px-2 sm:px-3 py-1 rounded-full">
+                          {post.category}
+                        </span>
+                      </div>
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 line-clamp-3-no-ellipsis group-hover:text-blue-600 transition-colors leading-tight mb-3 sm:mb-4">
+                        {post.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-gray-500 font-medium">{post.time}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           </section>
 
-          {/* Economia e Política */}
+          <Separator  />
+
+          {/* Ações Section */}
           <section>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
-                <DollarSign className="w-6 h-6 text-orange-600" />
-                Economia e Política
-              </h2>
-              <Button variant="outline" size="sm">
-                Ver todas <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+            <div className="border-l-4 border-purple-600 pl-4 sm:pl-6 mb-8 sm:mb-12">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100">Ações</h2>
+                <Link 
+                  href="/acoes" 
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 text-base sm:text-lg font-medium hover:underline transition-colors"
+                >
+                  Ver todos
+                </Link>
+              </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {latestPosts.slice(0, 4).map((post) => (
-                <Card key={post.slug} className="hover:shadow-lg transition-all duration-300 group">
-                  <div className="relative h-32 overflow-hidden">
-                    {post.coverImage ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {acoesPosts.map((post, index) => (
+                <Link key={index} href={`/${post.slug}`}>
+                  <Card className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group border border-gray-200 dark:border-gray-800 h-full">
+                    <div className="relative h-48 sm:h-52 overflow-hidden">
                       <Image
-                        src={post.coverImage}
+                        src={post.image}
                         alt={post.title}
                         fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
-                    ) : (
-                      <div className="h-full bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900 dark:to-orange-800 flex items-center justify-center">
-                        <DollarSign className="w-8 h-8 text-orange-600" />
-                      </div>
-                    )}
-                  </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-bold text-base line-clamp-2 mb-2 group-hover:text-orange-600 transition-colors">
-                      <Link href={`/${post.slug}`}>
-                        {post.title}
-                      </Link>
-                    </h3>
-                    <div className="flex items-center justify-between">
-                      <time className="text-xs text-slate-500" dateTime={post.date}>
-                        {format(new Date(post.date), "dd MMM", { locale: ptBR })}
-                      </time>
                     </div>
-                  </CardContent>
-                </Card>
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="mb-3 sm:mb-4">
+                        <span className="text-xs sm:text-sm font-semibold text-purple-600 bg-purple-50 px-2 sm:px-3 py-1 rounded-full">
+                          {post.category}
+                        </span>
+                      </div>
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 line-clamp-3-no-ellipsis group-hover:text-blue-600 transition-colors leading-tight mb-3 sm:mb-4">
+                        {post.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-gray-500 font-medium">{post.time}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          <Separator  />
+
+          {/* FIIs Section */}
+          <section>
+            <div className="border-l-4 border-orange-600 pl-4 sm:pl-6 mb-8 sm:mb-12">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100">FIIs</h2>
+                <Link 
+                  href="/fiis" 
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 text-base sm:text-lg font-medium hover:underline transition-colors"
+                >
+                  Ver todos
+                </Link>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {fiisPosts.map((post, index) => (
+                <Link key={index} href={`/${post.slug}`}>
+                  <Card className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group border border-gray-200 dark:border-gray-800 h-full">
+                    <div className="relative h-48 sm:h-52 overflow-hidden">
+                      <Image
+                        src={post.image}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="mb-3 sm:mb-4">
+                        <span className="text-xs sm:text-sm font-semibold text-orange-600 bg-orange-50 px-2 sm:px-3 py-1 rounded-full">
+                          {post.category}
+                        </span>
+                      </div>
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 line-clamp-3-no-ellipsis group-hover:text-blue-600 transition-colors leading-tight mb-3 sm:mb-4">
+                        {post.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-gray-500 font-medium">{post.time}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          <Separator  />
+
+          {/* Economia Section */}
+          <section>
+            <div className="border-l-4 border-red-600 pl-4 sm:pl-6 mb-8 sm:mb-12">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100">Economia</h2>
+                <Link 
+                  href="/economia" 
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 text-base sm:text-lg font-medium hover:underline transition-colors"
+                >
+                  Ver todos
+                </Link>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {economiaPosts.map((post, index) => (
+                <Link key={index} href={`/${post.slug}`}>
+                  <Card className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group border border-gray-200 dark:border-gray-800 h-full">
+                    <div className="relative h-48 sm:h-52 overflow-hidden">
+                      <Image
+                        src={post.image}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="mb-3 sm:mb-4">
+                        <span className="text-xs sm:text-sm font-semibold text-red-600 bg-red-50 px-2 sm:px-3 py-1 rounded-full">
+                          {post.category}
+                        </span>
+                      </div>
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 line-clamp-3-no-ellipsis group-hover:text-blue-600 transition-colors leading-tight mb-3 sm:mb-4">
+                        {post.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-gray-500  font-medium">{post.time}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </section>
+
+          <Separator  />
+
+          {/* Criptomoedas Section */}
+          <section>
+            <div className="border-l-4 border-yellow-600 pl-4 sm:pl-6 mb-8 sm:mb-12">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100">Criptomoedas</h2>
+                <Link 
+                  href="/criptomoedas" 
+                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 text-base sm:text-lg font-medium hover:underline transition-colors"
+                >
+                  Ver todos
+                </Link>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {criptomoedasPosts.map((post, index) => (
+                <Link key={index} href={`/${post.slug}`}>
+                  <Card className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group border border-gray-200 dark:border-gray-800 h-full">
+                    <div className="relative h-48 sm:h-52 overflow-hidden">
+                      <Image
+                        src={post.image}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="mb-3 sm:mb-4">
+                        <span className="text-xs sm:text-sm font-semibold text-yellow-600 bg-yellow-50 px-2 sm:px-3 py-1 rounded-full">
+                          {post.category}
+                        </span>
+                      </div>
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 line-clamp-3-no-ellipsis group-hover:text-blue-600 transition-colors leading-tight mb-3 sm:mb-4">
+                        {post.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-gray-500 font-medium">{post.time}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           </section>
         </div>
-      </div>
+      </main>
     </div>
   );
 } 
