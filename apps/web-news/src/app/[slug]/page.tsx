@@ -28,6 +28,15 @@ interface PostPageProps {
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
   try {
     const { slug } = await params;
+    
+    // Verificar se é um arquivo de sistema ou ícone (não é um post)
+    if (slug.includes('.') || slug.startsWith('favicon') || slug.startsWith('icon') || slug.startsWith('apple-touch')) {
+      return {
+        title: 'Arquivo não encontrado | iAssets',
+        description: 'O arquivo solicitado não foi encontrado.',
+      };
+    }
+    
     const post = await getPostBySlug(slug);
     
     if (!post) {
@@ -115,6 +124,12 @@ export async function generateStaticParams() {
 export default async function PostPage({ params }: PostPageProps) {
   try {
     const { slug } = await params;
+    
+    // Verificar se é um arquivo de sistema ou ícone (não é um post)
+    if (slug.includes('.') || slug.startsWith('favicon') || slug.startsWith('icon') || slug.startsWith('apple-touch')) {
+      notFound();
+    }
+    
     const post = await getPostBySlug(slug);
     
     if (!post) {

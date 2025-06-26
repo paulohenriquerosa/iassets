@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { 
   Menu, 
   X, 
@@ -12,13 +11,19 @@ import {
   TrendingUp, 
   TrendingDown,
   Globe,
-  Zap,
   BarChart3,
   DollarSign,
   Bitcoin,
-  Bell,
-  User
+  Calculator,
+  Users,
+  ChevronDown
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navigationItems = [
   { 
@@ -33,69 +38,73 @@ const navigationItems = [
     ]
   },
   { 
-    label: "Criptomoedas", 
-    href: "/crypto",
-    icon: Bitcoin,
-    submenu: [
-      { label: "Bitcoin", href: "/crypto/bitcoin" },
-      { label: "Ethereum", href: "/crypto/ethereum" },
-      { label: "Altcoins", href: "/crypto/altcoins" },
-      { label: "DeFi", href: "/crypto/defi" }
-    ]
-  },
-  { 
-    label: "Internacional", 
-    href: "/internacional",
+    label: "Economia", 
+    href: "/economia",
     icon: Globe,
     submenu: [
-      { label: "Wall Street", href: "/internacional/wall-street" },
-      { label: "Europa", href: "/internacional/europa" },
-      { label: "Ásia", href: "/internacional/asia" }
+      { label: "Brasil", href: "/economia/brasil" },
+      { label: "Internacional", href: "/economia/internacional" },
+      { label: "Política Econômica", href: "/economia/politica" },
+      { label: "Indicadores", href: "/economia/indicadores" }
     ]
   },
   { 
-    label: "Análises", 
-    href: "/analises",
-    icon: TrendingUp
+    label: "Colunas", 
+    href: "/colunas",
+    icon: Users,
+    submenu: [
+      { label: "Análise Técnica", href: "/colunas/analise-tecnica" },
+      { label: "Estratégias", href: "/colunas/estrategias" },
+      { label: "Opiniões", href: "/colunas/opinioes" }
+    ]
   },
   { 
-    label: "Educação", 
-    href: "/educacao",
-    icon: Zap
+    label: "Cripto", 
+    href: "/cripto",
+    icon: Bitcoin
+  },
+  { 
+    label: "Ferramentas", 
+    href: "/ferramentas",
+    icon: Calculator,
+    submenu: [
+      { label: "Simulador de Investimentos", href: "/ferramentas/simulador" },
+      { label: "Calculadora de Renda Fixa", href: "/ferramentas/renda-fixa" },
+      { label: "Conversor de Moedas", href: "/ferramentas/conversor" }
+    ]
   }
 ];
 
-// Mock data for live prices
+// Live market data
 const liveData = [
-  { symbol: "IBOV", price: "129.847", change: "+0.85%", isPositive: true },
-  { symbol: "USD/BRL", price: "5.51", change: "-0.12%", isPositive: false },
-  { symbol: "BTC", price: "$67.234", change: "+2.45%", isPositive: true },
-  { symbol: "ETH", price: "$3.456", change: "+1.23%", isPositive: true }
+  { symbol: "IBOV", price: "130.247", change: "+1.25%", isPositive: true },
+  { symbol: "USD/BRL", price: "5.48", change: "-0.32%", isPositive: false },
+  { symbol: "BTC", price: "$71.234", change: "+3.45%", isPositive: true },
+  { symbol: "EUR/BRL", price: "5.95", change: "+0.18%", isPositive: true }
 ];
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-      {/* Live Ticker */}
-      <div className="bg-primary/5 border-b border-border">
+    <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/80 dark:supports-[backdrop-filter]:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 shadow-sm">
+      
+      {/* Live Market Ticker */}
+      <div className="bg-slate-900 dark:bg-slate-950 text-white">
         <div className="container mx-auto px-4">
-          <div className="flex items-center space-x-6 py-2 overflow-x-auto">
-            <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
-              AO VIVO
-            </span>
+          <div className="flex items-center overflow-x-auto py-2 gap-6">
+           
+            <div className="flex items-center gap-2 animate-scroll whitespace-nowrap overflow-hidden w-full">
             {liveData.map((item) => (
-              <div key={item.symbol} className="flex items-center space-x-2 whitespace-nowrap">
-                <span className="text-xs font-medium text-foreground">
+              <div key={item.symbol} className="flex items-center gap-3 whitespace-nowrap text-sm">
+                <span className="font-semibold text-white">
                   {item.symbol}
                 </span>
-                <span className="text-xs font-medium text-foreground">
+                <span className="font-mono font-semibold text-white">
                   {item.price}
                 </span>
-                <span className={`text-xs font-medium flex items-center gap-1 ${
-                  item.isPositive ? "text-green-600" : "text-red-600"
+                <span className={`font-semibold flex items-center gap-1 ${
+                  item.isPositive ? "text-green-400" : "text-red-400"
                 }`}>
                   {item.isPositive ? (
                     <TrendingUp className="w-3 h-3" />
@@ -106,6 +115,7 @@ export function Header() {
                 </span>
               </div>
             ))}
+            </div>
           </div>
         </div>
       </div>
@@ -113,76 +123,70 @@ export function Header() {
       {/* Main Header */}
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
+          
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-primary-foreground font-bold" />
+          <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
+              <DollarSign className="w-6 h-6 text-white font-bold" />
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-bold text-foreground">iAssets</span>
-              <span className="text-xs text-muted-foreground -mt-1">Investimentos</span>
+              <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">iAssets</span>
+              <span className="text-xs text-slate-600 dark:text-slate-400 -mt-1 font-medium">Portal Financeiro</span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          <nav className="hidden lg:flex items-center gap-1">
             {navigationItems.map((item) => (
-              <div
-                key={item.label}
-                className="relative group"
-                onMouseEnter={() => setActiveSubmenu(item.label)}
-                onMouseLeave={() => setActiveSubmenu(null)}
-              >
-                <Link
-                  href={item.href}
-                  className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-accent"
-                >
-                  <item.icon className="w-4 h-4" />
-                  <span>{item.label}</span>
-                </Link>
-                
-                {/* Submenu */}
-                {item.submenu && activeSubmenu === item.label && (
-                  <div className="absolute top-full left-0 w-56 mt-1 bg-popover border border-border rounded-lg shadow-lg py-2 z-50">
-                    {item.submenu.map((subItem) => (
-                      <Link
-                        key={subItem.label}
-                        href={subItem.href}
-                        className="block px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                      >
-                        {subItem.label}
-                      </Link>
-                    ))}
-                  </div>
+              <div key={item.label}>
+                {item.submenu ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-colors">
+                        <item.icon className="w-4 h-4 mr-2" />
+                        {item.label}
+                        <ChevronDown className="w-4 h-4 ml-1" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-56">
+                      {item.submenu.map((subItem) => (
+                        <DropdownMenuItem key={subItem.label} asChild>
+                          <Link href={subItem.href} className="w-full cursor-pointer">
+                            {subItem.label}
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Link 
+                    href={item.href}
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50"
+                  >
+                    <item.icon className="w-4 h-4 mr-2" />
+                    {item.label}
+                  </Link>
                 )}
               </div>
             ))}
           </nav>
 
-          {/* Search and Actions */}
-          <div className="flex items-center space-x-4">
-            {/* Search */}
-            <div className="hidden md:flex relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          {/* Right Section */}
+          <div className="flex items-center gap-3">
+            
+            {/* Search - Desktop */}
+            <div className="hidden md:block relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
               <Input
                 type="search"
                 placeholder="Buscar notícias..."
-                className="pl-10 w-64"
+                className="pl-10 w-64 border-slate-200 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-400 bg-slate-50 dark:bg-slate-800"
               />
             </div>
 
-            {/* Notifications */}
-            <Button variant="ghost" size="sm" className="relative">
-              <Bell className="w-4 h-4" />
-              <Badge className="absolute -top-1 -right-1 w-2 h-2 p-0 bg-red-500"></Badge>
-            </Button>
+  
 
-            {/* User Menu */}
-            <Button variant="ghost" size="sm">
-              <User className="w-4 h-4" />
-            </Button>
-
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Toggle */}
             <Button
               variant="ghost"
               size="sm"
@@ -201,39 +205,40 @@ export function Header() {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden bg-background border-t border-border">
-          <div className="container mx-auto px-4 py-4 space-y-4">
+        <div className="lg:hidden bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-lg">
+          <div className="container mx-auto px-4 py-6 space-y-4">
+            
             {/* Mobile Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
               <Input
                 type="search"
                 placeholder="Buscar notícias..."
-                className="pl-10"
+                className="pl-10 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
               />
             </div>
 
             {/* Mobile Navigation */}
             <nav className="space-y-2">
               {navigationItems.map((item) => (
-                <div key={item.label}>
+                <div key={item.label} className="space-y-1">
                   <Link
                     href={item.href}
-                    className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-accent"
+                    className="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-lg transition-colors font-medium"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <item.icon className="w-4 h-4" />
-                    <span>{item.label}</span>
+                    <item.icon className="w-5 h-5" />
+                    {item.label}
                   </Link>
                   
                   {/* Mobile Submenu */}
                   {item.submenu && (
-                    <div className="ml-6 space-y-1">
+                    <div className="ml-8 space-y-1">
                       {item.submenu.map((subItem) => (
                         <Link
                           key={subItem.label}
                           href={subItem.href}
-                          className="block px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors rounded-md"
+                          className="block px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-lg transition-colors"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
                           {subItem.label}
@@ -243,6 +248,7 @@ export function Header() {
                   )}
                 </div>
               ))}
+            
             </nav>
           </div>
         </div>
