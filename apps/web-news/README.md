@@ -1,63 +1,56 @@
-# iAssets News - Portal Financeiro Premium
+# iAssets News - Portal Financeiro
 
 Portal de notícias e análises do mercado financeiro brasileiro com foco em investimentos, desenvolvido com Next.js 15, TailwindCSS e ShadcnUI.
 
 ## 🚀 Características Principais
 
-### ✨ Design Moderno e Responsivo
-- Interface profissional optimizada para desktop e mobile
-- Tema dark/light integrado
-- Animações suaves e efeitos hover avançados 
-- Gradientes e elementos visuais premium
+### ✨ Design Moderno e Limpo
+- Interface profissional e minimalista
+- Foco no conteúdo essencial
+- Responsivo para desktop e mobile
+- Animações suaves e efeitos hover
 
 ### 📊 Funcionalidades Financeiras
-- **Ticker de Notícias ao Vivo**: Rotação automática de breaking news
 - **Cotações em Tempo Real**: Widget avançado com múltiplos mercados
 - **Calendário Econômico**: Eventos econômicos importantes
-- **Análises por Categoria**: Ações, FIIs, Renda Fixa, Criptomoedas
-- **Ferramentas Gratuitas**: Calculadoras e simuladores
+- **Análises por Seção**: Ações, FIIs, Economia separadamente
+- **Newsletter VIP**: Sistema de inscrição integrado
 
-### 🎯 Seções Especializadas
-- **Notícias Urgentes**: Destaque para news de última hora
-- **Insights de Especialistas**: Perfis dos analistas com estatísticas
-- **Educação Financeira**: Cursos e conteúdo educativo
-- **Webinars e Podcasts**: Eventos ao vivo e conteúdo em áudio
-- **Tópicos em Alta**: Trending topics do mercado financeiro
+### 🎯 Seções da Homepage
+- **Hero Section**: Post em destaque com imagem
+- **Notícias Urgentes**: Últimas 3 notícias importantes
+- **Ações Brasileiras**: Seção dedicada ao mercado acionário
+- **Fundos Imobiliários**: Análises específicas de FIIs
+- **Economia e Política**: Notícias macroeconômicas
+- **Sidebar**: Ranking, calendário, newsletter e cotações
 
-### 🔧 Tecnologias Utilizadas
+### 🔧 Stack Tecnológico
 - **Next.js 15** - Framework React com App Router
-- **TypeScript** - Tipagem estática
-- **TailwindCSS 4** - Styling utilitário
-- **ShadcnUI** - Componentes acessíveis
-- **Notion API** - CMS headless para conteúdo
-- **Lucide React** - Ícones modernos
-- **Date-fns** - Manipulação de datas
+- **TypeScript** - Tipagem estática completa
+- **TailwindCSS 4** - Styling utilitário moderno
+- **ShadcnUI** - Componentes acessíveis e customizáveis
+- **Notion API** - CMS headless para gerenciamento de conteúdo
+- **Lucide React** - Biblioteca de ícones consistente
 
-## 🎨 Componentes Customizados
+## 🎨 Componentes Principais
 
 ### AdvancedMarketWidget
-Widget avançado de mercado com:
+Widget completo de mercado com:
 - Cotações ao vivo com atualização automática
-- Múltiplas categorias (Brasil, EUA, Câmbio, Cripto)
-- Volume de negociação
+- 4 categorias: Brasil, EUA, Câmbio, Criptomoedas
+- Volume de negociação por ativo
 - Indicadores visuais de tendência
+- Design responsivo com tabs
 
-### Seções da Homepage
-1. **Hero Section** - Post em destaque com overlay
-2. **Notícias Urgentes** - Grid de últimas notícias
-3. **Análises por Mercado** - Tabs organizadas por categoria
-4. **Especialistas** - Cards dos analistas
-5. **Educação** - Cursos e conteúdo educativo
-6. **Ferramentas** - Calculadoras gratuitas
-7. **Eventos** - Webinars e podcasts
-8. **Sidebar** - Tópicos, calendário, newsletter
+### Layout da Homepage
+1. **Hero Section** - Post principal com overlay e CTA
+2. **Notícias Urgentes** - Grid 3x1 com numeração
+3. **Ações Brasileiras** - 2 posts com ícone verde
+4. **Fundos Imobiliários** - 2 posts com ícone roxo
+5. **Economia e Política** - 2 posts com ícone laranja
+6. **Sidebar** - 4 widgets complementares
 
 ## 🚀 Início Rápido
-
-### Pré-requisitos
-- Node.js 18+
-- NPM ou Yarn
-- Conta Notion (para CMS)
 
 ### Instalação
 ```bash
@@ -70,123 +63,144 @@ npm install
 # Configure as variáveis de ambiente
 cp .env.example .env.local
 
-# Inicie o servidor de desenvolvimento
+# Inicie o desenvolvimento
 npm run dev
 ```
 
-### Variáveis de Ambiente
+### Variáveis de Ambiente Necessárias
 ```env
-NOTION_TOKEN=seu_token_notion
+NOTION_TOKEN=seu_token_notion_aqui
 NOTION_DATABASE_ID=id_do_database_notion
 ```
 
 ## 📱 Responsividade
 
-O portal é totalmente responsivo com breakpoints otimizados:
-- **Mobile**: < 768px
-- **Tablet**: 768px - 1024px  
-- **Desktop**: > 1024px
+Breakpoints otimizados:
+- **Mobile**: < 768px (layout em coluna única)
+- **Tablet**: 768px - 1024px (grid 2 colunas)
+- **Desktop**: > 1024px (grid 4 colunas com sidebar)
 
 ## 🎯 SEO e Performance
 
-- **Metadata completa** com Open Graph e Twitter Cards
-- **Dados estruturados** para Google Rich Snippets
-- **Imagens otimizadas** com Next.js Image
-- **Loading states** e skeleton screens
-- **Cache de API** com Unstable Cache
+### Otimizações Implementadas
+- **Metadata Dinâmica** - Open Graph e Twitter Cards
+- **Dados Estruturados** - Schema.org para artigos
+- **Imagens Otimizadas** - Next.js Image com lazy loading
+- **Cache Inteligente** - Unstable Cache para API calls
+- **Sitemap Automático** - Geração dinâmica de sitemap.xml
 
-## 🔄 Integração com Notion
+### Core Web Vitals
+- **LCP**: < 2.5s com Hero Image otimizada
+- **FID**: < 100ms com componentes lazy
+- **CLS**: < 0.1 com skeleton screens
 
-O portal utiliza o Notion como CMS headless:
-- Database configurado com campos personalizados
-- API integrada para busca de posts
-- Cache automático para performance
-- Fallback para dados mockup
+## 🔄 Integração Notion
 
-### Estrutura do Database Notion
-- **Title** (Título)
-- **Slug** (URL amigável)
-- **Description** (Descrição/Resumo)
-- **Status** (Published/Draft)
-- **Date** (Data de publicação)
-- **Tags** (Categorias)
-- **Author** (Autor)
-- **Cover** (Imagem de capa)
+### Database Schema
+- **Title** (título) - Campo obrigatório
+- **Slug** (url) - Gerado automaticamente
+- **Description** (resumo) - Para SEO
+- **Status** (status) - Published/Draft
+- **Date** (data) - Data de publicação
+- **Tags** (categorias) - Multi-select
+- **Author** (autor) - Relation ou People
+- **Cover** (capa) - File ou URL
 
-## 🎨 Customização de Estilos
+### Fallback System
+- Posts mockup realistas quando Notion indisponível
+- Imagens via Unsplash para demonstração
+- Dados de mercado simulados
+- Cache automático com revalidação
 
-### Classes CSS Customizadas
-- `.gradient-financial` - Gradiente financeiro
-- `.news-ticker` - Animação do ticker
-- `.hover-scale` - Efeito hover escala
-- `.premium-glow` - Efeito glow premium
-- `.pulse-live` - Indicador ao vivo
+## 🎨 Design System
 
-### Cores do Tema
+### Paleta de Cores
 ```css
+/* Cores principais */
 --primary: #3b82f6 (Azul)
---success: #10b981 (Verde)
---danger: #ef4444 (Vermelho)
---warning: #f59e0b (Amarelo)
+--success: #10b981 (Verde - Ações)
+--purple: #a855f7 (Roxo - FIIs)
+--orange: #f97316 (Laranja - Economia)
+--danger: #ef4444 (Vermelho - Urgente)
 ```
 
-## 📊 Dados Mockup
+### Typography Scale
+- **Hero**: text-2xl md:text-4xl (32px-64px)
+- **Section**: text-2xl (32px)
+- **Card Title**: text-lg (24px)
+- **Body**: text-base (16px)
+- **Caption**: text-sm (14px)
 
-Para demonstração, o portal inclui dados mockup realistas:
-- Posts de exemplo com imagens do Unsplash
-- Cotações de mercado simuladas
-- Eventos de calendário econômico
-- Perfis de especialistas
+## 📊 Conteúdo Mockup
+
+### Posts de Exemplo
+- Análises de Petrobras, Vale, Nubank
+- Notícias do Fed e política monetária
+- Dados econômicos brasileiros
+- Imagens de alta qualidade via Unsplash
+
+### Dados de Mercado
+- Índices: IBOVESPA, IFIX, S&P 500
+- Moedas: USD/BRL, EUR/BRL, GBP/BRL
+- Cripto: BTC, ETH, SOL, XRP
+- Volume de negociação simulado
 
 ## 🚀 Deploy
 
 ### Vercel (Recomendado)
 ```bash
+# Build de produção
 npm run build
-vercel --prod
+
+# Deploy automático via Git
+git push origin main
 ```
 
-### Docker
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-RUN npm run build
-EXPOSE 3000
-CMD ["npm", "start"]
-```
+### Configurações Necessárias
+- Variáveis de ambiente no painel Vercel
+- Domain customizado (opcional)
+- Analytics e monitoring
 
-## 📈 Roadmap
+## 📈 Métricas e Analytics
 
-- [ ] Sistema de comentários
-- [ ] Newsletter integrada
-- [ ] App mobile React Native
-- [ ] Dashboard de assinantes
-- [ ] API de cotações real
-- [ ] Sistema de notificações push
-- [ ] Modo offline com PWA
+### Google Analytics 4
+- Page views e unique visitors
+- Bounce rate por seção
+- Tempo médio na página
+- Conversões de newsletter
+
+### Performance Monitoring
+- Core Web Vitals tracking
+- Error monitoring via Sentry
+- Uptime monitoring
+- API response times
 
 ## 🤝 Contribuição
 
-1. Fork o projeto
-2. Crie sua feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
+### Como Contribuir
+1. Fork o repositório
+2. Crie uma branch: `git checkout -b feature/nova-funcionalidade`
+3. Commit: `git commit -m 'Adiciona nova funcionalidade'`
+4. Push: `git push origin feature/nova-funcionalidade`
 5. Abra um Pull Request
+
+### Padrões de Código
+- TypeScript strict mode
+- ESLint + Prettier configurados
+- Conventional Commits
+- Testes unitários (opcional)
 
 ## 📄 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para detalhes.
 
-## 📞 Contato
+## 📞 Suporte
 
-**iAssets Team**
+**Equipe iAssets**
 - Website: https://iassets.com.br
-- Email: contato@iassets.com.br
-- Twitter: [@iassets_br](https://twitter.com/iassets_br)
+- Email: dev@iassets.com.br
+- Discord: [Comunidade iAssets](https://discord.gg/iassets)
 
 ---
 
-Desenvolvido com ❤️ pela equipe iAssets
+**Desenvolvido com ❤️ para o mercado financeiro brasileiro**
