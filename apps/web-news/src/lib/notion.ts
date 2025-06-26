@@ -1,5 +1,5 @@
 // lib/notion.ts
-import { Client } from "@notionhq/client";
+import { Client } from "@notionhq/client"
 import { type ExtendedRecordMap } from "notion-types";
 import { NotionCompatAPI } from "notion-compat";
 import { unstable_cache } from "next/cache";

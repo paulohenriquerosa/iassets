@@ -7,6 +7,7 @@ import { Metadata } from "next";
 import { Separator } from "@/components/ui/separator";
 import { getAllPosts, getAllCategories, getPostsByCategory } from "@/lib/notion";
 import { CategorySection } from "@/components/sections/category-section";
+import { HomepageClientWrapper } from "@/components/homepage-client-wrapper";
 
 export const metadata: Metadata = {
   title: "iAssets - Portal Líder em Notícias e Análises do Mercado Financeiro",
@@ -73,26 +74,27 @@ export default async function HomePage() {
   const categoryPosts = await Promise.all(categoryPostsPromises);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
-      {/* Market Data Ticker */}
-      <div className="bg-gray-900 text-white py-2 sm:py-3 overflow-hidden">
-        <div className="animate-scroll whitespace-nowrap">
-          <div className="inline-flex items-center space-x-6 sm:space-x-8">
-            {/* Duplicate the data for seamless loop */}
-            {[...marketData, ...marketData].map((item, index) => (
-              <div key={index} className="inline-flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm font-medium">
-                <span className="text-gray-300">{item.symbol}</span>
-                <span className="text-white">{item.value}</span>
-                <span className={`${item.positive ? 'text-green-400' : 'text-red-400'}`}>
-                  {item.change}
-                </span>
-              </div>
-            ))}
+    <HomepageClientWrapper>
+      <div className="min-h-screen bg-white dark:bg-gray-900">
+        {/* Market Data Ticker */}
+        <div className="bg-gray-900 text-white py-2 sm:py-3 overflow-hidden">
+          <div className="animate-scroll whitespace-nowrap">
+            <div className="inline-flex items-center space-x-6 sm:space-x-8">
+              {/* Duplicate the data for seamless loop */}
+              {[...marketData, ...marketData].map((item, index) => (
+                <div key={index} className="inline-flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm font-medium">
+                  <span className="text-gray-300">{item.symbol}</span>
+                  <span className="text-white">{item.value}</span>
+                  <span className={`${item.positive ? 'text-green-400' : 'text-red-400'}`}>
+                    {item.change}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Hero Section */}
         {featuredPost && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
@@ -202,5 +204,6 @@ export default async function HomePage() {
         </div>
       </main>
     </div>
+    </HomepageClientWrapper>
   );
 } 

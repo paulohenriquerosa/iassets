@@ -15,10 +15,6 @@ import {
   Eye,
   MessageCircle,
   Tag,
-  Twitter,
-  Facebook,
-  Linkedin,
-  Copy,
   TrendingUp,
   ChevronRight,
   Heart
@@ -26,6 +22,9 @@ import {
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { ArticleTracker } from "@/components/analytics/article-tracker";
+import { ShareButtonsInline } from "@/components/social-share-inline";
+import { NewsletterWithTracking } from "@/components/newsletter-with-tracking";
 
 interface PostPageProps {
   params: Promise<{
@@ -235,6 +234,13 @@ export default async function PostPage({ params }: PostPageProps) {
 
     return (
       <>
+        {/* Tracking do artigo */}
+        <ArticleTracker 
+          articleTitle={post.title}
+          articleCategory={post.category || 'Geral'}
+          articleAuthor={post.author?.name}
+        />
+
         {/* Dados estruturados */}
         <script
           type="application/ld+json"
@@ -279,44 +285,44 @@ export default async function PostPage({ params }: PostPageProps) {
                 <article className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                   {/* Header */}
                   <header className="p-6 sm:p-8">
-                    {/* Voltar */}
-                    <Link 
-                      href="/" 
+                {/* Voltar */}
+                <Link 
+                  href="/" 
                       className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors mb-6 group"
-                    >
+                >
                       <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-                      Voltar à página inicial
-                    </Link>
+                  Voltar à página inicial
+                </Link>
 
-                    {/* Tags */}
-                    {post.tags && post.tags.length > 0 && (
+                {/* Tags */}
+                {post.tags && post.tags.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-6">
-                        {post.tags.map((tag) => (
-                          <Link 
-                            key={tag}
-                            href={`/categoria/${tag.toLowerCase()}`}
+                    {post.tags.map((tag) => (
+                      <Link 
+                        key={tag}
+                        href={`/categoria/${tag.toLowerCase()}`}
                             className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-                          >
-                            <Tag className="w-3 h-3" />
-                            {tag}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
+                      >
+                        <Tag className="w-3 h-3" />
+                        {tag}
+                      </Link>
+                    ))}
+                  </div>
+                )}
 
-                    {/* Título */}
+                {/* Título */}
                     <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight text-gray-900 dark:text-gray-100 mb-6">
-                      {post.title}
-                    </h1>
+                  {post.title}
+                </h1>
 
                     {/* Subtítulo/Resumo */}
                     {post.summary && (
                       <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed mb-8">
                         {post.summary}
-                      </p>
-                    )}
+                  </p>
+                )}
 
-                    {/* Meta informações */}
+                {/* Meta informações */}
                     <div className="flex flex-wrap items-center gap-6 text-gray-600 dark:text-gray-400 mb-8">
                       {post.author && (
                         <div className="flex items-center gap-3">
@@ -331,89 +337,73 @@ export default async function PostPage({ params }: PostPageProps) {
                             </div>
                           )}
                           <div>
-                            <div className="flex items-center gap-2">
-                              <User className="w-4 h-4" />
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
                               <span className="font-medium text-gray-900 dark:text-gray-100">
                                 {post.author.name}
                               </span>
                             </div>
-                            
+                      
                           </div>
-                        </div>
+                  </div>
                       )}
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
                         <time dateTime={post.date} className="text-sm">
-                          {format(publishedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                        </time>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
+                      {format(publishedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                    </time>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
                         <span className="text-sm">{readingTime} min de leitura</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Eye className="w-4 h-4" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Eye className="w-4 h-4" />
                         <span className="text-sm">2.3k visualizações</span>
-                      </div>
-                    </div>
+                  </div>
+                </div>
 
-                    {/* Ações de Compartilhamento */}
-                    <div className="flex flex-wrap items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Compartilhar:
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <Twitter className="w-4 h-4" />
-                          Twitter
-                        </Button>
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <Facebook className="w-4 h-4" />
-                          Facebook
-                        </Button>
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <Linkedin className="w-4 h-4" />
-                          LinkedIn
-                        </Button>
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <Copy className="w-4 h-4" />
-                          Copiar
-                        </Button>
-                      </div>
-                      <div className="ml-auto flex items-center gap-2">
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <BookmarkPlus className="w-4 h-4" />
-                          Salvar
-                        </Button>
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <Heart className="w-4 h-4" />
-                          Curtir
-                        </Button>
-                      </div>
+                    {/* Ações de Compartilhamento com Tracking */}
+                    <ShareButtonsInline 
+                      title={post.title}
+                      url={`/${post.slug}`}
+                      category={post.category || 'Geral'}
+                    />
+                    
+                    {/* Ações Adicionais */}
+                    <div className="flex items-center gap-2 mt-4">
+                      <Button variant="outline" size="sm" className="gap-2">
+                        <BookmarkPlus className="w-4 h-4" />
+                        Salvar
+                      </Button>
+                      <Button variant="outline" size="sm" className="gap-2">
+                        <Heart className="w-4 h-4" />
+                        Curtir
+                      </Button>
                     </div>
-                  </header>
+          </header>
 
-                  {/* Imagem de capa */}
-                  {post.coverImage && (
+          {/* Imagem de capa */}
+          {post.coverImage && (
                     <div className="px-6 sm:px-8 mb-8">
-                      <div className="relative aspect-video overflow-hidden rounded-xl">
-                        <Image
-                          src={post.coverImage}
-                          alt={post.title}
-                          fill
-                          className="object-cover"
-                          priority
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-                        />
-                      </div>
-                    </div>
-                  )}
+                  <div className="relative aspect-video overflow-hidden rounded-xl">
+                    <Image
+                      src={post.coverImage}
+                      alt={post.title}
+                      fill
+                      className="object-cover"
+                      priority
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+                    />
+              </div>
+            </div>
+          )}
 
-                  {/* Conteúdo do post */}
+          {/* Conteúdo do post */}
                   <div className="px-6 sm:px-8 pb-8">
                     <div className="prose prose-lg max-w-none prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-gray-900 dark:prose-strong:text-gray-100">
-                      <NotionContent recordMap={post.content} />
-                    </div>
+                   <NotionContent recordMap={post.content} />
+                 </div>
                   </div>
 
                   {/* Footer do artigo */}
@@ -439,10 +429,10 @@ export default async function PostPage({ params }: PostPageProps) {
                           </p>
                           <div className="text-xs text-gray-500">
                             Publicado em {format(publishedDate, "dd/MM/yyyy", { locale: ptBR })}
-                          </div>
-                        </div>
-                      </div>
-                      
+              </div>
+            </div>
+          </div>
+
                       <div className="flex items-center gap-3">
                         <Button variant="outline" className="gap-2">
                           <MessageCircle className="w-4 h-4" />
@@ -552,28 +542,19 @@ export default async function PostPage({ params }: PostPageProps) {
                             </h4>
                             <p className="text-xs text-gray-500">
                               {formatTimeAgo(recentPost.date)}
-                            </p>
-                          </div>
+                    </p>
+                  </div>
                         </Link>
                       ))}
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* Newsletter */}
-                <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-800">
-                  <CardContent className="p-6 text-center">
-                    <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-2">
-                      Newsletter iAssets
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                      Receba as principais notícias do mercado financeiro direto no seu email.
-                    </p>
-                    <Button className="w-full">
-                      Assinar Newsletter
-                    </Button>
-                  </CardContent>
-                </Card>
+                {/* Newsletter com Tracking */}
+                <NewsletterWithTracking 
+                  location="article_sidebar"
+                  variant="sidebar"
+                />
 
                 {/* Disclaimer */}
                 <Card className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
@@ -588,9 +569,9 @@ export default async function PostPage({ params }: PostPageProps) {
                   </CardContent>
                 </Card>
               </aside>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
       </>
     );
   } catch (error) {
