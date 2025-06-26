@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Filter, Tag, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getAllCategories } from "@/lib/notion";
 
 interface SearchFiltersProps {
   onSearch?: (query: string, filters: SearchFilters) => void;
@@ -15,16 +16,6 @@ interface SearchFilters {
   tags: string[];
   sortBy: string;
 }
-
-const categories = [
-  { value: "all", label: "Todas as categorias" },
-  { value: "acoes", label: "Ações" },
-  { value: "crypto", label: "Criptomoedas" },
-  { value: "fiis", label: "Fundos Imobiliários" },
-  { value: "internacional", label: "Internacional" },
-  { value: "analises", label: "Análises" },
-  { value: "educacao", label: "Educação" }
-];
 
 const dateRanges = [
   { value: "all", label: "Qualquer data" },
@@ -49,12 +40,46 @@ const sortOptions = [
 export function SearchFilters({ onSearch }: SearchFiltersProps) {
   const [query, setQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [categories, setCategories] = useState<{value: string, label: string}[]>([
+    { value: "all", label: "Todas as categorias" }
+  ]);
   const [filters, setFilters] = useState<SearchFilters>({
     category: "all",
     dateRange: "all",
     tags: [],
     sortBy: "relevance"
   });
+
+  // Buscar categorias dinamicamente
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const notionCategories = await getAllCategories();
+        const categoryOptions = [
+          { value: "all", label: "Todas as categorias" },
+          ...notionCategories.map(category => ({
+            value: category.toLowerCase().replace(/\s+/g, '-'),
+            label: category
+          }))
+        ];
+        setCategories(categoryOptions);
+      } catch (error) {
+        console.error("Erro ao buscar categorias:", error);
+        // Fallback para categorias estáticas se houver erro
+        setCategories([
+          { value: "all", label: "Todas as categorias" },
+          { value: "acoes", label: "Ações" },
+          { value: "crypto", label: "Criptomoedas" },
+          { value: "fiis", label: "Fundos Imobiliários" },
+          { value: "internacional", label: "Internacional" },
+          { value: "analises", label: "Análises" },
+          { value: "educacao", label: "Educação" }
+        ]);
+      }
+    }
+
+    fetchCategories();
+  }, []);
 
   const handleSearch = () => {
     onSearch?.(query, filters);

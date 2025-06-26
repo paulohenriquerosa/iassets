@@ -1,21 +1,23 @@
 # Robots.txt para iAssets - Portal de Notícias Financeiras
-# https://iassets.com.br
+# https://news.iassets.com.br
+# Otimizado para SEO de notícias financeiras
 
 User-agent: *
 Allow: /
-Allow: /mercados
-Allow: /crypto
-Allow: /internacional
-Allow: /analises
-Allow: /educacao
-Allow: /calculadoras
-Allow: /carteiras
-Allow: /analise-tecnica
 
-# Permitir bots específicos
+# Permitir crawling frequente para notícias
+Allow: /categoria/
+Allow: /tag/
+Allow: /autor/
+
+# Bots específicos com configurações otimizadas
 User-agent: Googlebot
 Allow: /
-Crawl-delay: 1
+Crawl-delay: 0.5
+
+User-agent: Googlebot-News
+Allow: /
+Crawl-delay: 0
 
 User-agent: Bingbot
 Allow: /
@@ -23,29 +25,59 @@ Crawl-delay: 1
 
 User-agent: Slurp
 Allow: /
-Crawl-delay: 2
+Crawl-delay: 1
 
-# Bloquear arquivos desnecessários
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+# Bloquear arquivos e parâmetros desnecessários
 Disallow: /api/
 Disallow: /_next/
 Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /login/
 Disallow: /private/
+Disallow: /temp/
+Disallow: /tmp/
 Disallow: *.json$
 Disallow: /*?*utm_*
 Disallow: /*?*fbclid*
 Disallow: /*?*gclid*
+Disallow: /*?*ref=*
+Disallow: /*?*source=*
+Disallow: /*?print=*
+Disallow: /*?share=*
+Disallow: /search?*
+Disallow: /*?preview=*
 
-# Permitir recursos importantes
+# Permitir recursos importantes para SEO
 Allow: /api/og/
+Allow: /api/amp/
 Allow: /_next/static/
 Allow: /_next/image/
+Allow: /images/
+Allow: /icons/
+Allow: /favicon.ico
+Allow: /manifest.json
 
-# Sitemaps
-Sitemap: https://iassets.com.br/sitemap.xml
-Sitemap: https://iassets.com.br/sitemap-posts.xml
-Sitemap: https://iassets.com.br/sitemap-pages.xml
+# Sitemaps - URLs atualizadas
+Sitemap: https://news.iassets.com.br/sitemap.xml
+Sitemap: https://news.iassets.com.br/sitemap-news.xml
+Sitemap: https://news.iassets.com.br/sitemap-categories.xml
 
-# Informações do site
+# Informações específicas para portais financeiros
 # Portal de notícias financeiras do Brasil
-# Atualizado: 2024-12-19
-# Contato: contato@iassets.com.br 
+# Frequência de atualização: Tempo real para mercados
+# Categorias principais: Mercados, Criptomoedas, Economia, Internacional
+# Último update: 2025-01-17
+# Contato técnico: tech@iassets.com.br
+# Política de dados: https://news.iassets.com.br/privacidade 

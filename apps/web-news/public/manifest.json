@@ -1,114 +1,131 @@
 {
   "name": "iAssets - Portal de Notícias Financeiras",
   "short_name": "iAssets",
-  "description": "Portal líder em notícias financeiras do Brasil. Análises de ações, criptomoedas, fundos imobiliários e investimentos.",
+  "description": "Portal líder em notícias financeiras do Brasil. Análises de ações, criptomoedas, fundos imobiliários e mercado de capitais em tempo real.",
+  "version": "1.0.0",
   "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
-  "orientation": "portrait-primary",
   "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "categories": ["finance", "news", "business", "productivity"],
   "lang": "pt-BR",
   "dir": "ltr",
-  "categories": ["finance", "news", "business", "productivity"],
+  "edge_side_panel": {
+    "preferred_width": 480
+  },
+  "screenshots": [
+    {
+      "src": "/images/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Portal iAssets - Vista Geral"
+    },
+    {
+      "src": "/images/screenshot-narrow.png", 
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "iAssets Mobile - Notícias Financeiras"
+    }
+  ],
   "icons": [
     {
-      "src": "/icons/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/icons/icon-192x192.png",
+      "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "/icons/icon-384x384.png",
-      "sizes": "384x384",
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
       "type": "image/png",
-      "purpose": "maskable any"
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "shortcuts": [
     {
       "name": "Mercados",
       "short_name": "Mercados",
-      "description": "Cotações e análises de mercado em tempo real",
+      "description": "Acompanhe cotações e análises do mercado financeiro",
       "url": "/mercados",
-      "icons": [{ "src": "/icons/shortcut-mercados.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/icons/market-96x96.png", "sizes": "96x96" }]
     },
     {
       "name": "Criptomoedas",
       "short_name": "Crypto",
-      "description": "Notícias e cotações de criptomoedas",
-      "url": "/crypto",
-      "icons": [{ "src": "/icons/shortcut-crypto.png", "sizes": "96x96" }]
+      "description": "Últimas notícias e preços de criptomoedas",
+      "url": "/criptomoedas",
+      "icons": [{ "src": "/icons/crypto-96x96.png", "sizes": "96x96" }]
     },
     {
-      "name": "Calculadoras",
-      "short_name": "Calc",
-      "description": "Ferramentas de cálculo para investimentos",
-      "url": "/calculadoras",
-      "icons": [{ "src": "/icons/shortcut-calc.png", "sizes": "96x96" }]
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshots/desktop-home.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Homepage do iAssets no desktop"
+      "name": "Economia",
+      "short_name": "Economia",
+      "description": "Análises econômicas e indicadores brasileiros",
+      "url": "/economia",
+      "icons": [{ "src": "/icons/economy-96x96.png", "sizes": "96x96" }]
     },
     {
-      "src": "/screenshots/mobile-home.png",
-      "sizes": "375x812",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Homepage do iAssets no mobile"
+      "name": "Ferramentas",
+      "short_name": "Ferramentas",
+      "description": "Calculadoras e simuladores financeiros",
+      "url": "/ferramentas",
+      "icons": [{ "src": "/icons/tools-96x96.png", "sizes": "96x96" }]
     }
   ],
-  "related_applications": [],
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.iassets.news",
+      "id": "com.iassets.news"
+    },
+    {
+      "platform": "ios",
+      "url": "https://apps.apple.com/app/iassets-news/id123456789"
+    }
+  ],
   "prefer_related_applications": false,
-  "edge_side_panel": {
-    "preferred_width": 400
+  "serviceworker": {
+    "src": "/sw.js",
+    "scope": "/",
+    "update_via_cache": "imports"
   },
   "protocol_handlers": [
     {
-      "protocol": "web+finance",
-      "url": "/mercados?symbol=%s"
+      "protocol": "web+iassets",
+      "url": "/share?url=%s"
     }
-  ]
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "id": "com.iassets.news.pwa",
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7"
 } 

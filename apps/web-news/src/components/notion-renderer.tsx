@@ -5,14 +5,44 @@ import React from "react";
 import { NotionRenderer } from "react-notion-x";
 import { ExtendedRecordMap } from "notion-types";
 import Link from "next/link";
-import Image from "next/image";
-
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 
+// Importar os estilos CSS do react-notion-x
+import "react-notion-x/src/styles.css";
+import "prismjs/themes/prism-tomorrow.css";
+import "katex/dist/katex.min.css";
+// Importar nossos estilos customizados
+import "@/styles/notion.css";
+
+// Interface para as props do componente NotionImage
+interface NotionImageProps {
+  src: string;
+  alt?: string;
+  className?: string;
+  style?: React.CSSProperties;
+  [key: string]: unknown;
+}
+
+// Componente wrapper customizado para imagens do Notion
+const NotionImage = ({ src, alt, className, style, ...props }: NotionImageProps) => {
+  // Usar img tag nativa para evitar problemas com width/height obrigatórios do Next.js Image
+   
+  return (
+    <img
+      src={src}
+      alt={alt || ""}
+      className={className}
+      style={style}
+      loading="lazy"
+      {...props}
+    />
+  );
+};
+
 const Code = dynamic(() =>
     import('react-notion-x/build/third-party/code').then(async (m) => {
-      // additional prism syntaxes
+      // Importar sintaxes adicionais do Prism
       await Promise.all([
         // @ts-expect-error ignore no prisma types
         import('prismjs/components/prism-markup-templating.js'),
@@ -112,14 +142,28 @@ export function NotionContent({ recordMap }: NotionContentProps) {
         showCollectionViewDropdown={false}
         linkTableTitleProperties={false}
         isLinkCollectionToUrlProperty={false}
+        disableHeader={true}
+        className="notion-renderer"
+        previewImages={true}
+        forceCustomImages={false}
+        showTableOfContents={false}
+        minTableOfContentsItems={0}
         components={{
-          nextImage: Image,
+          nextImage: NotionImage,
           nextLink: Link,
           Code,
           Equation,
           Modal,
           Pdf,
           Collection: () => null,
+        }}
+        mapPageUrl={(pageId) => {
+          // Map any internal notion links to our own routing
+          return `/${pageId}`;
+        }}
+        mapImageUrl={(url) => {
+          // You can implement custom image URL mapping here if needed
+          return url;
         }}
       />
     </div>
