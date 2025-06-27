@@ -5,19 +5,19 @@ import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { 
-  Calendar, 
-  Clock, 
-  User, 
-  ArrowLeft, 
-  Share2, 
+import {
+  Calendar,
+  Clock,
+  User,
+  ArrowLeft,
+  Share2,
   BookmarkPlus,
   Eye,
   MessageCircle,
   Tag,
   TrendingUp,
   ChevronRight,
-  Heart
+  Heart,
 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -36,37 +36,46 @@ interface PostPageProps {
 const formatTimeAgo = (dateString: string): string => {
   const date = new Date(dateString);
   const now = new Date();
-  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-  
+  const diffInHours = Math.floor(
+    (now.getTime() - date.getTime()) / (1000 * 60 * 60),
+  );
+
   if (diffInHours < 1) {
     return "Há poucos minutos";
   } else if (diffInHours < 24) {
-    return `Há ${diffInHours} hora${diffInHours > 1 ? 's' : ''}`;
+    return `Há ${diffInHours} hora${diffInHours > 1 ? "s" : ""}`;
   } else {
     const diffInDays = Math.floor(diffInHours / 24);
-    return `Há ${diffInDays} dia${diffInDays > 1 ? 's' : ''}`;
+    return `Há ${diffInDays} dia${diffInDays > 1 ? "s" : ""}`;
   }
 };
 
 // Gerar metadata dinâmica para SEO
-export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PostPageProps): Promise<Metadata> {
   try {
     const { slug } = await params;
-    
+
     // Verificar se é um arquivo de sistema ou ícone (não é um post)
-    if (slug.includes('.') || slug.startsWith('favicon') || slug.startsWith('icon') || slug.startsWith('apple-touch')) {
+    if (
+      slug.includes(".") ||
+      slug.startsWith("favicon") ||
+      slug.startsWith("icon") ||
+      slug.startsWith("apple-touch")
+    ) {
       return {
-        title: 'Arquivo não encontrado | iAssets',
-        description: 'O arquivo solicitado não foi encontrado.',
+        title: "Arquivo não encontrado | iAssets",
+        description: "O arquivo solicitado não foi encontrado.",
       };
     }
-    
+
     const post = await getPostBySlug(slug);
-    
+
     if (!post) {
       return {
-        title: 'Post não encontrado | iAssets',
-        description: 'O post solicitado não foi encontrado.',
+        title: "Post não encontrado | iAssets",
+        description: "O post solicitado não foi encontrado.",
       };
     }
 
@@ -75,59 +84,61 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
 
     return {
       title: `${post.title} | iAssets News`,
-      description: post.summary || `Análise completa sobre ${post.title}. Leia mais no portal líder em notícias financeiras do Brasil.`,
+      description:
+        post.summary ||
+        `Análise completa sobre ${post.title}. Leia mais no portal líder em notícias financeiras do Brasil.`,
       keywords: [
         ...post.tags,
-        'análise financeira',
-        'investimentos',
-        'mercado financeiro',
-        'notícias financeiras',
-        'iassets'
+        "análise financeira",
+        "investimentos",
+        "mercado financeiro",
+        "notícias financeiras",
+        "iassets",
       ],
-      authors: [{ name: post.author?.name || 'Equipe iAssets' }],
+      authors: [{ name: post.author?.name || "Equipe iAssets" }],
       openGraph: {
         title: post.title,
         description: post.summary || `Análise completa sobre ${post.title}`,
         url: `https://iassets.com.br/${post.slug}`,
-        siteName: 'iAssets News',
+        siteName: "iAssets News",
         images: [
           {
-            url: post.coverImage || '/images/og-default.jpg',
+            url: post.coverImage || "/images/og-default.jpg",
             width: 1200,
             height: 630,
             alt: post.title,
           },
         ],
-        locale: 'pt_BR',
-        type: 'article',
+        locale: "pt_BR",
+        type: "article",
         publishedTime: publishedDate.toISOString(),
         modifiedTime: modifiedDate.toISOString(),
-        section: post.category || 'Notícias',
+        section: post.category || "Notícias",
         tags: post.tags,
       },
       twitter: {
-        card: 'summary_large_image',
+        card: "summary_large_image",
         title: post.title,
         description: post.summary || `Análise completa sobre ${post.title}`,
-        images: [post.coverImage || '/images/twitter-default.jpg'],
-        creator: '@iassets_br',
+        images: [post.coverImage || "/images/twitter-default.jpg"],
+        creator: "@iassets_br",
       },
       alternates: {
         canonical: `https://iassets.com.br/${post.slug}`,
       },
       other: {
-        'article:author': post.author?.name || 'Equipe iAssets',
-        'article:published_time': publishedDate.toISOString(),
-        'article:modified_time': modifiedDate.toISOString(),
-        'article:section': post.category || 'Notícias',
-        'article:tag': post.tags.join(', '),
+        "article:author": post.author?.name || "Equipe iAssets",
+        "article:published_time": publishedDate.toISOString(),
+        "article:modified_time": modifiedDate.toISOString(),
+        "article:section": post.category || "Notícias",
+        "article:tag": post.tags.join(", "),
       },
     };
   } catch (error) {
-    console.error('Error generating metadata:', error);
+    console.error("Error generating metadata:", error);
     return {
-      title: 'Post não encontrado | iAssets',
-      description: 'O post solicitado não foi encontrado.',
+      title: "Post não encontrado | iAssets",
+      description: "O post solicitado não foi encontrado.",
     };
   }
 }
@@ -140,7 +151,7 @@ export async function generateStaticParams() {
       slug: post.slug,
     }));
   } catch (error) {
-    console.error('Error generating static params:', error);
+    console.error("Error generating static params:", error);
     return [];
   }
 }
@@ -148,96 +159,109 @@ export async function generateStaticParams() {
 export default async function PostPage({ params }: PostPageProps) {
   try {
     const { slug } = await params;
-    
+
     // Verificar se é um arquivo de sistema ou ícone (não é um post)
-    if (slug.includes('.') || slug.startsWith('favicon') || slug.startsWith('icon') || slug.startsWith('apple-touch')) {
+    if (
+      slug.includes(".") ||
+      slug.startsWith("favicon") ||
+      slug.startsWith("icon") ||
+      slug.startsWith("apple-touch")
+    ) {
       notFound();
     }
-    
+
     const post = await getPostBySlug(slug);
-    
+
     if (!post) {
       notFound();
     }
 
     const publishedDate = new Date(post.date);
-    const readingTime = Math.ceil((post.title.length + (post.summary?.length || 0)) / 200);
+    const readingTime = Math.ceil(
+      (post.title.length + (post.summary?.length || 0)) / 200,
+    );
 
     // Buscar posts relacionados da mesma categoria
-    const relatedPosts = post.category 
-      ? (await getPostsByCategory(post.category, 6)).filter(p => p.id !== post.id).slice(0, 4)
+    const relatedPosts = post.category
+      ? (await getPostsByCategory(post.category, 6))
+          .filter((p) => p.id !== post.id)
+          .slice(0, 4)
       : [];
 
     // Buscar posts recentes para sidebar
-    const recentPosts = (await getAllPosts()).slice(0, 5).filter(p => p.id !== post.id);
+    const recentPosts = (await getAllPosts())
+      .slice(0, 5)
+      .filter((p) => p.id !== post.id);
 
     // Dados estruturados para o artigo
     const articleStructuredData = {
       "@context": "https://schema.org",
       "@type": "NewsArticle",
-      "headline": post.title,
-      "description": post.summary,
-      "image": [post.coverImage || "https://iassets.com.br/images/default-article.jpg"],
-      "datePublished": publishedDate.toISOString(),
-      "dateModified": new Date(post.createdTime).toISOString(),
-      "author": {
+      headline: post.title,
+      description: post.summary,
+      image: [
+        post.coverImage || "https://iassets.com.br/images/default-article.jpg",
+      ],
+      datePublished: publishedDate.toISOString(),
+      dateModified: new Date(post.createdTime).toISOString(),
+      author: {
         "@type": "Person",
-        "name": post.author?.name || "Equipe iAssets",
-        "url": "https://iassets.com.br/sobre"
+        name: post.author?.name || "Equipe iAssets",
+        url: "https://iassets.com.br/sobre",
       },
-      "publisher": {
+      publisher: {
         "@type": "Organization",
-        "name": "iAssets",
-        "logo": {
+        name: "iAssets",
+        logo: {
           "@type": "ImageObject",
-          "url": "https://iassets.com.br/images/logo.png",
-          "width": 200,
-          "height": 60
-        }
+          url: "https://iassets.com.br/images/logo.png",
+          width: 200,
+          height: 60,
+        },
       },
-      "mainEntityOfPage": {
+      mainEntityOfPage: {
         "@type": "WebPage",
-        "@id": `https://iassets.com.br/${post.slug}`
+        "@id": `https://iassets.com.br/${post.slug}`,
       },
-      "articleSection": post.category || "Notícias",
-      "keywords": post.tags.join(", "),
-      "wordCount": post.title.length + (post.summary?.length || 0),
-      "timeRequired": `PT${readingTime}M`,
-      "inLanguage": "pt-BR",
-      "isAccessibleForFree": true
+      articleSection: post.category || "Notícias",
+      keywords: post.tags.join(", "),
+      wordCount: post.title.length + (post.summary?.length || 0),
+      timeRequired: `PT${readingTime}M`,
+      inLanguage: "pt-BR",
+      isAccessibleForFree: true,
     };
 
     const breadcrumbData = {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
-      "itemListElement": [
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Início",
-          "item": "https://iassets.com.br"
+          position: 1,
+          name: "Início",
+          item: "https://iassets.com.br",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": post.category || "Notícias",
-          "item": `https://iassets.com.br/categoria/${post.category?.toLowerCase().replace(/\s+/g, '-') || 'noticias'}`
+          position: 2,
+          name: post.category || "Notícias",
+          item: `https://iassets.com.br/categoria/${post.category?.toLowerCase().replace(/\s+/g, "-") || "noticias"}`,
         },
         {
           "@type": "ListItem",
-          "position": 3,
-          "name": post.title,
-          "item": `https://iassets.com.br/${post.slug}`
-        }
-      ]
+          position: 3,
+          name: post.title,
+          item: `https://iassets.com.br/${post.slug}`,
+        },
+      ],
     };
 
     return (
       <>
         {/* Tracking do artigo */}
-        <ArticleClientTracker 
+        <ArticleClientTracker
           articleTitle={post.title}
-          articleCategory={post.category || 'Geral'}
+          articleCategory={post.category || "Geral"}
           articleAuthor={post.author?.name}
         />
 
@@ -245,13 +269,13 @@ export default async function PostPage({ params }: PostPageProps) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(articleStructuredData)
+            __html: JSON.stringify(articleStructuredData),
           }}
         />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(breadcrumbData)
+            __html: JSON.stringify(breadcrumbData),
           }}
         />
 
@@ -259,16 +283,22 @@ export default async function PostPage({ params }: PostPageProps) {
           {/* Breadcrumb */}
           <div className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
-              <nav className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400" aria-label="Breadcrumb">
-                <Link href="/" className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+              <nav
+                className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"
+                aria-label="Breadcrumb"
+              >
+                <Link
+                  href="/"
+                  className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                >
                   Início
                 </Link>
                 <ChevronRight className="w-3 h-3" />
-                <Link 
-                  href={`/categoria/${post.category?.toLowerCase().replace(/\s+/g, '-') || 'noticias'}`}
+                <Link
+                  href={`/categoria/${post.category?.toLowerCase().replace(/\s+/g, "-") || "noticias"}`}
                   className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
                 >
-                  {post.category || 'Notícias'}
+                  {post.category || "Notícias"}
                 </Link>
                 <ChevronRight className="w-3 h-3" />
                 <span className="text-gray-900 dark:text-gray-100 font-medium truncate">
@@ -285,44 +315,44 @@ export default async function PostPage({ params }: PostPageProps) {
                 <article>
                   {/* Header */}
                   <header className="mb-8">
-                {/* Voltar */}
-                <Link 
-                  href="/" 
+                    {/* Voltar */}
+                    <Link
+                      href="/"
                       className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors mb-6 group"
-                >
+                    >
                       <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-                  Voltar à página inicial
-                </Link>
+                      Voltar à página inicial
+                    </Link>
 
-                {/* Tags */}
-                {post.tags && post.tags.length > 0 && (
+                    {/* Tags */}
+                    {post.tags && post.tags.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-6">
-                    {post.tags.map((tag) => (
-                      <Link 
-                        key={tag}
-                        href={`/categoria/${tag.toLowerCase()}`}
+                        {post.tags.map((tag) => (
+                          <Link
+                            key={tag}
+                            href={`/categoria/${tag.toLowerCase()}`}
                             className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-                      >
-                        <Tag className="w-3 h-3" />
-                        {tag}
-                      </Link>
-                    ))}
-                  </div>
-                )}
+                          >
+                            <Tag className="w-3 h-3" />
+                            {tag}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
 
-                {/* Título */}
+                    {/* Título */}
                     <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight text-gray-900 dark:text-gray-100 mb-6">
-                  {post.title}
-                </h1>
+                      {post.title}
+                    </h1>
 
                     {/* Subtítulo/Resumo */}
                     {post.summary && (
                       <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed mb-8">
                         {post.summary}
-                  </p>
-                )}
+                      </p>
+                    )}
 
-                {/* Meta informações */}
+                    {/* Meta informações */}
                     <div className="flex flex-wrap items-center gap-6 text-gray-600 dark:text-gray-400 mb-8">
                       {post.author && (
                         <div className="flex items-center gap-3">
@@ -337,73 +367,64 @@ export default async function PostPage({ params }: PostPageProps) {
                             </div>
                           )}
                           <div>
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4" />
+                            <div className="flex items-center gap-2">
+                              <User className="w-4 h-4" />
                               <span className="font-medium text-gray-900 dark:text-gray-100">
                                 {post.author.name}
                               </span>
                             </div>
-                      
                           </div>
-                  </div>
+                        </div>
                       )}
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
                         <time dateTime={post.date} className="text-sm">
-                      {format(publishedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                    </time>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
-                        <span className="text-sm">{readingTime} min de leitura</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Eye className="w-4 h-4" />
+                          {format(publishedDate, "dd 'de' MMMM 'de' yyyy", {
+                            locale: ptBR,
+                          })}
+                        </time>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        <span className="text-sm">
+                          {readingTime} min de leitura
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Eye className="w-4 h-4" />
                         <span className="text-sm">2.3k visualizações</span>
-                  </div>
-                </div>
+                      </div>
+                    </div>
 
                     {/* Ações de Compartilhamento com Tracking */}
-                    <SocialShareClient 
+                    <SocialShareClient
                       title={post.title}
                       url={`/${post.slug}`}
-                      category={post.category || 'Geral'}
+                      category={post.category || "Geral"}
                     />
-                    
-                    {/* Ações Adicionais */}
-                    <div className="flex items-center gap-2 mt-4">
-                      <Button variant="outline" size="sm" className="gap-2">
-                        <BookmarkPlus className="w-4 h-4" />
-                        Salvar
-                      </Button>
-                      <Button variant="outline" size="sm" className="gap-2">
-                        <Heart className="w-4 h-4" />
-                        Curtir
-                      </Button>
-                    </div>
-          </header>
+                  </header>
 
-          {/* Imagem de capa */}
-          {post.coverImage && (
+                  {/* Imagem de capa */}
+                  {post.coverImage && (
                     <div className="mb-8">
-                  <div className="relative aspect-video overflow-hidden rounded-xl">
-                    <Image
-                      src={post.coverImage}
-                      alt={post.title}
-                      fill
-                      className="object-cover"
-                      priority
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-                    />
-              </div>
-            </div>
-          )}
+                      <div className="relative aspect-video overflow-hidden rounded-xl">
+                        <Image
+                          src={post.coverImage}
+                          alt={post.title}
+                          fill
+                          className="object-cover"
+                          priority
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+                        />
+                      </div>
+                    </div>
+                  )}
 
-          {/* Conteúdo do post */}
+                  {/* Conteúdo do post */}
                   <div className="mb-8">
                     <div className="prose prose-lg max-w-none prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-gray-900 dark:prose-strong:text-gray-100">
-                   <NotionContent recordMap={post.content} />
-                 </div>
+                      <NotionContent recordMap={post.content} />
+                    </div>
                   </div>
 
                   {/* Footer do artigo */}
@@ -414,7 +435,7 @@ export default async function PostPage({ params }: PostPageProps) {
                           <div className="relative w-16 h-16 rounded-full overflow-hidden">
                             <Image
                               src={post.author.avatar}
-                              alt={post.author.name || 'Autor'}
+                              alt={post.author.name || "Autor"}
                               fill
                               className="object-cover"
                             />
@@ -422,16 +443,19 @@ export default async function PostPage({ params }: PostPageProps) {
                         )}
                         <div>
                           <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
-                            {post.author?.name || 'Equipe iAssets'}
+                            {post.author?.name || "Equipe iAssets"}
                           </h3>
                           <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                             Especialista em mercado financeiro e investimentos
                           </p>
                           <div className="text-xs text-gray-500">
-                            Publicado em {format(publishedDate, "dd/MM/yyyy", { locale: ptBR })}
-              </div>
-            </div>
-          </div>
+                            Publicado em{" "}
+                            {format(publishedDate, "dd/MM/yyyy", {
+                              locale: ptBR,
+                            })}
+                          </div>
+                        </div>
+                      </div>
 
                       <div className="flex items-center gap-3">
                         <Button variant="outline" className="gap-2">
@@ -456,10 +480,13 @@ export default async function PostPage({ params }: PostPageProps) {
                         Posts Relacionados
                       </h2>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       {relatedPosts.map((relatedPost) => (
-                        <Link key={relatedPost.id} href={`/${relatedPost.slug}`}>
+                        <Link
+                          key={relatedPost.id}
+                          href={`/${relatedPost.slug}`}
+                        >
                           <Card className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group border border-gray-200 dark:border-gray-700 h-full">
                             <div className="relative h-48 overflow-hidden">
                               {relatedPost.coverImage ? (
@@ -542,8 +569,8 @@ export default async function PostPage({ params }: PostPageProps) {
                             </h4>
                             <p className="text-xs text-gray-500">
                               {formatTimeAgo(recentPost.date)}
-                    </p>
-                  </div>
+                            </p>
+                          </div>
                         </Link>
                       ))}
                     </div>
@@ -551,7 +578,7 @@ export default async function PostPage({ params }: PostPageProps) {
                 </Card>
 
                 {/* Newsletter com Tracking */}
-                <NewsletterClient 
+                <NewsletterClient
                   location="article_sidebar"
                   variant="sidebar"
                 />
@@ -563,20 +590,20 @@ export default async function PostPage({ params }: PostPageProps) {
                       Aviso Legal
                     </h3>
                     <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
-                      O conteúdo apresentado neste artigo tem caráter educativo e não constitui recomendação de investimento. 
-                      Consulte sempre um assessor financeiro qualificado.
+                      O conteúdo apresentado neste artigo tem caráter educativo
+                      e não constitui recomendação de investimento. Consulte
+                      sempre um assessor financeiro qualificado.
                     </p>
                   </CardContent>
                 </Card>
               </aside>
-                </div>
-              </div>
             </div>
+          </div>
+        </div>
       </>
     );
   } catch (error) {
-    console.error('Error rendering post:', error);
+    console.error("Error rendering post:", error);
     notFound();
   }
 }
-

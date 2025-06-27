@@ -1,15 +1,16 @@
-'use client'
+"use client";
 
 import Link from "next/link";
-import { 
-  DollarSign, 
-  Twitter, 
-  Linkedin, 
-  Youtube, 
+import LogoWhite from "../assets/logo-white.png";
+import Image from "next/image";
+import {
+  Twitter,
+  Linkedin,
+  Youtube,
   Instagram,
   Shield,
   Users,
-  Globe
+  Globe,
 } from "lucide-react";
 import { siteConfig } from "@/lib/seo";
 import { FinancialAnalytics } from "@/lib/analytics";
@@ -19,28 +20,28 @@ export function FooterWithTracking() {
   // Função para rastrear cliques no footer
   const handleFooterClick = (section: string, item: string, href: string) => {
     FinancialAnalytics.trackEvent({
-      action: 'footer_link_click',
-      category: 'navigation',
+      action: "footer_link_click",
+      category: "navigation",
       label: `${section}_${item}`,
       custom_parameters: {
         footer_section: section,
         footer_item: item,
-        footer_href: href
-      }
+        footer_href: href,
+      },
     });
   };
 
   // Função para rastrear redes sociais
   const handleSocialClick = (platform: string, url: string) => {
     FinancialAnalytics.trackEvent({
-      action: 'social_click',
-      category: 'engagement',
+      action: "social_click",
+      category: "engagement",
       label: `footer_${platform}`,
       custom_parameters: {
         social_platform: platform,
         social_url: url,
-        click_location: 'footer'
-      }
+        click_location: "footer",
+      },
     });
   };
 
@@ -62,19 +63,18 @@ export function FooterWithTracking() {
               itemType="https://schema.org/Organization"
             >
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-                  <DollarSign className="w-6 h-6 text-gray-900 font-bold" />
-                </div>
-                <div>
-                  <span
-                    className="text-2xl font-bold text-white"
-                    itemProp="name"
-                  >
-                    {siteConfig.name}
+                <Image
+                  src={LogoWhite}
+                  className="size-9 dark:invert"
+                  alt="IAssets Logo"
+                />
+                <div className="flex gap-2 items-center">
+                  <span className="text-2xl font-bold text-white tracking-tight">
+                    iAssets
                   </span>
-                  <p className="text-gray-400 text-sm -mt-1">
-                    Portal Financeiro
-                  </p>
+                  <span className="text-xs text-slate-400 -mt-1 font-medium">
+                    News
+                  </span>
                 </div>
               </div>
               <p
@@ -113,7 +113,13 @@ export function FooterWithTracking() {
                     href="/categoria/mercados"
                     className="text-gray-300 hover:text-white transition-colors text-sm"
                     itemProp="url"
-                    onClick={() => handleFooterClick('mercados', 'mercados_financeiros', '/categoria/mercados')}
+                    onClick={() =>
+                      handleFooterClick(
+                        "mercados",
+                        "mercados_financeiros",
+                        "/categoria/mercados",
+                      )
+                    }
                   >
                     Mercados Financeiros
                   </Link>
@@ -123,7 +129,13 @@ export function FooterWithTracking() {
                     href="/categoria/criptomoedas"
                     className="text-gray-300 hover:text-white transition-colors text-sm"
                     itemProp="url"
-                    onClick={() => handleFooterClick('mercados', 'criptomoedas', '/categoria/criptomoedas')}
+                    onClick={() =>
+                      handleFooterClick(
+                        "mercados",
+                        "criptomoedas",
+                        "/categoria/criptomoedas",
+                      )
+                    }
                   >
                     Criptomoedas
                   </Link>
@@ -133,7 +145,13 @@ export function FooterWithTracking() {
                     href="/categoria/economia"
                     className="text-gray-300 hover:text-white transition-colors text-sm"
                     itemProp="url"
-                    onClick={() => handleFooterClick('mercados', 'economia_brasil', '/categoria/economia')}
+                    onClick={() =>
+                      handleFooterClick(
+                        "mercados",
+                        "economia_brasil",
+                        "/categoria/economia",
+                      )
+                    }
                   >
                     Economia Brasil
                   </Link>
@@ -143,7 +161,13 @@ export function FooterWithTracking() {
                     href="/categoria/internacional"
                     className="text-gray-300 hover:text-white transition-colors text-sm"
                     itemProp="url"
-                    onClick={() => handleFooterClick('mercados', 'mercados_internacionais', '/categoria/internacional')}
+                    onClick={() =>
+                      handleFooterClick(
+                        "mercados",
+                        "mercados_internacionais",
+                        "/categoria/internacional",
+                      )
+                    }
                   >
                     Mercados Internacionais
                   </Link>
@@ -153,7 +177,13 @@ export function FooterWithTracking() {
                     href="/categoria/analises"
                     className="text-gray-300 hover:text-white transition-colors text-sm"
                     itemProp="url"
-                    onClick={() => handleFooterClick('mercados', 'analises_profissionais', '/categoria/analises')}
+                    onClick={() =>
+                      handleFooterClick(
+                        "mercados",
+                        "analises_profissionais",
+                        "/categoria/analises",
+                      )
+                    }
                   >
                     Análises Profissionais
                   </Link>
@@ -171,7 +201,13 @@ export function FooterWithTracking() {
                   <Link
                     href="/ferramentas/calculadora-dividendos"
                     className="text-gray-300 hover:text-white transition-colors text-sm"
-                    onClick={() => handleFooterClick('ferramentas', 'calculadora_dividendos', '/ferramentas/calculadora-dividendos')}
+                    onClick={() =>
+                      handleFooterClick(
+                        "ferramentas",
+                        "calculadora_dividendos",
+                        "/ferramentas/calculadora-dividendos",
+                      )
+                    }
                   >
                     Calculadora de Dividendos
                   </Link>
@@ -180,7 +216,13 @@ export function FooterWithTracking() {
                   <Link
                     href="/ferramentas/simulador-carteira"
                     className="text-gray-300 hover:text-white transition-colors text-sm"
-                    onClick={() => handleFooterClick('ferramentas', 'simulador_carteira', '/ferramentas/simulador-carteira')}
+                    onClick={() =>
+                      handleFooterClick(
+                        "ferramentas",
+                        "simulador_carteira",
+                        "/ferramentas/simulador-carteira",
+                      )
+                    }
                   >
                     Simulador de Carteira
                   </Link>
@@ -189,7 +231,13 @@ export function FooterWithTracking() {
                   <Link
                     href="/cotacoes"
                     className="text-gray-300 hover:text-white transition-colors text-sm"
-                    onClick={() => handleFooterClick('ferramentas', 'cotacoes_tempo_real', '/cotacoes')}
+                    onClick={() =>
+                      handleFooterClick(
+                        "ferramentas",
+                        "cotacoes_tempo_real",
+                        "/cotacoes",
+                      )
+                    }
                   >
                     Cotações em Tempo Real
                   </Link>
@@ -198,7 +246,13 @@ export function FooterWithTracking() {
                   <Link
                     href="/categoria/educacao"
                     className="text-gray-300 hover:text-white transition-colors text-sm"
-                    onClick={() => handleFooterClick('ferramentas', 'educacao_financeira', '/categoria/educacao')}
+                    onClick={() =>
+                      handleFooterClick(
+                        "ferramentas",
+                        "educacao_financeira",
+                        "/categoria/educacao",
+                      )
+                    }
                   >
                     Educação Financeira
                   </Link>
@@ -208,15 +262,15 @@ export function FooterWithTracking() {
 
             {/* Company with tracking */}
             <div>
-              <h4 className="font-semibold text-lg mb-6 text-white">
-                Empresa
-              </h4>
+              <h4 className="font-semibold text-lg mb-6 text-white">Empresa</h4>
               <ul className="space-y-3">
                 <li>
                   <Link
                     href="/sobre"
                     className="text-gray-300 hover:text-white transition-colors text-sm"
-                    onClick={() => handleFooterClick('empresa', 'sobre_nos', '/sobre')}
+                    onClick={() =>
+                      handleFooterClick("empresa", "sobre_nos", "/sobre")
+                    }
                   >
                     Sobre nós
                   </Link>
@@ -225,7 +279,9 @@ export function FooterWithTracking() {
                   <Link
                     href="/equipe"
                     className="text-gray-300 hover:text-white transition-colors text-sm"
-                    onClick={() => handleFooterClick('empresa', 'nossa_equipe', '/equipe')}
+                    onClick={() =>
+                      handleFooterClick("empresa", "nossa_equipe", "/equipe")
+                    }
                   >
                     Nossa equipe
                   </Link>
@@ -234,7 +290,9 @@ export function FooterWithTracking() {
                   <Link
                     href="/contato"
                     className="text-gray-300 hover:text-white transition-colors text-sm"
-                    onClick={() => handleFooterClick('empresa', 'contato', '/contato')}
+                    onClick={() =>
+                      handleFooterClick("empresa", "contato", "/contato")
+                    }
                   >
                     Contato
                   </Link>
@@ -243,7 +301,9 @@ export function FooterWithTracking() {
                   <Link
                     href="/newsletter"
                     className="text-gray-300 hover:text-white transition-colors text-sm"
-                    onClick={() => handleFooterClick('empresa', 'newsletter', '/newsletter')}
+                    onClick={() =>
+                      handleFooterClick("empresa", "newsletter", "/newsletter")
+                    }
                   >
                     Newsletter
                   </Link>
@@ -272,7 +332,9 @@ export function FooterWithTracking() {
                   className="w-10 h-10 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center transition-colors"
                   aria-label="Twitter iAssets"
                   itemProp="sameAs"
-                  onClick={() => handleSocialClick('twitter', siteConfig.social.twitter)}
+                  onClick={() =>
+                    handleSocialClick("twitter", siteConfig.social.twitter)
+                  }
                 >
                   <Twitter className="w-5 h-5 text-gray-300" />
                 </a>
@@ -283,7 +345,9 @@ export function FooterWithTracking() {
                   className="w-10 h-10 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center transition-colors"
                   aria-label="LinkedIn iAssets"
                   itemProp="sameAs"
-                  onClick={() => handleSocialClick('linkedin', siteConfig.social.linkedin)}
+                  onClick={() =>
+                    handleSocialClick("linkedin", siteConfig.social.linkedin)
+                  }
                 >
                   <Linkedin className="w-5 h-5 text-gray-300" />
                 </a>
@@ -294,7 +358,9 @@ export function FooterWithTracking() {
                   className="w-10 h-10 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center transition-colors"
                   aria-label="YouTube iAssets"
                   itemProp="sameAs"
-                  onClick={() => handleSocialClick('youtube', siteConfig.social.youtube)}
+                  onClick={() =>
+                    handleSocialClick("youtube", siteConfig.social.youtube)
+                  }
                 >
                   <Youtube className="w-5 h-5 text-gray-300" />
                 </a>
@@ -305,7 +371,9 @@ export function FooterWithTracking() {
                   className="w-10 h-10 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center transition-colors"
                   aria-label="Instagram iAssets"
                   itemProp="sameAs"
-                  onClick={() => handleSocialClick('instagram', siteConfig.social.instagram)}
+                  onClick={() =>
+                    handleSocialClick("instagram", siteConfig.social.instagram)
+                  }
                 >
                   <Instagram className="w-5 h-5 text-gray-300" />
                 </a>
@@ -313,10 +381,7 @@ export function FooterWithTracking() {
             </div>
 
             {/* Newsletter com tracking integrado */}
-            <NewsletterWithTracking 
-              location="footer"
-              variant="footer"
-            />
+            <NewsletterWithTracking location="footer" variant="footer" />
           </div>
         </div>
 
@@ -337,21 +402,27 @@ export function FooterWithTracking() {
               <Link
                 href="/termos"
                 className="text-gray-400 hover:text-white transition-colors"
-                onClick={() => handleFooterClick('legal', 'termos_uso', '/termos')}
+                onClick={() =>
+                  handleFooterClick("legal", "termos_uso", "/termos")
+                }
               >
                 Termos de Uso
               </Link>
               <Link
                 href="/privacidade"
                 className="text-gray-400 hover:text-white transition-colors"
-                onClick={() => handleFooterClick('legal', 'privacidade', '/privacidade')}
+                onClick={() =>
+                  handleFooterClick("legal", "privacidade", "/privacidade")
+                }
               >
                 Privacidade
               </Link>
               <Link
                 href="/cookies"
                 className="text-gray-400 hover:text-white transition-colors"
-                onClick={() => handleFooterClick('legal', 'cookies', '/cookies')}
+                onClick={() =>
+                  handleFooterClick("legal", "cookies", "/cookies")
+                }
               >
                 Cookies
               </Link>
@@ -365,16 +436,13 @@ export function FooterWithTracking() {
             <div className="flex items-start gap-3">
               <Globe className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
               <div>
-                <h5 className="font-semibold text-white mb-3">
-                  Aviso Legal
-                </h5>
+                <h5 className="font-semibold text-white mb-3">Aviso Legal</h5>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  As informações contidas neste portal são apenas para
-                  fins educacionais e informativos. Não constituem
-                  recomendação de investimento. O investimento em ações e
-                  outros ativos envolve riscos. Sempre consulte um
-                  profissional qualificado antes de tomar decisões de
-                  investimento.
+                  As informações contidas neste portal são apenas para fins
+                  educacionais e informativos. Não constituem recomendação de
+                  investimento. O investimento em ações e outros ativos envolve
+                  riscos. Sempre consulte um profissional qualificado antes de
+                  tomar decisões de investimento.
                 </p>
               </div>
             </div>
@@ -383,4 +451,5 @@ export function FooterWithTracking() {
       </div>
     </footer>
   );
-} 
+}
+
