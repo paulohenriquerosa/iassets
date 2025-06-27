@@ -11,13 +11,11 @@ import {
   User,
   ArrowLeft,
   Share2,
-  BookmarkPlus,
   Eye,
   MessageCircle,
   Tag,
   TrendingUp,
   ChevronRight,
-  Heart,
 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
