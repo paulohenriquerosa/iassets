@@ -255,7 +255,7 @@ export default async function PostPage({ params }: PostPageProps) {
           }}
         />
 
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-white dark:bg-gray-900">
           {/* Breadcrumb */}
           <div className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
@@ -282,9 +282,9 @@ export default async function PostPage({ params }: PostPageProps) {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
               {/* Conteúdo Principal */}
               <main className="lg:col-span-3">
-                <article className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <article>
                   {/* Header */}
-                  <header className="p-6 sm:p-8">
+                  <header className="mb-8">
                 {/* Voltar */}
                 <Link 
                   href="/" 
@@ -385,7 +385,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
           {/* Imagem de capa */}
           {post.coverImage && (
-                    <div className="px-6 sm:px-8 mb-8">
+                    <div className="mb-8">
                   <div className="relative aspect-video overflow-hidden rounded-xl">
                     <Image
                       src={post.coverImage}
@@ -400,14 +400,14 @@ export default async function PostPage({ params }: PostPageProps) {
           )}
 
           {/* Conteúdo do post */}
-                  <div className="px-6 sm:px-8 pb-8">
+                  <div className="mb-8">
                     <div className="prose prose-lg max-w-none prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-gray-900 dark:prose-strong:text-gray-100">
                    <NotionContent recordMap={post.content} />
                  </div>
                   </div>
 
                   {/* Footer do artigo */}
-                  <footer className="border-t border-gray-200 dark:border-gray-700 p-6 sm:p-8 bg-gray-50 dark:bg-gray-800/50">
+                  <footer className="border-t border-gray-200 dark:border-gray-700 pt-8 mt-8">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                       <div className="flex items-center gap-4">
                         {post.author?.avatar && (
