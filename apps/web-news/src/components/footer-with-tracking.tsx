@@ -68,7 +68,7 @@ export function FooterWithTracking() {
                   className="size-9 dark:invert"
                   alt="IAssets Logo"
                 />
-                <div className="flex gap-2 items-center">
+                <div className="flex gap-1 items-center">
                   <span className="text-2xl font-bold text-white tracking-tight">
                     iAssets
                   </span>

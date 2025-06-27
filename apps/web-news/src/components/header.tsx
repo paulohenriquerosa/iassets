@@ -134,7 +134,7 @@ export function Header() {
               className="size-9 dark:invert"
               alt="IAssets Logo"
             />
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-1 items-center">
               <span className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
                 iAssets
               </span>
