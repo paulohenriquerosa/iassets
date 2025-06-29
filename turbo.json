@@ -13,7 +13,11 @@
     "PEXELS_API_KEY",
     "TIME_WINDOW_HOURS",
     "GOOGLE_API_KEY",
-    "GOOGLE_CX_ID"
+    "GOOGLE_CX_ID",
+    "QSTASH_CURRENT_SIGNING_KEY",
+    "QSTASH_NEXT_SIGNING_KEY",
+    "QSTASH_TOKEN",
+    "QSTASH_URL"
   ],
   "tasks": {
     "build": {
