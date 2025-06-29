@@ -5,7 +5,15 @@
     "NOTION_TOKEN",
     "NOTION_DATABASE_ID",
     "NODE_ENV",
-    "REVALIDATE_SECRET"
+    "REVALIDATE_SECRET",
+    "OPENAI_API_KEY",
+    "MAX_ITEMS",
+    "RESEND_API_KEY",
+    "UNSPLASH_ACCESS_KEY",
+    "PEXELS_API_KEY",
+    "TIME_WINDOW_HOURS",
+    "GOOGLE_API_KEY",
+    "GOOGLE_CX_ID"
   ],
   "tasks": {
     "build": {
