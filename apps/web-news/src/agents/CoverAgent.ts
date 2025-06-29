@@ -126,7 +126,39 @@ Retorne APENAS JSON:
       }
     }
 
-    // TODO: Google Custom Search (optional)
+    // Google Custom Search (optional)
+    if (process.env.GOOGLE_API_KEY && process.env.GOOGLE_CX_ID) {
+      for (const q of queries) {
+        try {
+          const res = await axios.get("https://www.googleapis.com/customsearch/v1", {
+            params: {
+              key: process.env.GOOGLE_API_KEY,
+              cx: process.env.GOOGLE_CX_ID,
+              q: q,
+              searchType: "image",
+              num: 4,
+              safe: "active",
+              imgSize: "large",
+              imgType: "photo",
+            },
+            timeout: 8000,
+          });
+
+          (res.data.items as any[] | undefined)?.forEach((item) => {
+            const link = item.link as string;
+            if (!link || !link.match(/\.(jpg|jpeg|png|webp)$/i)) return;
+
+            candidates.push({
+              url: link,
+              description: item.title || q,
+              source: "Google",
+            });
+          });
+        } catch (err) {
+          console.error("[CoverAgent] Google error", (err as any).message);
+        }
+      }
+    }
 
     // Remove duplicates
     const set = new Set<string>();
