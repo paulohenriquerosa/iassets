@@ -45,7 +45,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-notion-x": "^7.4.2",
-    "resend": "^4.6.0",
+    "resend": "^0.28.0",
+    "@upstash/qstash": "^1.2.0",
     "tailwind-merge": "^2.5.2",
     "unsplash-js": "^7.0.19"
   },

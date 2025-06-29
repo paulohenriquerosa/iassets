@@ -43,7 +43,7 @@ export class CrewCoordinator {
     return { processed, skipped, total: items.length };
   }
 
-  private async processItem(item: FeedItem): Promise<void> {
+  async processItem(item: FeedItem): Promise<void> {
     const scraped = await this.scraper.scrape(item.link);
     const research = await this.researcher.research({
       title: item.title,
