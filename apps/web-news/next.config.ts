@@ -17,6 +17,9 @@ const nextConfig: NextConfig = {
       's3.us-west-2.amazonaws.com',
       'notion.so',
       'lh3.googleusercontent.com',
+      'i.imgur.com',
+      'd1civoyjepycei.cloudfront.net',
+      'images.pexels.com'
     ],
     remotePatterns: [
       {
