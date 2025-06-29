@@ -77,8 +77,8 @@ export async function generateMetadata({
       };
     }
 
-    const publishedDate = new Date(post.date);
-    const modifiedDate = new Date(post.createdTime);
+    const publishedDate = safeDate(post.date);
+    const modifiedDate = safeDate(post.createdTime);
 
     return {
       title: `${post.title} | iAssets News`,
@@ -109,8 +109,8 @@ export async function generateMetadata({
         ],
         locale: "pt_BR",
         type: "article",
-        publishedTime: publishedDate.toISOString(),
-        modifiedTime: modifiedDate.toISOString(),
+        ...(publishedDate && { datePublished: publishedDate.toISOString() }),
+        ...(modifiedDate && { dateModified: modifiedDate.toISOString() }),
         section: post.category || "Notícias",
         tags: post.tags,
       },
@@ -126,8 +126,8 @@ export async function generateMetadata({
       },
       other: {
         "article:author": post.author?.name || "Equipe iAssets",
-        "article:published_time": publishedDate.toISOString(),
-        "article:modified_time": modifiedDate.toISOString(),
+        ...(publishedDate && { "article:published_time": publishedDate.toISOString() }),
+        ...(modifiedDate && { "article:modified_time": modifiedDate.toISOString() }),
         "article:section": post.category || "Notícias",
         "article:tag": post.tags.join(", "),
       },
@@ -154,6 +154,13 @@ export async function generateStaticParams() {
   }
 }
 
+// util
+function safeDate(dateLike: string | Date | undefined): Date | null {
+  if (!dateLike) return null;
+  const d = new Date(dateLike);
+  return isNaN(d.getTime()) ? null : d;
+}
+
 export default async function PostPage({ params }: PostPageProps) {
   try {
     const { slug } = await params;
@@ -174,10 +181,9 @@ export default async function PostPage({ params }: PostPageProps) {
       notFound();
     }
 
-    const publishedDate = new Date(post.date);
-    const readingTime = Math.ceil(
-      (post.title.length + (post.summary?.length || 0)) / 200,
-    );
+    const publishedDate = safeDate(post.date);
+    const modifiedDate = safeDate(post.createdTime);
+    const readingTime = Math.ceil((post.title.length + (post.summary?.length || 0)) / 200);
 
     // Buscar posts relacionados da mesma categoria
     const relatedPosts = post.category
@@ -200,8 +206,8 @@ export default async function PostPage({ params }: PostPageProps) {
       image: [
         post.coverImage || "https://iassets.com.br/images/default-article.jpg",
       ],
-      datePublished: publishedDate.toISOString(),
-      dateModified: new Date(post.createdTime).toISOString(),
+      ...(publishedDate && { datePublished: publishedDate.toISOString() }),
+      ...(modifiedDate && { dateModified: modifiedDate.toISOString() }),
       author: {
         "@type": "Person",
         name: post.author?.name || "Equipe iAssets",
@@ -377,7 +383,7 @@ export default async function PostPage({ params }: PostPageProps) {
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
                         <time dateTime={post.date} className="text-sm">
-                          {format(publishedDate, "dd 'de' MMMM 'de' yyyy", {
+                          {format(publishedDate || new Date(), "dd 'de' MMMM 'de' yyyy", {
                             locale: ptBR,
                           })}
                         </time>
@@ -448,7 +454,7 @@ export default async function PostPage({ params }: PostPageProps) {
                           </p>
                           <div className="text-xs text-gray-500">
                             Publicado em{" "}
-                            {format(publishedDate, "dd/MM/yyyy", {
+                            {format(publishedDate || new Date(), "dd/MM/yyyy", {
                               locale: ptBR,
                             })}
                           </div>
