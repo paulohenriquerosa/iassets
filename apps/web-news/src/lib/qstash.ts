@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { QStash } from "@upstash/qstash";
+import { Client } from "@upstash/qstash";
 import { sendQuotaExceededAlert } from "@/lib/email";
 
-const qstashInternal = new QStash({
+const qstashInternal = new Client({
   token: process.env.QSTASH_TOKEN!,
   baseUrl: process.env.QSTASH_URL || "https://qstash.upstash.io",
 });
