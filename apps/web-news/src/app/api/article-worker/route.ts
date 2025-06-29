@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { verifySignature } from "@upstash/qstash/nextjs";
 import { CrewCoordinator } from "@/agents/CrewCoordinator";
+import { DuplicateDetectionAgent } from "@/agents/DuplicateDetectionAgent";
 import type { FeedItem } from "@/agents/types";
 
 export const runtime = "nodejs";
@@ -23,6 +24,8 @@ export async function POST(req: Request) {
 
   try {
     await coordinator.processItem(item);
+    const dupAgent = new DuplicateDetectionAgent();
+    await dupAgent.add(item.title, item.summary || "");
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     console.error("[ArticleWorker] failure", err);

@@ -1,19 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import { FeedFetcher } from "@/agents/FeedFetcher";
-import { qstash } from "@/lib/qstash";
+import { qstashPublishJSON } from "@/lib/qstash";
+import { DuplicateDetectionAgent } from "@/agents/DuplicateDetectionAgent";
 
 export const runtime = "nodejs";
 
 export async function GET() {
   try {
-
     const fetcher = new FeedFetcher();
-    const items = await fetcher.fetch();
+    const itemsRaw = await fetcher.fetch();
+
+    const dupAgent = new DuplicateDetectionAgent();
+    const items: typeof itemsRaw = [];
+    for (const it of itemsRaw) {
+      const dup = await dupAgent.exists(it.title, it.summary || "");
+      if (!dup) items.push(it);
+    }
+
+    if (items.length === 0) {
+      return NextResponse.json({ enqueued: 0, skipped: "duplicates" });
+    }
 
     const results = await Promise.all(
       items.map((it) =>
-        qstash.publishJSON({
+        qstashPublishJSON({
           url: `${process.env.NEXT_PUBLIC_APP_URL}/api/article-worker`,
           body: it,
         })
