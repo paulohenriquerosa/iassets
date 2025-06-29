@@ -3,21 +3,18 @@ import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import type { Article, ResearchResult, ScrapedContent } from "@/agents/types";
+import { jsonrepair } from "jsonrepair";
 
 const CATEGORIES = [
   "Mercados",
   "Criptomoedas",
-  "Global",
   "Tecnologia",
   "Economia", 
   "Política",
   "Investimentos",
-  "Bolsa de Valores",
   "Finanças Pessoais",
-  "Impostos",
-  "Seguros",
-  "Previdência",
-  "Empreendedorismo",
+  "Internacional",
+  "Empresas",
 ];
 
 const category = CATEGORIES.join(", ");
@@ -104,14 +101,18 @@ Retorne apenas JSON válido:
     return this.safeParse(raw);
   }
 
-  private safeParse(content: string): Article | null {
+  private safeParse(raw: string): Article | null {
     try {
-      const clean = content.replace(/```json\s*/gi, "").replace(/```/g, "").trim();
+      const clean = raw.replace(/```json\s*/gi, "").replace(/```/g, "").trim();
       const jsonMatch = clean.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
+      if (!jsonMatch) throw new Error("no-object");
+
+      try {
         return JSON.parse(jsonMatch[0]);
+      } catch {
+        // tenta reparar
+        return JSON.parse(jsonrepair(jsonMatch[0]));
       }
-      throw new Error("No JSON found");
     } catch (e) {
       console.error("[WriterAgent] safeParse fail", e);
       return null;
