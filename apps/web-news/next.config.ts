@@ -19,24 +19,13 @@ const nextConfig: NextConfig = {
       'lh3.googleusercontent.com',
       'i.imgur.com',
       'd1civoyjepycei.cloudfront.net',
-      'images.pexels.com'
+      'images.pexels.com',
+      'static.cryptobriefing.com'
     ],
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: '**.notion.so',
-      },
-      {
-        protocol: 'https',
-        hostname: 'notion.so',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 's3.us-west-2.amazonaws.com',
+        protocol: "https",
+        hostname: "**",      // libera todos os domínios https
       },
     ],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 dias
