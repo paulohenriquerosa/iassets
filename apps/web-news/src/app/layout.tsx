@@ -200,6 +200,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//platform.twitter.com" />
 
         <meta name="google-adsense-account" content="ca-pub-2303827165043763"></meta>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2303827165043763" crossorigin="anonymous"></script>
 
         {/* Pingback para WordPress compatibility */}
         <link rel="pingback" href={`${siteConfig.url}/xmlrpc.php`} />
