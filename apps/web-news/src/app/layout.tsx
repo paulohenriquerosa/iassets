@@ -192,11 +192,14 @@ export default function RootLayout({
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
 
+
         {/* DNS Prefetch para recursos externos */}
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//www.google-analytics.com" />
         <link rel="dns-prefetch" href="//connect.facebook.net" />
         <link rel="dns-prefetch" href="//platform.twitter.com" />
+
+        <meta name="google-adsense-account" content="ca-pub-2303827165043763"></meta>
 
         {/* Pingback para WordPress compatibility */}
         <link rel="pingback" href={`${siteConfig.url}/xmlrpc.php`} />
