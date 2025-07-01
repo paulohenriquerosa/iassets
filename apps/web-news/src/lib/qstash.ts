@@ -7,8 +7,14 @@ const qstashInternal = new Client({
   baseUrl: process.env.QSTASH_URL || "https://qstash.upstash.io",
 });
 
-export async function qstashPublishJSON(opts: Parameters<typeof qstashInternal.publishJSON>[0]) {
+const IS_LOCAL = process.env.NODE_ENV !== "production" || process.env.QSTASH_DISABLE === "1";
+
+export async function qstashPublishJSON(opts: any) {
   try {
+    if (IS_LOCAL) {
+      console.log("[QStash] SKIPPED publish (local dev)", opts.destination);
+      return { bodyUrl: "local", messageId: "local-dev" } as any;
+    }
     return await qstashInternal.publishJSON(opts);
   } catch (err: any) {
     console.error("[QStash] publish error", err);

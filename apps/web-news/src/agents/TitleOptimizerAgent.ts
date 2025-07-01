@@ -26,10 +26,10 @@ Resumo executivo: "{summary}"
 – Use palavras-chave de alta procura (ex: "impacto", "entenda", "o que muda").
 – Seja claro, promissor e evite clickbait.
 
-Retorne apenas JSON:
-{
+Retorne apenas JSON válido:
+{{
   "titles": ["Variante 1", "Variante 2", "Variante 3"]
-}
+}}
 `);
   }
 

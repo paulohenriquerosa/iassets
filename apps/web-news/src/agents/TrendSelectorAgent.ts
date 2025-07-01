@@ -42,7 +42,8 @@ Retorne APENAS JSON válido:
   }
 
   /**
-   * Filtra os itens do feed retornando apenas os topK com maior potencial.
+   * Seleciona até topK itens com score >= minScore.
+   * Se não houver itens suficientes, retorna somente os que atendem ao critério (pode ser lista vazia).
    */
   async select(feedItems: FeedItem[], topK: number = 3): Promise<FeedItem[]> {
     if (feedItems.length === 0) return [];
@@ -70,9 +71,11 @@ Retorne APENAS JSON válido:
       return feedItems.slice(0, topK);
     }
 
-    // Ordena por score (-1 evita mis-format)
+    // Threshold mínimo para pontuação (via env ou 3)
+    const MIN_SCORE = Number(process.env.TREND_MIN_SCORE ?? 3);
+
     scored = scored
-      .filter((s) => typeof s.score === "number" && s.title)
+      .filter((s) => typeof s.score === "number" && s.title && s.score >= MIN_SCORE)
       .sort((a, b) => b.score - a.score);
 
     // Mapeia para FeedItem preservando ordem por score
@@ -86,14 +89,7 @@ Retorne APENAS JSON válido:
       if (ordered.length >= topK) break;
     }
 
-    // Caso o LLM não tenha listado topK diferentes, preenche restantes
-    if (ordered.length < topK) {
-      for (const it of feedItems) {
-        if (!ordered.includes(it)) ordered.push(it);
-        if (ordered.length >= topK) break;
-      }
-    }
-
+    // Retorna apenas ordered (já está limitado por topK e minScore)
     return ordered.slice(0, topK);
   }
 } 

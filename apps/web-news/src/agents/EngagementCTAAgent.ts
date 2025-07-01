@@ -1,7 +1,8 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
-import { JsonOutputParser } from "@langchain/core/output_parsers";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+import { jsonrepair } from "jsonrepair";
 import { agentLog } from "@/lib/logger";
 
 export interface CTAItem {
@@ -13,7 +14,7 @@ export interface CTAItem {
 export class EngagementCTAAgent {
   private llm: ChatOpenAI;
   private prompt: PromptTemplate;
-  private parser = new JsonOutputParser<{ ctas: CTAItem[] }>();
+  private parser = new StringOutputParser();
 
   constructor() {
     this.llm = new ChatOpenAI({
@@ -33,14 +34,14 @@ Artigo final em Markdown:
   b) link para um artigo relacionado (forneça o slug).  
   c) inscrição na newsletter (frase curta).  
 
-Retorne JSON:
-{
+Retorne JSON válido:
+{{
   "ctas": [
-    { "type":"comment", "text":"Gostou deste artigo? Deixe sua opinião abaixo!" },
-    { "type":"related", "slug":"/impacto-fed-nos-investimentos", "text":"Entenda também como a decisão do Fed afeta seus ativos" },
-    { "type":"newsletter", "text":"Assine nossa newsletter para receber análises diárias!" }
+    {{ "type": "comment", "text": "Gostou deste artigo? Deixe sua opinião abaixo!" }},
+    {{ "type": "related", "slug": "/impacto-fed-nos-investimentos", "text": "Entenda também como a decisão do Fed afeta seus ativos" }},
+    {{ "type": "newsletter", "text": "Assine nossa newsletter para receber análises diárias!" }}
   ]
-}
+}}
 `);
   }
 
@@ -53,11 +54,28 @@ Retorne JSON:
     ]);
 
     try {
-      const res = await chain.invoke({ content });
-      agentLog("CTAAgent", "output", res.ctas);
-      return res.ctas ?? [];
+      const raw = await chain.invoke({ content });
+      const parsed = this.safeParse(raw);
+      agentLog("CTAAgent", "output", parsed?.ctas);
+      return parsed?.ctas ?? [];
     } catch (err) {
       console.error("[EngagementCTAAgent] LLM error", err);
+      return null;
+    }
+  }
+
+  private safeParse(raw: string): { ctas: CTAItem[] } | null {
+    try {
+      const clean = raw.replace(/```json\s*/gi, "").replace(/```/g, "").trim();
+      const jsonMatch = clean.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("no-json");
+      try {
+        return JSON.parse(jsonMatch[0]);
+      } catch {
+        return JSON.parse(jsonrepair(jsonMatch[0]));
+      }
+    } catch (e) {
+      console.error("[CTAAgent] safeParse fail", e);
       return null;
     }
   }

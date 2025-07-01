@@ -17,6 +17,8 @@ interface ImageCandidate {
   source: string;
 }
 
+const IS_LOCAL = process.env.NODE_ENV !== "production";
+
 export class CoverAgent {
   private llm: ChatOpenAI;
   private queryPrompt: PromptTemplate;
@@ -39,9 +41,7 @@ Resumo: {summary}
 Tags: {tags}
 
 Retorne APENAS JSON válido:
-{{
-  "queries": ["query 1", "query 2", "query 3"]
-}}
+{{\n  "queries": ["query 1", "query 2", "query 3"]\n}}
 `);
 
     this.choosePrompt = PromptTemplate.fromTemplate(`
@@ -53,7 +53,7 @@ Resumo: {summary}
 IMAGENS:
 {images}
 
-Retorne APENAS JSON:
+Retorne APENAS JSON válido:
 {{ "best": 2 }}
 `);
   }
@@ -127,7 +127,7 @@ Retorne APENAS JSON:
     }
 
     // Google Custom Search (optional)
-    if (process.env.GOOGLE_API_KEY && process.env.GOOGLE_CX_ID) {
+    if (!IS_LOCAL && process.env.GOOGLE_API_KEY && process.env.GOOGLE_CX_ID) {
       for (const q of queries) {
         try {
           const res = await axios.get("https://www.googleapis.com/customsearch/v1", {
@@ -154,8 +154,12 @@ Retorne APENAS JSON:
               source: "Google",
             });
           });
-        } catch (err) {
-          console.error("[CoverAgent] Google error", (err as any).message);
+        } catch (err: any) {
+          if (err?.response?.status === 429) {
+            console.warn("[CoverAgent] Google quota exceeded – skipping");
+            break;
+          }
+          console.error("[CoverAgent] Google error", err.message);
         }
       }
     }

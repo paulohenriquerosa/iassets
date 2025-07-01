@@ -35,15 +35,15 @@ Artigo em Markdown:
   3. 3 sugestões de links internos (URLs padrão do portal).
   4. Pontos onde é válido repetir a palavra-chave (sem forçar).
 
-Retorne apenas JSON:
-{
+Retorne apenas JSON válido:
+{{
   "metaDescription": "...",
-  "keywords": ["key1","key2",...],
-  "internalLinks": ["url1","url2","url3"],
+  "keywords": ["key1", "key2", "key3", "key4", "key5"],
+  "internalLinks": ["url1", "url2", "url3"],
   "placements": [
-    { "paragraph": 2, "keyword": "..." }
+    {{ "paragraph": 2, "keyword": "..." }}
   ]
-}
+}}
 `);
   }
 

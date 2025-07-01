@@ -3,8 +3,11 @@ import { NextResponse } from "next/server";
 import { FeedFetcher } from "@/agents/FeedFetcher";
 import { qstashPublishJSON } from "@/lib/qstash";
 import { DuplicateDetectionAgent } from "@/agents/DuplicateDetectionAgent";
+import { CrewCoordinator } from "@/agents/CrewCoordinator";
 
 export const runtime = "nodejs";
+
+const IS_LOCAL = process.env.NODE_ENV !== "production" || process.env.QSTASH_DISABLE === "1";
 
 export async function GET() {
   try {
@@ -20,6 +23,21 @@ export async function GET() {
 
     if (items.length === 0) {
       return NextResponse.json({ enqueued: 0, skipped: "duplicates" });
+    }
+
+    if (IS_LOCAL) {
+      // process synchronously without queue
+      const coord = new CrewCoordinator();
+      let processed = 0;
+      for (const it of items) {
+        try {
+          await coord.processItem(it);
+          processed++;
+        } catch (err) {
+          console.error("[generate-articles] local process error", err);
+        }
+      }
+      return NextResponse.json({ processed, mode: "local" });
     }
 
     const results = await Promise.all(

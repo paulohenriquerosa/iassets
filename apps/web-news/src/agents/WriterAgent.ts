@@ -53,9 +53,6 @@ Estatísticas:
 Citações externas:
 {externalQuotes}
 
-IMAGENS DISPONÍVEIS:
-{images}
-
 Lead pronto: {lead}
 
 Se 'Lead pronto' NÃO estiver vazio, use-o como primeiro parágrafo sem modificações.
@@ -67,8 +64,7 @@ Escreva um artigo jornalístico completo EM PORTUGUÊS em Markdown seguindo:
 3. Parágrafos de tamanho variado conforme o conteúdo
 4. Escolha uma categoria com base no conteúdo do artigo
 5. Use listas e tabelas quando útil
-6. Incorpore imagens com sintaxe ![alt](url) onde fizer sentido
-7. Finalize com análise ou perspectiva futura
+6. Finalize com análise ou perspectiva futura
 
 Retorne apenas JSON válido:
 {{
@@ -96,7 +92,6 @@ PESQUISA E CONTEXTO:
 Fatos relacionados (JSON): {relatedFacts}
 Estatísticas (JSON): {statistics}
 Citações externas (JSON): {externalQuotes}
-Imagens geradas (prompts): {visualsJson}
 
 SEO E ENGAJAMENTO:
 SEO (meta + keywords + links internos) em JSON: {seoJson}
@@ -107,7 +102,6 @@ REQUISITOS DE SAÍDA:
 - O lead (primeiro parágrafo) deve ser **ou** o "Lead pronto" **ou** um novo.
 - Use **## Subtítulo** para cada seção.
 - Insira a **meta description** como comentário HTML no topo: \`<!-- meta: ... -->\`.
-- Adicione imagens usando markdown.
 - Inclua CTAs no final.
 - Escolha a **categoria** dentre: ${category}.
 - Gere até 5 **tags**, priorizando keywords do SEO JSON.
@@ -162,8 +156,7 @@ RETORNE APENAS UM JSON VÁLIDO:
     research: ResearchResult,
     seoJson: object,
     ctaJson: object,
-    relatedArticlesJson: object,
-    visualsJson: object
+    relatedArticlesJson: object
   ): Promise<Article | null> {
     const chain = RunnableSequence.from([
       this.finalPrompt,
@@ -171,7 +164,7 @@ RETORNE APENAS UM JSON VÁLIDO:
       this.parser,
     ]);
 
-    agentLog("WriterAgent", "finalize-input", { seoJson, ctaJson, relatedArticlesJson, visualsJson });
+    agentLog("WriterAgent", "finalize-input", { seoJson, ctaJson, relatedArticlesJson });
 
     const raw = await chain.invoke({
       title: original.title,
@@ -181,7 +174,6 @@ RETORNE APENAS UM JSON VÁLIDO:
       relatedFacts: JSON.stringify(research.relatedFacts ?? []),
       statistics: JSON.stringify(research.statistics ?? []),
       externalQuotes: JSON.stringify(research.externalQuotes ?? []),
-      visualsJson: JSON.stringify(visualsJson),
       seoJson: JSON.stringify(seoJson),
       ctaJson: JSON.stringify(ctaJson),
       relatedArticlesJson: JSON.stringify(relatedArticlesJson),
