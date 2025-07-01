@@ -1,8 +1,9 @@
-import { ChatOpenAI } from "@langchain/openai";
+import type { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { JsonOutputParser } from "@langchain/core/output_parsers";
 import { agentLog } from "@/lib/logger";
+import { getLLM } from "@/lib/llm";
 
 interface SEOData {
   metaDescription: string;
@@ -17,10 +18,8 @@ export class SEOEnhancerAgent {
   private parser = new JsonOutputParser<SEOData>();
 
   constructor() {
-    this.llm = new ChatOpenAI({
-      modelName: process.env.SEO_MODEL || "gpt-4",
+    this.llm = getLLM("SEO_MODEL", "gpt-3.5-turbo-0125", {
       temperature: 0.3,
-      openAIApiKey: process.env.OPENAI_API_KEY!,
     });
 
     this.prompt = PromptTemplate.fromTemplate(`

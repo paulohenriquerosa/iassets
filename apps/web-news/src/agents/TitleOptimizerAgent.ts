@@ -1,8 +1,9 @@
-import { ChatOpenAI } from "@langchain/openai";
+import type { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { JsonOutputParser } from "@langchain/core/output_parsers";
 import { agentLog } from "@/lib/logger";
+import { getLLM } from "@/lib/llm";
 
 export class TitleOptimizerAgent {
   private llm: ChatOpenAI;
@@ -10,10 +11,8 @@ export class TitleOptimizerAgent {
   private parser = new JsonOutputParser<{ titles: string[] }>();
 
   constructor() {
-    this.llm = new ChatOpenAI({
-      modelName: process.env.TITLE_MODEL || "gpt-4",
+    this.llm = getLLM("TITLE_MODEL", "gpt-3.5-turbo-0125", {
       temperature: 0.4,
-      openAIApiKey: process.env.OPENAI_API_KEY!,
     });
 
     this.prompt = PromptTemplate.fromTemplate(`

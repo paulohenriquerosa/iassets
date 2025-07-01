@@ -1,10 +1,11 @@
-import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import type { Article, ResearchResult, ScrapedContent } from "@/agents/types";
 import { jsonrepair } from "jsonrepair";
 import { agentLog } from "@/lib/logger";
+import { getLLM, logTokenUsage } from "@/lib/llm";
+import type { ChatOpenAI } from "@langchain/openai";
 
 const CATEGORIES = [
   "Mercados",
@@ -27,11 +28,10 @@ export class WriterAgent {
   private parser = new StringOutputParser();
 
   constructor() {
-    this.llm = new ChatOpenAI({
-      modelName: process.env.WRITER_MODEL || "gpt-4",
+    // Centralized LLM config (cheaper default + lower maxTokens)
+    this.llm = getLLM("WRITER_MODEL", "gpt-3.5-turbo-0125", {
       temperature: 0.3,
-      openAIApiKey: process.env.OPENAI_API_KEY!,
-      maxTokens: 2048,
+      maxTokens: 1000,
     });
 
     this.draftPrompt = PromptTemplate.fromTemplate(`
@@ -146,6 +146,8 @@ RETORNE APENAS UM JSON VÁLIDO:
     });
 
     const article = this.safeParse(raw);
+    // token usage log (approx.)
+    await logTokenUsage("WriterAgent", "draft", this.llm, JSON.stringify(original), raw);
     agentLog("WriterAgent", "draft-output", article);
     return article;
   }
@@ -180,6 +182,8 @@ RETORNE APENAS UM JSON VÁLIDO:
     });
 
     const article = this.safeParse(raw);
+    // token usage log (approx.)
+    await logTokenUsage("WriterAgent", "finalize", this.llm, JSON.stringify(original), raw);
     agentLog("WriterAgent", "finalize-output", article);
     return article;
   }

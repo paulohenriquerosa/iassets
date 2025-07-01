@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Index } from "@upstash/vector";
 import OpenAI from "openai";
-import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { sendQuotaExceededAlert } from "@/lib/email";
+import { getLLM } from "@/lib/llm";
 
 const VECTOR_DIM = 1536; // text-embedding-3-small
 
@@ -27,11 +27,7 @@ export class DuplicateDetectionAgent {
 NOVO: {novo}
 EXISTENTE: {velho}
 Eles falam da MESMA notícia?`),
-      new ChatOpenAI({
-        modelName: process.env.DUP_MODEL || "gpt-3.5-turbo-1106",
-        temperature: 0,
-        openAIApiKey: process.env.OPENAI_API_KEY!,
-      }),
+      getLLM("DUP_MODEL", "gpt-3.5-turbo-1106", { temperature: 0 }),
       new StringOutputParser(),
     ]);
   }

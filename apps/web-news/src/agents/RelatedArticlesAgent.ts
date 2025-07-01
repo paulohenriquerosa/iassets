@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Index } from "@upstash/vector";
 import OpenAI from "openai";
-import { ChatOpenAI } from "@langchain/openai";
+import type { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { agentLog } from "@/lib/logger";
+import { getLLM } from "@/lib/llm";
 
 export interface RelatedArticle {
   title: string;
@@ -29,7 +30,7 @@ export class RelatedArticlesAgent {
 
     this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
-    this.llm = new ChatOpenAI({ modelName: "gpt-3.5-turbo", temperature: 0 });
+    this.llm = getLLM("RELATED_MODEL", "gpt-3.5-turbo", { temperature: 0 });
 
     this.prompt = PromptTemplate.fromTemplate(`
 Você é um ASSISTENTE DE RECOMENDAÇÃO DE LEITURA.

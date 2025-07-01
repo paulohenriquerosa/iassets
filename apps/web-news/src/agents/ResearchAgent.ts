@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ChatOpenAI } from "@langchain/openai";
+import type { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { StringOutputParser } from "@langchain/core/output_parsers";
+import { getLLM } from "@/lib/llm";
 
 import type { ResearchResult } from "@/agents/types";
 
@@ -12,10 +13,8 @@ export class ResearchAgent {
   private parser = new StringOutputParser();
 
   constructor() {
-    this.llm = new ChatOpenAI({
-      modelName: process.env.RESEARCH_MODEL || "gpt-4",
+    this.llm = getLLM("RESEARCH_MODEL", "gpt-3.5-turbo-0125", {
       temperature: 0.2,
-      openAIApiKey: process.env.OPENAI_API_KEY!,
     });
 
     this.prompt = PromptTemplate.fromTemplate(`
