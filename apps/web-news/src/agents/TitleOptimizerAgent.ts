@@ -2,6 +2,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { JsonOutputParser } from "@langchain/core/output_parsers";
+import { agentLog } from "@/lib/logger";
 
 export class TitleOptimizerAgent {
   private llm: ChatOpenAI;
@@ -36,6 +37,8 @@ Retorne apenas JSON:
    * Retorna até 3 variações de título otimizadas para SEO.
    */
   async optimize(originalTitle: string, summary: string): Promise<string[]> {
+    agentLog("TitleOptimizer", "input", { originalTitle, summary });
+
     const chain = RunnableSequence.from([
       this.prompt,
       this.llm,
@@ -44,7 +47,9 @@ Retorne apenas JSON:
 
     try {
       const res = await chain.invoke({ originalTitle, summary });
-      return res.titles.filter(Boolean).slice(0, 3);
+      const titles = res.titles.filter(Boolean).slice(0, 3);
+      agentLog("TitleOptimizer", "output", titles);
+      return titles;
     } catch (err) {
       console.error("[TitleOptimizerAgent] LLM error", err);
       return [];

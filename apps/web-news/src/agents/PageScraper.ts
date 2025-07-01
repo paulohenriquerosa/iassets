@@ -32,19 +32,7 @@ export class PageScraper {
 
       text = text.replace(/\s+/g, " ").trim();
 
-      // Extract images
-      const images: Array<{ url: string; alt: string; caption?: string }> = [];
-      $("img").each((_: unknown, img: any) => {
-        const url = $(img).attr("src") || "";
-        if (!url) return;
-        const alt = ($(img).attr("alt") || "").trim();
-        // Attempt caption via <figure><figcaption>
-        const fig = $(img).closest("figure");
-        const caption = fig.find("figcaption").text().trim() || undefined;
-        images.push({ url, alt, caption });
-      });
-
-      return { fullText: text, images };
+      return { fullText: text, images: [] };
     } catch (err: any) {
       console.error(`[PageScraper] Error scraping ${link}:`, err.message);
       return { fullText: "", images: [] };

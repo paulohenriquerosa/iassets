@@ -4,6 +4,7 @@ import { RunnableSequence } from "@langchain/core/runnables";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import type { Article, ResearchResult, ScrapedContent } from "@/agents/types";
 import { jsonrepair } from "jsonrepair";
+import { agentLog } from "@/lib/logger";
 
 const CATEGORIES = [
   "Mercados",
@@ -21,7 +22,8 @@ const category = CATEGORIES.join(", ");
 
 export class WriterAgent {
   private llm: ChatOpenAI;
-  private prompt: PromptTemplate;
+  private draftPrompt: PromptTemplate;
+  private finalPrompt: PromptTemplate;
   private parser = new StringOutputParser();
 
   constructor() {
@@ -32,7 +34,7 @@ export class WriterAgent {
       maxTokens: 2048,
     });
 
-    this.prompt = PromptTemplate.fromTemplate(`
+    this.draftPrompt = PromptTemplate.fromTemplate(`
 Você é um JORNALISTA FINANCEIRO.
 
 Dados:
@@ -77,18 +79,66 @@ Retorne apenas JSON válido:
  "tags": ["tag1", "tag2", "tag3", "tag4"]
 }}
 `);
+
+    // Enhanced prompt for final article incorporating SEO and CTAs
+    this.finalPrompt = PromptTemplate.fromTemplate(`
+Você é um JORNALISTA FINANCEIRO SÊNIOR, especializado em produzir notícias e análises sobre mercado financeiro, economia, criptomoedas e política econômica.
+Use tom informativo e objetivo, mas mantenha a leitura fluida e engajadora.
+
+DADOS INICIAIS:
+Título bruto: "{title}"
+Resumo original: "{summary}"
+Lead pronto: "{lead}"
+Texto bruto (máx. 4000 chars):
+{fullText}
+
+PESQUISA E CONTEXTO:
+Fatos relacionados (JSON): {relatedFacts}
+Estatísticas (JSON): {statistics}
+Citações externas (JSON): {externalQuotes}
+Imagens geradas (prompts): {visualsJson}
+
+SEO E ENGAJAMENTO:
+SEO (meta + keywords + links internos) em JSON: {seoJson}
+CTAs recomendados em JSON: {ctaJson}
+Artigos relacionados em JSON: {relatedArticlesJson}
+
+REQUISITOS DE SAÍDA:
+- O lead (primeiro parágrafo) deve ser **ou** o "Lead pronto" **ou** um novo.
+- Use **## Subtítulo** para cada seção.
+- Insira a **meta description** como comentário HTML no topo: \`<!-- meta: ... -->\`.
+- Adicione imagens usando markdown.
+- Inclua CTAs no final.
+- Escolha a **categoria** dentre: ${category}.
+- Gere até 5 **tags**, priorizando keywords do SEO JSON.
+
+RETORNE APENAS UM JSON VÁLIDO:
+{{
+  "title": "Título final (≤60 chars)",
+  "summary": "Resumo executivo (máx. 160 chars)",
+  "metaDescription": "...",
+  "category": "...",
+  "tags": ["..."],
+  "content": "Markdown completo"
+}}
+`);
   }
 
-  async write(
+  async draft(
     original: { title: string; summary: string; lead?: string },
     scraped: ScrapedContent,
     research: ResearchResult
   ): Promise<Article | null> {
     const chain = RunnableSequence.from([
-      this.prompt,
+      this.draftPrompt,
       this.llm,
       this.parser,
     ]);
+
+    agentLog("WriterAgent", "draft-input", {
+      title: original.title,
+      summary: original.summary,
+    });
 
     const raw = await chain.invoke({
       title: original.title,
@@ -97,14 +147,49 @@ Retorne apenas JSON válido:
       relatedFacts: JSON.stringify(research.relatedFacts ?? []),
       statistics: JSON.stringify(research.statistics ?? []),
       externalQuotes: JSON.stringify(research.externalQuotes ?? []),
-      images: scraped.images
-        .slice(0, 5)
-        .map((img) => `${img.url} (${img.alt})`) // context list
-        .join("\n"),
+      // no original images
       lead: original.lead ?? "",
     });
 
-    return this.safeParse(raw);
+    const article = this.safeParse(raw);
+    agentLog("WriterAgent", "draft-output", article);
+    return article;
+  }
+
+  async finalize(
+    original: { title: string; summary: string; lead?: string },
+    scraped: ScrapedContent,
+    research: ResearchResult,
+    seoJson: object,
+    ctaJson: object,
+    relatedArticlesJson: object,
+    visualsJson: object
+  ): Promise<Article | null> {
+    const chain = RunnableSequence.from([
+      this.finalPrompt,
+      this.llm,
+      this.parser,
+    ]);
+
+    agentLog("WriterAgent", "finalize-input", { seoJson, ctaJson, relatedArticlesJson, visualsJson });
+
+    const raw = await chain.invoke({
+      title: original.title,
+      summary: original.summary,
+      lead: original.lead ?? "",
+      fullText: scraped.fullText.substring(0, 4000),
+      relatedFacts: JSON.stringify(research.relatedFacts ?? []),
+      statistics: JSON.stringify(research.statistics ?? []),
+      externalQuotes: JSON.stringify(research.externalQuotes ?? []),
+      visualsJson: JSON.stringify(visualsJson),
+      seoJson: JSON.stringify(seoJson),
+      ctaJson: JSON.stringify(ctaJson),
+      relatedArticlesJson: JSON.stringify(relatedArticlesJson),
+    });
+
+    const article = this.safeParse(raw);
+    agentLog("WriterAgent", "finalize-output", article);
+    return article;
   }
 
   private safeParse(raw: string): Article | null {

@@ -2,6 +2,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { JsonOutputParser } from "@langchain/core/output_parsers";
+import { agentLog } from "@/lib/logger";
 
 export interface CTAItem {
   type: "comment" | "related" | "newsletter" | string;
@@ -44,6 +45,7 @@ Retorne JSON:
   }
 
   async suggest(content: string): Promise<CTAItem[] | null> {
+    agentLog("CTAAgent", "input", content.slice(0,200));
     const chain = RunnableSequence.from([
       this.prompt,
       this.llm,
@@ -52,6 +54,7 @@ Retorne JSON:
 
     try {
       const res = await chain.invoke({ content });
+      agentLog("CTAAgent", "output", res.ctas);
       return res.ctas ?? [];
     } catch (err) {
       console.error("[EngagementCTAAgent] LLM error", err);

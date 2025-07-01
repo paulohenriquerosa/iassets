@@ -14,6 +14,7 @@ import { SEOEnhancerAgent } from "@/agents/SEOEnhancerAgent";
 import { VisualsAgent } from "@/agents/VisualsAgent";
 import { EngagementCTAAgent } from "@/agents/EngagementCTAAgent";
 import { StyleGuideAgent } from "@/agents/StyleGuideAgent";
+import { RelatedArticlesAgent } from "@/agents/RelatedArticlesAgent";
 
 export class CrewCoordinator {
   private feedFetcher = new FeedFetcher();
@@ -29,6 +30,7 @@ export class CrewCoordinator {
   private visualsAgent = new VisualsAgent();
   private ctaAgent = new EngagementCTAAgent();
   private styleAgent = new StyleGuideAgent();
+  private relatedAgent = new RelatedArticlesAgent();
 
   async run(): Promise<{
     processed: number;
@@ -61,11 +63,16 @@ export class CrewCoordinator {
 
   async processItem(item: FeedItem): Promise<void> {
     const scraped = await this.scraper.scrape(item.link);
+    const cleanText = scraped.fullText
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, "") // remove markdown images
+      .replace(/<img[^>]*>/gi, "") // remove html images
+      .replace(/https?:\/\/\S+/g, ""); // remove raw URLs
+
     const research = await this.researcher.research({
       title: item.title,
       link: item.link,
       summary: item.summary,
-      fullText: scraped.fullText,
+      fullText: cleanText,
     });
     if (!research) throw new Error("Research failed");
 
@@ -73,79 +80,30 @@ export class CrewCoordinator {
     const bestTitle = optimized[0] ?? item.title;
 
     const leadText = await this.leadAgent.createLead(bestTitle, item.summary);
-    const article = await this.writer.write(
+    const related = await this.relatedAgent.recommend(bestTitle, item.summary);
+    const draftArticle = await this.writer.draft(
       { title: bestTitle, summary: item.summary, lead: leadText },
       scraped,
       research
     );
-    if (!article) throw new Error("Writer failed");
+    if (!draftArticle) throw new Error("Writer draft failed");
 
-    const seo = await this.seoAgent.enhance(article.content);
-    if (seo) {
-      // merge tags with keywords
-      const extraTags = seo.keywords.filter((k) => !article.tags.includes(k));
-      article.tags.push(...extraTags.slice(0, 10 - article.tags.length));
-      article.metaDescription = seo.metaDescription;
-      article.keywords = seo.keywords;
-      if (seo.internalLinks && seo.internalLinks.length) {
-        article.internalLinks = seo.internalLinks;
-      }
+    const seoJson = await this.seoAgent.enhance(draftArticle.content) || {};
 
-      // adjust content by repeating keywords and adding links section
-      const paragraphs = article.content.split(/\n\s*\n/);
-      (seo.placements || []).forEach(({ paragraph, keyword }) => {
-        const idx = paragraph - 1;
-        if (idx >= 0 && idx < paragraphs.length && !paragraphs[idx].includes(keyword)) {
-          paragraphs[idx] = `${paragraphs[idx]} ${keyword}`;
-        }
-      });
+    const visuals = await this.visualsAgent.suggest(bestTitle, draftArticle.content) || { imagePrompts: [] };
 
-      article.content = paragraphs.join("\n\n");
-      if (seo.internalLinks && seo.internalLinks.length) {
-        const linksMd = seo.internalLinks.map((l) => `- [Leia também](${l})`).join("\n");
-        article.content += `\n\n## Veja também\n${linksMd}`;
-      }
-    }
+    const ctaJson = await this.ctaAgent.suggest(draftArticle.content) || [];
 
-    const visuals = await this.visualsAgent.suggest(bestTitle, article.content);
-    if (visuals) {
-      // append callouts section
-      if (visuals.callouts && visuals.callouts.length) {
-        const calloutsMd = visuals.callouts.map((c) => `> **${c}**`).join("\n\n");
-        article.content += `\n\n${calloutsMd}`;
-      }
-
-      // embed placeholder images for generated prompts
-      if (visuals.imagePrompts && visuals.imagePrompts.length) {
-        const imagesMd = visuals.imagePrompts
-          .map((p) => `![${p}](https://via.placeholder.com/800x400.png?text=${encodeURIComponent(p)})`)
-          .join("\n\n");
-        article.content += `\n\n${imagesMd}`;
-      }
-
-      // add charts suggestions as bullet list at end
-      if (visuals.charts && visuals.charts.length) {
-        const chartsMd = visuals.charts
-          .map((c) => `- ${c.type} chart: ${c.data}`)
-          .join("\n");
-        article.content += `\n\n## Visualizações sugeridas\n${chartsMd}`;
-      }
-    }
-
-    const ctas = await this.ctaAgent.suggest(article.content);
-    if (ctas && ctas.length) {
-      const sectionLines: string[] = ["\n\n---\n## Continue Engajado\n"];
-      ctas.forEach((cta) => {
-        if (cta.type === "comment") {
-          sectionLines.push(cta.text);
-        } else if (cta.type === "related" && cta.slug) {
-          sectionLines.push(`👉 [${cta.text}](${cta.slug})`);
-        } else if (cta.type === "newsletter") {
-          sectionLines.push(cta.text);
-        }
-      });
-      article.content += sectionLines.join("\n\n");
-    }
+    const article = await this.writer.finalize(
+      { title: bestTitle, summary: item.summary, lead: leadText },
+      scraped,
+      research,
+      seoJson,
+      ctaJson,
+      related,
+      visuals
+    );
+    if (!article) throw new Error("Writer finalize failed");
 
     const polished = await this.styleAgent.polish(article.content);
     if (polished) {

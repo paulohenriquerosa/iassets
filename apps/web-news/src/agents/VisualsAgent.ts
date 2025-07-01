@@ -2,6 +2,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { JsonOutputParser } from "@langchain/core/output_parsers";
+import { agentLog } from "@/lib/logger";
 
 export interface VisualsResult {
   charts: Array<{ type: string; data: string }>;
@@ -41,6 +42,8 @@ Retorne JSON:
   }
 
   async suggest(title: string, content: string): Promise<VisualsResult | null> {
+    agentLog("VisualsAgent", "input", title);
+
     const chain = RunnableSequence.from([
       this.prompt,
       this.llm,
@@ -49,6 +52,7 @@ Retorne JSON:
 
     try {
       const res = await chain.invoke({ title, content });
+      agentLog("VisualsAgent", "output", res);
       return res;
     } catch (err) {
       console.error("[VisualsAgent] LLM error", err);

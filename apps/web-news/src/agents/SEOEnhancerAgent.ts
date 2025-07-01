@@ -2,6 +2,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { JsonOutputParser } from "@langchain/core/output_parsers";
+import { agentLog } from "@/lib/logger";
 
 interface SEOData {
   metaDescription: string;
@@ -47,6 +48,8 @@ Retorne apenas JSON:
   }
 
   async enhance(content: string): Promise<SEOData | null> {
+    agentLog("SEOEnhancer", "input", content.slice(0,200));
+
     const chain = RunnableSequence.from([
       this.prompt,
       this.llm,
@@ -55,6 +58,7 @@ Retorne apenas JSON:
 
     try {
       const res = await chain.invoke({ content });
+      agentLog("SEOEnhancer", "output", res);
       return res;
     } catch (err) {
       console.error("[SEOEnhancerAgent] LLM error", err);

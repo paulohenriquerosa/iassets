@@ -4,6 +4,7 @@ import { RunnableSequence } from "@langchain/core/runnables";
 import { JsonOutputParser } from "@langchain/core/output_parsers";
 
 import type { FeedItem } from "@/agents/types";
+import { agentLog } from "@/lib/logger";
 
 interface TrendScore {
   title: string;
@@ -50,6 +51,8 @@ Retorne APENAS JSON válido:
       .map((it, idx) => `${idx + 1}. ${it.title}`)
       .join("\n");
 
+    agentLog("TrendSelector", "input-items", feedItems.length);
+
     const chain = RunnableSequence.from([
       this.prompt,
       this.llm,
@@ -60,6 +63,7 @@ Retorne APENAS JSON válido:
     try {
       const res = await chain.invoke({ items: itemsStr });
       scored = res.trends ?? [];
+      agentLog("TrendSelector", "output", scored);
     } catch (err) {
       console.error("[TrendSelectorAgent] LLM error", err);
       // Fallback: retorna primeiros topK itens

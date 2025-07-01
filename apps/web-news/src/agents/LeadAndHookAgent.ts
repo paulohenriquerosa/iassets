@@ -2,6 +2,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { StringOutputParser } from "@langchain/core/output_parsers";
+import { agentLog } from "@/lib/logger";
 
 export class LeadAndHookAgent {
   private llm: ChatOpenAI;
@@ -30,6 +31,8 @@ Retorne apenas o texto do lead.
   }
 
   async createLead(title: string, summary: string): Promise<string> {
+    agentLog("LeadAndHook", "input", { title, summary });
+
     const chain = RunnableSequence.from([
       this.prompt,
       this.llm,
@@ -38,7 +41,9 @@ Retorne apenas o texto do lead.
 
     try {
       const lead = await chain.invoke({ title, summary });
-      return (lead || "").trim();
+      const cleanLead = (lead || "").trim();
+      agentLog("LeadAndHook", "output", cleanLead);
+      return cleanLead;
     } catch (err) {
       console.error("[LeadAndHookAgent] LLM error", err);
       return "";
