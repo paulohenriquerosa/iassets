@@ -54,6 +54,11 @@ Citações externas:
 IMAGENS DISPONÍVEIS:
 {images}
 
+Lead pronto: {lead}
+
+Se 'Lead pronto' NÃO estiver vazio, use-o como primeiro parágrafo sem modificações.
+Caso contrário, crie o lead seguindo as instruções abaixo.
+
 Escreva um artigo jornalístico completo EM PORTUGUÊS em Markdown seguindo:
 1. Lead (WHO, WHAT, WHEN, WHERE, WHY)
 2. Seções com "## Subtítulo"
@@ -75,7 +80,7 @@ Retorne apenas JSON válido:
   }
 
   async write(
-    original: { title: string; summary: string },
+    original: { title: string; summary: string; lead?: string },
     scraped: ScrapedContent,
     research: ResearchResult
   ): Promise<Article | null> {
@@ -96,6 +101,7 @@ Retorne apenas JSON válido:
         .slice(0, 5)
         .map((img) => `${img.url} (${img.alt})`) // context list
         .join("\n"),
+      lead: original.lead ?? "",
     });
 
     return this.safeParse(raw);

@@ -22,4 +22,7 @@ export interface Article {
   content: string;
   category: string;
   tags: string[];
+  metaDescription?: string;
+  keywords?: string[];
+  internalLinks?: string[];
 } 
