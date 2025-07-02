@@ -1,5 +1,8 @@
 'use client'
 
+import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+
 // Tipos para eventos de analytics
 export interface FinancialEvent {
   action: string
@@ -85,7 +88,7 @@ export class FinancialAnalytics {
     const path = window.location.pathname
     let pageType = 'home'
     
-    if (path.includes('/categoria/')) pageType = 'category'
+    if (path.includes('/categorias/')) pageType = 'category'
     else if (path.match(/^\/[^\/]+$/)) pageType = 'article'
     else if (path.includes('/ferramentas/')) pageType = 'tools'
     else if (path.includes('/sobre')) pageType = 'about'
@@ -285,7 +288,7 @@ export class FinancialAnalytics {
   
   // Métodos auxiliares
   private static extractCategoryFromPath(path: string): string {
-    const categoryMatch = path.match(/\/categoria\/([^\/]+)/)
+    const categoryMatch = path.match(/\/categorias\/([^\/]+)/)
     return categoryMatch ? categoryMatch[1] : 'general'
   }
   
@@ -301,18 +304,32 @@ export class FinancialAnalytics {
 // Hook para uso em componentes React
 export const useFinancialAnalytics = () => {
   return {
-    trackArticleView: FinancialAnalytics.trackArticleView,
-    trackCategoryInteraction: FinancialAnalytics.trackCategoryInteraction,
-    trackSocialShare: FinancialAnalytics.trackSocialShare,
-    trackNewsletterSignup: FinancialAnalytics.trackNewsletterSignup,
-    trackSearch: FinancialAnalytics.trackSearch,
-    trackToolUsage: FinancialAnalytics.trackToolUsage,
-    trackExternalClick: FinancialAnalytics.trackExternalClick,
-    trackReadingTime: FinancialAnalytics.trackReadingTime
-  }
-}
+    trackArticleView: (event: ArticleEvent) => FinancialAnalytics.trackArticleView(event),
+    trackCategoryInteraction: (event: CategoryEvent) => FinancialAnalytics.trackCategoryInteraction(event),
+    trackSocialShare: (event: SocialShareEvent) => FinancialAnalytics.trackSocialShare(event),
+    trackNewsletterSignup: (event: NewsletterEvent) => FinancialAnalytics.trackNewsletterSignup(event),
+    trackSearch: (query: string, resultsCount: number, category?: string) => FinancialAnalytics.trackSearch(query, resultsCount, category),
+    trackToolUsage: (toolName: string, toolCategory: string, action: string) => FinancialAnalytics.trackToolUsage(toolName, toolCategory, action),
+    trackExternalClick: (url: string, text: string) => FinancialAnalytics.trackExternalClick(url, text),
+    trackReadingTime: (title: string, seconds: number) => FinancialAnalytics.trackReadingTime(title, seconds),
+  };
+};
 
 // Inicializar automaticamente quando o módulo for carregado
 if (typeof window !== 'undefined') {
   FinancialAnalytics.init()
+}
+
+// Hook global para page view (App Router)
+export function usePageTracking() {
+  const pathname = usePathname();
+  const search = useSearchParams();
+
+  useEffect(() => {
+    FinancialAnalytics.trackEvent({
+      action: "page_view",
+      category: "navigation",
+      label: pathname + (search ? "?" + search.toString() : ""),
+    });
+  }, [pathname, search]);
 } 

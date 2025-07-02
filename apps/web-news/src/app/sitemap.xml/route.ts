@@ -104,7 +104,7 @@ export async function GET() {
 
     // Categorias dinâmicas
     const categoryUrls: SitemapUrl[] = categories.map(category => ({
-      url: `/categoria/${category.toLowerCase().replace(/\s+/g, '-')}`,
+      url: `/categorias/${category.toLowerCase().replace(/\s+/g, '-')}`,
       lastModified: new Date().toISOString(),
       changeFrequency: 'hourly',
       priority: 0.8,

@@ -11,6 +11,7 @@ import {
   FeaturedPost,
   Sidebar,
 } from "@/components/HomePageClient";
+import { fetchMarketData } from "@/lib/market";
 
 export const metadata: Metadata = {
   title: "iAssets - Portal Líder em Notícias e Análises do Mercado Financeiro",
@@ -30,22 +31,12 @@ export const metadata: Metadata = {
   ],
 };
 
-const marketData = [
-  { symbol: "IBOV", value: "130.247", change: "+1.25%", positive: true },
-  { symbol: "USD/BRL", value: "5.48", change: "-0.32%", positive: false },
-  { symbol: "BTC", value: "$71.234", change: "+3.45%", positive: true },
-  { symbol: "EUR/BRL", value: "5.95", change: "+0.18%", positive: true },
-  { symbol: "PETR4", value: "R$ 38.42", change: "+2.1%", positive: true },
-  { symbol: "VALE3", value: "R$ 65.89", change: "-1.2%", positive: false },
-  { symbol: "ITUB4", value: "R$ 32.15", change: "+0.8%", positive: true },
-  { symbol: "BBDC4", value: "R$ 14.67", change: "+1.5%", positive: true },
-];
-
 export default async function HomePage() {
   // Buscar dados dinâmicos do Notion
-  const [allPosts, categories] = await Promise.all([
+  const [allPosts, categories, marketData] = await Promise.all([
     getAllPosts(),
     getAllCategories(),
+    fetchMarketData(),
   ]);
 
   // Post em destaque (mais recente)

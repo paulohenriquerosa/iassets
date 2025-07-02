@@ -3,26 +3,27 @@ import { NotionContent } from "@/components/notion-renderer";
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import {
   Calendar,
   Clock,
   User,
   ArrowLeft,
   Share2,
-  Eye,
   MessageCircle,
   Tag,
   TrendingUp,
   ChevronRight,
+  Home,
 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArticleClientTracker } from "@/components/ArticleClientTracker";
 import { SocialShareClient } from "@/components/SocialShareClient";
-import { NewsletterClient } from "@/components/NewsletterClient";
+import { NewsletterWithTracking } from "@/components/newsletter-with-tracking";
+import { RelatedArticlesAgent } from "@/agents/RelatedArticlesAgent";
+import { unstable_cache } from "next/cache";
+import { formatSmartDate } from "@/lib/utils";
 
 interface PostPageProps {
   params: Promise<{
@@ -30,23 +31,7 @@ interface PostPageProps {
   }>;
 }
 
-// Função helper para formatar tempo
-const formatTimeAgo = (dateString: string): string => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInHours = Math.floor(
-    (now.getTime() - date.getTime()) / (1000 * 60 * 60),
-  );
 
-  if (diffInHours < 1) {
-    return "Há poucos minutos";
-  } else if (diffInHours < 24) {
-    return `Há ${diffInHours} hora${diffInHours > 1 ? "s" : ""}`;
-  } else {
-    const diffInDays = Math.floor(diffInHours / 24);
-    return `Há ${diffInDays} dia${diffInDays > 1 ? "s" : ""}`;
-  }
-};
 
 // Gerar metadata dinâmica para SEO
 export async function generateMetadata({
@@ -185,12 +170,44 @@ export default async function PostPage({ params }: PostPageProps) {
     const modifiedDate = safeDate(post.createdTime);
     const readingTime = Math.ceil((post.title.length + (post.summary?.length || 0)) / 200);
 
-    // Buscar posts relacionados da mesma categoria
-    const relatedPosts = post.category
-      ? (await getPostsByCategory(post.category, 6))
-          .filter((p) => p.id !== post.id)
-          .slice(0, 4)
-      : [];
+    // Buscar recomendações semânticas via Upstash Vector com cache (24h)
+    let relatedPosts = [] as Awaited<ReturnType<typeof getAllPosts>>;
+
+    try {
+      const fetchRecommendations = unstable_cache(
+        async () => {
+          const recAgent = new RelatedArticlesAgent();
+          return recAgent.recommend(post.title, post.summary || "");
+        },
+        ["related", slug],
+        { revalidate: 86400 }, // cache 24h
+      );
+
+      const recommendations = await fetchRecommendations();
+
+      if (recommendations.length > 0) {
+        const recPosts = await Promise.all(
+          recommendations.map(async ({ slug: recSlug }) => {
+            const cleanSlug = recSlug.replace(/^\//, "");
+            try {
+              return await getPostBySlug(cleanSlug);
+            } catch {
+              return null;
+            }
+          }),
+        );
+        relatedPosts = recPosts.filter(Boolean) as typeof relatedPosts;
+      }
+    } catch (err) {
+      console.error("Error fetching vector recommendations", err);
+    }
+
+    // Fallback para recomendações por categoria caso não haja resultado semântico
+    if (relatedPosts.length === 0 && post.category) {
+      relatedPosts = (await getPostsByCategory(post.category, 6))
+        .filter((p) => p.id !== post.id)
+        .slice(0, 4);
+    }
 
     // Buscar posts recentes para sidebar
     const recentPosts = (await getAllPosts())
@@ -249,7 +266,7 @@ export default async function PostPage({ params }: PostPageProps) {
           "@type": "ListItem",
           position: 2,
           name: post.category || "Notícias",
-          item: `https://iassets.com.br/categoria/${post.category?.toLowerCase().replace(/\s+/g, "-") || "noticias"}`,
+          item: `https://iassets.com.br/categorias/${post.category?.toLowerCase().replace(/\s+/g, "-") || "noticias"}`,
         },
         {
           "@type": "ListItem",
@@ -295,11 +312,18 @@ export default async function PostPage({ params }: PostPageProps) {
                   href="/"
                   className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
                 >
-                  Início
+                  <Home className="w-3 h-3" />
                 </Link>
                 <ChevronRight className="w-3 h-3" />
                 <Link
-                  href={`/categoria/${post.category?.toLowerCase().replace(/\s+/g, "-") || "noticias"}`}
+                  href="/categorias"
+                  className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+                >
+                  Categorias
+                </Link>
+                <ChevronRight className="w-3 h-3" />
+                <Link
+                  href={`/categorias/${post.category?.toLowerCase().replace(/\s+/g, "-") || "noticias"}`}
                   className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
                 >
                   {post.category || "Notícias"}
@@ -334,7 +358,7 @@ export default async function PostPage({ params }: PostPageProps) {
                         {post.tags.map((tag) => (
                           <Link
                             key={tag}
-                            href={`/categoria/${tag.toLowerCase()}`}
+                            href={`/categorias/${tag.toLowerCase()}`}
                             className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
                           >
                             <Tag className="w-3 h-3" />
@@ -383,9 +407,7 @@ export default async function PostPage({ params }: PostPageProps) {
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
                         <time dateTime={post.date} className="text-sm">
-                          {format(publishedDate || new Date(), "dd 'de' MMMM 'de' yyyy", {
-                            locale: ptBR,
-                          })}
+                          {formatSmartDate(post.date)}
                         </time>
                       </div>
                       <div className="flex items-center gap-2">
@@ -393,10 +415,6 @@ export default async function PostPage({ params }: PostPageProps) {
                         <span className="text-sm">
                           {readingTime} min de leitura
                         </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Eye className="w-4 h-4" />
-                        <span className="text-sm">2.3k visualizações</span>
                       </div>
                     </div>
 
@@ -452,12 +470,7 @@ export default async function PostPage({ params }: PostPageProps) {
                           <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                             Especialista em mercado financeiro e investimentos
                           </p>
-                          <div className="text-xs text-gray-500">
-                            Publicado em{" "}
-                            {format(publishedDate || new Date(), "dd/MM/yyyy", {
-                              locale: ptBR,
-                            })}
-                          </div>
+                          
                         </div>
                       </div>
 
@@ -521,7 +534,7 @@ export default async function PostPage({ params }: PostPageProps) {
                                 {relatedPost.summary}
                               </p>
                               <div className="flex items-center justify-between text-xs text-gray-500">
-                                <span>{formatTimeAgo(relatedPost.date)}</span>
+                                <span>{formatSmartDate(relatedPost.date)}</span>
                                 {relatedPost.author && (
                                   <span>{relatedPost.author.name}</span>
                                 )}
@@ -572,7 +585,7 @@ export default async function PostPage({ params }: PostPageProps) {
                               {recentPost.title}
                             </h4>
                             <p className="text-xs text-gray-500">
-                              {formatTimeAgo(recentPost.date)}
+                              {formatSmartDate(recentPost.date)}
                             </p>
                           </div>
                         </Link>
@@ -582,10 +595,7 @@ export default async function PostPage({ params }: PostPageProps) {
                 </Card>
 
                 {/* Newsletter com Tracking */}
-                <NewsletterClient
-                  location="article_sidebar"
-                  variant="sidebar"
-                />
+                <NewsletterWithTracking location="article_sidebar" variant="sidebar" />
 
                 {/* Disclaimer */}
                 <Card className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">

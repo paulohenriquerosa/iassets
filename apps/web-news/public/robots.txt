@@ -6,7 +6,7 @@ User-agent: *
 Allow: /
 
 # Permitir crawling frequente para notícias
-Allow: /categoria/
+Allow: /categorias/
 Allow: /tag/
 Allow: /autor/
 
@@ -80,4 +80,8 @@ Sitemap: https://news.iassets.com.br/sitemap-categories.xml
 # Categorias principais: Mercados, Criptomoedas, Economia, Internacional
 # Último update: 2025-01-17
 # Contato técnico: tech@iassets.com.br
-# Política de dados: https://news.iassets.com.br/privacidade 
+# Política de dados: https://news.iassets.com.br/privacidade
+
+User-agent: *
+Disallow: /api/
+Disallow: /busca 

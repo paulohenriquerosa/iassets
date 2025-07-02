@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Logo from "../assets/logo.png";
@@ -10,76 +11,39 @@ import {
   Menu,
   X,
   Search,
-  Globe,
-  BarChart3,
-  Bitcoin,
-  // Calculator,
-  // Users,
-  ChevronDown,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useSearchTracking } from "@/components/analytics/article-tracker";
 import { FinancialAnalytics } from "@/lib/analytics";
 
-const navigationItems = [
-  {
-    label: "Mercados",
-    href: "/mercados",
-    icon: BarChart3,
-    submenu: [
-      { label: "Ações Brasileiras", href: "/mercados/acoes-brasileiras" },
-      { label: "Ações Americanas", href: "/mercados/acoes-americanas" },
-      { label: "Fundos Imobiliários", href: "/mercados/fiis" },
-      { label: "Renda Fixa", href: "/mercados/renda-fixa" },
-    ],
-  },
-  {
-    label: "Economia",
-    href: "/economia",
-    icon: Globe,
-    submenu: [
-      { label: "Brasil", href: "/economia/brasil" },
-      { label: "Internacional", href: "/economia/internacional" },
-      { label: "Política Econômica", href: "/economia/politica" },
-      { label: "Indicadores", href: "/economia/indicadores" },
-    ],
-  },
-  // {
-  //   label: "Colunas",
-  //   href: "/colunas",
-  //   icon: Users,
-  //   submenu: [
-  //     { label: "Análise Técnica", href: "/colunas/analise-tecnica" },
-  //     { label: "Estratégias", href: "/colunas/estrategias" },
-  //     { label: "Opiniões", href: "/colunas/opinioes" }
-  //   ]
-  // },
-  {
-    label: "Cripto",
-    href: "/cripto",
-    icon: Bitcoin,
-  },
-  // {
-  //   label: "Ferramentas",
-  //   href: "/ferramentas",
-  //   icon: Calculator,
-  //   submenu: [
-  //     { label: "Simulador de Investimentos", href: "/ferramentas/simulador" },
-  //     { label: "Calculadora de Renda Fixa", href: "/ferramentas/renda-fixa" },
-  //     { label: "Conversor de Moedas", href: "/ferramentas/conversor" }
-  //   ]
-  // }
-];
+interface NavItem { label: string; href: string; }
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [navItems, setNavItems] = useState<NavItem[]>([]);
   const trackSearch = useSearchTracking();
+  const router = useRouter();
+
+  // fetch categories on mount
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((res) => res.json())
+      .then((data) => {
+        const items: NavItem[] = (data.categories as string[]).map((cat: string) => ({
+          label: cat,
+          href: `/categorias/${cat
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9\s-]/g, "")
+            .replace(/\s+/g, "-")
+            .replace(/-+/g, "-")
+            .trim()}`,
+        }));
+        setNavItems(items);
+      })
+      .catch(() => {});
+  }, []);
 
   // Função para rastrear cliques de navegação
   const handleNavClick = (
@@ -103,9 +67,10 @@ export function Header() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      trackSearch(searchQuery, 0); // 0 = resultados simulados
-      // Aqui implementaria a lógica real de busca
-      console.log("Pesquisando:", searchQuery);
+      trackSearch(searchQuery, 0);
+      const encoded = encodeURIComponent(searchQuery.trim());
+      router.push(`/busca?q=${encoded}`);
+      setIsMobileMenuOpen(false);
     }
   };
 
@@ -146,52 +111,17 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1">
-            {navigationItems.map((item) => (
+            {navItems.map((item) => (
               <div key={item.label}>
-                {item.submenu ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="font-medium text-slate-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                      >
-                        <item.icon className="w-4 h-4 mr-2" />
-                        {item.label}
-                        <ChevronDown className="w-4 h-4 ml-1" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-56">
-                      {item.submenu.map((subItem) => (
-                        <DropdownMenuItem key={subItem.label} asChild>
-                          <Link
-                            href={subItem.href}
-                            className="w-full cursor-pointer"
-                            onClick={() =>
-                              handleNavClick(
-                                subItem.label,
-                                subItem.href,
-                                "submenu",
-                              )
-                            }
-                          >
-                            {subItem.label}
-                          </Link>
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : (
-                  <Link
-                    href={item.href}
-                    className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    onClick={() =>
-                      handleNavClick(item.label, item.href, "main")
-                    }
-                  >
-                    <item.icon className="w-4 h-4 mr-2" />
-                    {item.label}
-                  </Link>
-                )}
+                <Link
+                  href={item.href}
+                  className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  onClick={() =>
+                    handleNavClick(item.label, item.href, "main")
+                  }
+                >
+                  {item.label}
+                </Link>
               </div>
             ))}
           </nav>
@@ -245,7 +175,7 @@ export function Header() {
 
             {/* Mobile Navigation */}
             <nav className="space-y-2">
-              {navigationItems.map((item) => (
+              {navItems.map((item) => (
                 <div key={item.label} className="space-y-1">
                   <Link
                     href={item.href}
@@ -255,32 +185,8 @@ export function Header() {
                       setIsMobileMenuOpen(false);
                     }}
                   >
-                    <item.icon className="w-5 h-5" />
-                    {item.label}
+                      {item.label}
                   </Link>
-
-                  {/* Mobile Submenu */}
-                  {item.submenu && (
-                    <div className="ml-8 space-y-1">
-                      {item.submenu.map((subItem) => (
-                        <Link
-                          key={subItem.label}
-                          href={subItem.href}
-                          className="block px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                          onClick={() => {
-                            handleNavClick(
-                              subItem.label,
-                              subItem.href,
-                              "submenu",
-                            );
-                            setIsMobileMenuOpen(false);
-                          }}
-                        >
-                          {subItem.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
                 </div>
               ))}
             </nav>

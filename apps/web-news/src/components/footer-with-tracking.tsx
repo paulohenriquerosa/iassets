@@ -15,8 +15,18 @@ import {
 import { siteConfig } from "@/lib/seo";
 import { FinancialAnalytics } from "@/lib/analytics";
 import { NewsletterWithTracking } from "@/components/newsletter-with-tracking";
+import { useState, useEffect } from "react";
 
 export function FooterWithTracking() {
+  const [categories, setCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((r) => r.json())
+      .then((d) => setCategories(d.categories as string[]))
+      .catch(() => {});
+  }, []);
+
   // Função para rastrear cliques no footer
   const handleFooterClick = (section: string, item: string, href: string) => {
     FinancialAnalytics.trackEvent({
@@ -98,167 +108,42 @@ export function FooterWithTracking() {
               </div>
             </div>
 
-            {/* Navigation Links with tracking */}
+            {/* Dynamic Categories Links */}
             <nav
               className="space-y-6"
               itemScope
               itemType="https://schema.org/SiteNavigationElement"
             >
               <h4 className="font-semibold text-lg mb-6 text-white">
-                Mercados
+                Categorias
               </h4>
               <ul className="space-y-3">
-                <li>
-                  <Link
-                    href="/categoria/mercados"
-                    className="text-gray-300 hover:text-white transition-colors text-sm"
-                    itemProp="url"
-                    onClick={() =>
-                      handleFooterClick(
-                        "mercados",
-                        "mercados_financeiros",
-                        "/categoria/mercados",
-                      )
-                    }
-                  >
-                    Mercados Financeiros
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/categoria/criptomoedas"
-                    className="text-gray-300 hover:text-white transition-colors text-sm"
-                    itemProp="url"
-                    onClick={() =>
-                      handleFooterClick(
-                        "mercados",
-                        "criptomoedas",
-                        "/categoria/criptomoedas",
-                      )
-                    }
-                  >
-                    Criptomoedas
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/categoria/economia"
-                    className="text-gray-300 hover:text-white transition-colors text-sm"
-                    itemProp="url"
-                    onClick={() =>
-                      handleFooterClick(
-                        "mercados",
-                        "economia_brasil",
-                        "/categoria/economia",
-                      )
-                    }
-                  >
-                    Economia Brasil
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/categoria/internacional"
-                    className="text-gray-300 hover:text-white transition-colors text-sm"
-                    itemProp="url"
-                    onClick={() =>
-                      handleFooterClick(
-                        "mercados",
-                        "mercados_internacionais",
-                        "/categoria/internacional",
-                      )
-                    }
-                  >
-                    Mercados Internacionais
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/categoria/analises"
-                    className="text-gray-300 hover:text-white transition-colors text-sm"
-                    itemProp="url"
-                    onClick={() =>
-                      handleFooterClick(
-                        "mercados",
-                        "analises_profissionais",
-                        "/categoria/analises",
-                      )
-                    }
-                  >
-                    Análises Profissionais
-                  </Link>
-                </li>
+                {categories.slice(0, 8).map((cat) => {
+                  const slug = cat
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .replace(/[^a-z0-9\s-]/g, "")
+                    .replace(/\s+/g, "-")
+                    .replace(/-+/g, "-")
+                    .trim();
+                  return (
+                    <li key={cat}>
+                      <Link
+                        href={`/categorias/${slug}`}
+                        className="text-gray-300 hover:text-white transition-colors text-sm"
+                        itemProp="url"
+                        onClick={() =>
+                          handleFooterClick("categoria", cat, `/categorias/${slug}`)
+                        }
+                      >
+                        {cat}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </nav>
-
-            {/* Tools & Resources with tracking */}
-            <div>
-              <h4 className="font-semibold text-lg mb-6 text-white">
-                Ferramentas
-              </h4>
-              <ul className="space-y-3">
-                <li>
-                  <Link
-                    href="/ferramentas/calculadora-dividendos"
-                    className="text-gray-300 hover:text-white transition-colors text-sm"
-                    onClick={() =>
-                      handleFooterClick(
-                        "ferramentas",
-                        "calculadora_dividendos",
-                        "/ferramentas/calculadora-dividendos",
-                      )
-                    }
-                  >
-                    Calculadora de Dividendos
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/ferramentas/simulador-carteira"
-                    className="text-gray-300 hover:text-white transition-colors text-sm"
-                    onClick={() =>
-                      handleFooterClick(
-                        "ferramentas",
-                        "simulador_carteira",
-                        "/ferramentas/simulador-carteira",
-                      )
-                    }
-                  >
-                    Simulador de Carteira
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/cotacoes"
-                    className="text-gray-300 hover:text-white transition-colors text-sm"
-                    onClick={() =>
-                      handleFooterClick(
-                        "ferramentas",
-                        "cotacoes_tempo_real",
-                        "/cotacoes",
-                      )
-                    }
-                  >
-                    Cotações em Tempo Real
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/categoria/educacao"
-                    className="text-gray-300 hover:text-white transition-colors text-sm"
-                    onClick={() =>
-                      handleFooterClick(
-                        "ferramentas",
-                        "educacao_financeira",
-                        "/categoria/educacao",
-                      )
-                    }
-                  >
-                    Educação Financeira
-                  </Link>
-                </li>
-              </ul>
-            </div>
 
             {/* Company with tracking */}
             <div>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Post } from "@/lib/notion";
+import { formatSmartDate } from "@/lib/utils";
 
 interface CategorySectionProps {
   category: string;
@@ -76,20 +77,6 @@ const getColorClasses = (color: string) => {
   return colorMap[color] || colorMap.gray;
 };
 
-const formatTimeAgo = (dateString: string): string => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-  
-  if (diffInHours < 1) {
-    return "Há poucos minutos";
-  } else if (diffInHours < 24) {
-    return `Há ${diffInHours} hora${diffInHours > 1 ? 's' : ''}`;
-  } else {
-    const diffInDays = Math.floor(diffInHours / 24);
-    return `Há ${diffInDays} dia${diffInDays > 1 ? 's' : ''}`;
-  }
-};
 
 const createCategorySlug = (category: string): string => {
   return category
@@ -119,7 +106,7 @@ export function CategorySection({ category, posts, color }: CategorySectionProps
             {category}
           </h2>
           <Link 
-            href={`/categoria/${categorySlug}`}
+            href={`/categorias/${categorySlug}`}
             className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 text-base sm:text-lg font-medium hover:underline transition-colors"
           >
             Ver todos
@@ -157,7 +144,7 @@ export function CategorySection({ category, posts, color }: CategorySectionProps
                   {post.title}
                 </h3>
                 <div className="flex items-center justify-between text-xs sm:text-sm text-gray-500">
-                  <span className="font-medium">{formatTimeAgo(post.date)}</span>
+                  <span className="font-medium">{formatSmartDate(post.date)}</span>
                   {post.author && (
                     <span className="text-gray-400">{post.author.name}</span>
                   )}

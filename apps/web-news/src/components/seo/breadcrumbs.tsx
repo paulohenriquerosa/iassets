@@ -107,7 +107,7 @@ function generateBreadcrumbsFromPath(pathname: string): BreadcrumbItem[] {
     
     // Mapeamento de segmentos para labels amigáveis
     const segmentLabels: Record<string, string> = {
-      'categoria': 'Categorias',
+      'categorias': 'Categorias',
       'mercados': 'Mercados',
       'criptomoedas': 'Criptomoedas',
       'economia': 'Economia',
@@ -154,7 +154,7 @@ export function ArticleBreadcrumbs({ category, title, className }: ArticleBreadc
     const categorySlug = category.toLowerCase().replace(/\s+/g, '-')
     items.push({
       label: category,
-      href: `/categoria/${categorySlug}`
+      href: `/categorias/${categorySlug}`
     })
   }
   
@@ -179,7 +179,7 @@ export function CategoryBreadcrumbs({ category, className }: CategoryBreadcrumbs
     { label: 'Categorias', href: '/categorias' },
     { 
       label: category,
-      href: `/categoria/${category.toLowerCase().replace(/\s+/g, '-')}`,
+      href: `/categorias/${category.toLowerCase().replace(/\s+/g, '-')}`,
       current: true
     }
   ]

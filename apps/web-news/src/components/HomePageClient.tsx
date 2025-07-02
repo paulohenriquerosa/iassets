@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { Clock, TrendingUp, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatSmartDate } from '@/lib/utils';
 
 interface MarketDataItem {
   symbol: string;
@@ -25,21 +26,7 @@ interface Post {
   coverImage?: string;
 }
 
-// Função helper para formatar tempo (movida para client)
-const formatTimeAgo = (dateString: string): string => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-  
-  if (diffInHours < 1) {
-    return "Há poucos minutos";
-  } else if (diffInHours < 24) {
-    return `Há ${diffInHours} hora${diffInHours > 1 ? 's' : ''}`;
-  } else {
-    const diffInDays = Math.floor(diffInHours / 24);
-    return `Há ${diffInDays} dia${diffInDays > 1 ? 's' : ''}`;
-  }
-};
+
 
 // Componente invisível que apenas inicializa os hooks de tracking
 export function HomePageClient() {
@@ -133,7 +120,7 @@ export function FeaturedPost({ post }: FeaturedPostProps) {
           <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 lg:p-10">
             <div className="flex items-center gap-2 mb-3 sm:mb-4 text-sm text-white/80">
               <Clock className="w-4 h-4" />
-              <span>{formatTimeAgo(post.date)}</span>
+              <span>{formatSmartDate(post.date)}</span>
               <span className="mx-2">•</span>
               <span>{post.category}</span>
             </div>
@@ -209,7 +196,7 @@ export function Sidebar({ posts }: SidebarProps) {
                   {post.title}
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-500 font-medium">
-                  {formatTimeAgo(post.date)}
+                  {formatSmartDate(post.date)}
                 </p>
               </div>
             </Link>

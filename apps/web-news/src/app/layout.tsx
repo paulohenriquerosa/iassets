@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { FooterWithTracking } from "@/components/footer-with-tracking";
 import { siteConfig, organizationSchema, websiteSchema } from "@/lib/seo";
+import PageTracker from "@/components/PageTracker";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -200,7 +201,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//platform.twitter.com" />
 
         <meta name="google-adsense-account" content="ca-pub-2303827165043763"></meta>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2303827165043763" crossorigin="anonymous"></script>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2303827165043763" crossOrigin="anonymous"></script>
 
         {/* Pingback para WordPress compatibility */}
         <link rel="pingback" href={`${siteConfig.url}/xmlrpc.php`} />
@@ -310,6 +311,7 @@ export default function RootLayout({
 
         <div className="min-h-screen flex flex-col">
           <Header />
+          <PageTracker />
           <main className="flex-grow" role="main" id="main-content">
             {children}
           </main>

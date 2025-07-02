@@ -202,7 +202,7 @@ export function generateCategoryMetadata(category: string): Metadata {
     }
   }
 
-  const url = `${siteConfig.url}/categoria/${categoryKey}`
+  const url = `${siteConfig.url}/categorias/${categoryKey}`
 
   return {
     title: metadata.title,

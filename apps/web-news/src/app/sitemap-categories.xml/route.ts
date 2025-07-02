@@ -19,7 +19,7 @@ export async function GET() {
         return {
           name: category,
           slug: categorySlug,
-          url: `/categoria/${categorySlug}`,
+          url: `/categorias/${categorySlug}`,
           postCount: posts.length,
           lastModified: posts.length > 0 
             ? new Date(posts[0].date || posts[0].createdTime).toISOString()

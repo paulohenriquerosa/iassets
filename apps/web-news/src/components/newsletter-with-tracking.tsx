@@ -37,8 +37,13 @@ export function NewsletterWithTracking({
     setStatus('loading')
     
     try {
-      // Simular chamada de API
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, location, categoryInterest }),
+      });
+
+      if (!res.ok) throw new Error("fail");
       
       // Rastrear inscrição
       trackNewsletter(location, categoryInterest)

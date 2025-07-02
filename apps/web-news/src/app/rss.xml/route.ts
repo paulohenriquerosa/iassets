@@ -79,7 +79,7 @@ export async function GET() {
       <author>contato@iassets.com.br (${author})</author>
       <dc:creator>${author}</dc:creator>
       <dc:publisher>iAssets</dc:publisher>
-      <category domain="${baseUrl}/categoria/${category.toLowerCase().replace(/\s+/g, '-')}">${category}</category>
+      <category domain="${baseUrl}/categorias/${category.toLowerCase().replace(/\s+/g, '-')}">${category}</category>
       ${post.tags ? post.tags.map(tag => `<category>${tag}</category>`).join('\n      ') : ''}
       
       <!-- Meta financeiras específicas -->
