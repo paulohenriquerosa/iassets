@@ -20,11 +20,19 @@ export async function POST(req: Request) {
   }
 
   const item = (await req.json()) as FeedItem;
-  const coordinator = new CrewCoordinator();
+  const dupAgent = new DuplicateDetectionAgent();
 
   try {
+    const isDup = await dupAgent.exists(item.title, item.summary || "");
+    if (isDup) {
+      console.log("[ArticleWorker] Duplicate detected, skipping");
+      return NextResponse.json({ ok: true, skipped: "duplicate" });
+    }
+
+    const coordinator = new CrewCoordinator();
     await coordinator.processItem(item);
-    const dupAgent = new DuplicateDetectionAgent();
+
+    // add to duplicate index after successful processing
     await dupAgent.add(item.title, item.summary || "");
     return NextResponse.json({ ok: true });
   } catch (err: any) {
