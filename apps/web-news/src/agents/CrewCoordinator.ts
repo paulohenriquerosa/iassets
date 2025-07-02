@@ -154,7 +154,7 @@ export class CrewCoordinator {
         coverUrl,
       });
       // fire & forget (no await to not block main flow)
-      this.twitterAgent.publishThread(tweets, coverUrl, articleUrl).catch((err) => {
+      await this.twitterAgent.publishThread(tweets, coverUrl, articleUrl).catch((err) => {
         console.error("[CrewCoordinator] twitter publish error", err);
       });
     } catch (err) {
