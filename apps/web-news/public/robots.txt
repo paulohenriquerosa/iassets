@@ -1,4 +1,4 @@
-# Robots.txt para iAssets - Portal de Notícias Financeiras
+# Robots.txt para iAssets News - Portal de Notícias Financeiras
 # https://news.iassets.com.br
 # Otimizado para SEO de notícias financeiras
 

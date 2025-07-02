@@ -17,6 +17,7 @@ import { RelatedArticlesAgent } from "@/agents/RelatedArticlesAgent";
 import { DuplicateDetectionAgent } from "@/agents/DuplicateDetectionAgent";
 import { ArticleIndexer } from "@/agents/ArticleIndexer";
 import { TwitterThreadAgent } from "@/agents/TwitterThreadAgent";
+import { qstashPublishJSON } from "@/lib/qstash";
 
 export class CrewCoordinator {
   private feedFetcher = new FeedFetcher();
@@ -153,10 +154,15 @@ export class CrewCoordinator {
         url: articleUrl,
         coverUrl,
       });
-      // fire & forget (no await to not block main flow)
-      await this.twitterAgent.publishThread(tweets, coverUrl, articleUrl).catch((err) => {
-        console.error("[CrewCoordinator] twitter publish error", err);
-      });
+      // Enfileira a publicação via QStash para rodar em função separada
+      if (tweets.length) {
+        const dest = `${process.env.INTERNAL_API_BASE_URL ?? process.env.NEXT_PUBLIC_SITE_URL}/api/twitter-worker`;
+        await qstashPublishJSON({
+          destination: dest,
+          body: { tweets, coverUrl, uniqueId: articleUrl },
+          // opcional: delay para distribuir carga
+        });
+      }
     } catch (err) {
       console.error("[CrewCoordinator] twitter generate error", err);
     }

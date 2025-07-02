@@ -1,6 +1,6 @@
 {
-  "name": "iAssets - Portal de Notícias Financeiras",
-  "short_name": "iAssets",
+  "name": "iAssets News - Portal de Notícias Financeiras",
+  "short_name": "iAssets News",
   "description": "Portal líder em notícias financeiras do Brasil. Análises de ações, criptomoedas, fundos imobiliários e mercado de capitais em tempo real.",
   "version": "1.0.0",
   "start_url": "/",
@@ -22,14 +22,14 @@
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Portal iAssets - Vista Geral"
+      "label": "Portal iAssets News - Vista Geral"
     },
     {
       "src": "/images/screenshot-narrow.png", 
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "iAssets Mobile - Notícias Financeiras"
+      "label": "iAssets News Mobile - Notícias Financeiras"
     }
   ],
   "icons": [
