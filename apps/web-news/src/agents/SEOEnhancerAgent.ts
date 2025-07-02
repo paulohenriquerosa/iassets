@@ -18,8 +18,8 @@ export class SEOEnhancerAgent {
   private parser = new JsonOutputParser<SEOData>();
 
   constructor() {
-    this.llm = getLLM("SEO_MODEL", "gpt-3.5-turbo-0125", {
-      temperature: 0.3,
+    this.llm = getLLM("SEO_MODEL", "gpt-3.5-turbo", {
+      temperature: 0.4,
     });
 
     this.prompt = PromptTemplate.fromTemplate(`

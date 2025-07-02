@@ -11,8 +11,8 @@ export class LeadAndHookAgent {
   private parser = new StringOutputParser();
 
   constructor() {
-    this.llm = getLLM("LEAD_MODEL", "gpt-3.5-turbo-0125", {
-      temperature: 0.5,
+    this.llm = getLLM("LEAD_MODEL", "GPT-4o-mini", {
+      temperature: 0.8,
     });
 
     this.prompt = PromptTemplate.fromTemplate(`

@@ -2,6 +2,7 @@
 import axios from "axios";
 import { load } from "cheerio";
 import { ScrapedContent } from "@/agents/types";
+import { getJson, setJson } from "@/lib/cache";
 
 export class PageScraper {
   private readonly userAgent =
@@ -10,6 +11,14 @@ export class PageScraper {
 
   async scrape(link: string): Promise<ScrapedContent> {
     try {
+      // Try cache first
+      const cacheKey = `scrape:${link}`;
+      const cached = await getJson<ScrapedContent>(cacheKey);
+      if (cached) {
+        console.log(`[PageScraper] Cache hit for ${link}`);
+        return cached;
+      }
+
       console.log(`[PageScraper] Downloading ${link}`);
       const { data: html } = await axios.get<string>(link, {
         headers: { "User-Agent": this.userAgent },
@@ -32,7 +41,12 @@ export class PageScraper {
 
       text = text.replace(/\s+/g, " ").trim();
 
-      return { fullText: text, images: [] };
+      const result: ScrapedContent = { fullText: text, images: [] };
+
+      // Cache the result for 12h
+      await setJson(cacheKey, result, 60 * 60 * 12);
+
+      return result;
     } catch (err: any) {
       console.error(`[PageScraper] Error scraping ${link}:`, err.message);
       return { fullText: "", images: [] };

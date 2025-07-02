@@ -51,6 +51,7 @@
     "react-notion-x": "^7.4.2",
     "resend": "^4.6.0",
     "tailwind-merge": "^2.5.2",
+    "twitter-api-v2": "^1.24.0",
     "unsplash-js": "^7.0.19"
   },
   "devDependencies": {

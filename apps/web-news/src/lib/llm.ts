@@ -8,7 +8,7 @@ import { ChatOpenAI } from "@langchain/openai";
  * @param envVar name of the environment variable that, when defined, contains
  *               the model name to use (e.g. "WRITER_MODEL").
  * @param fallback default model used when the env var is not set. Choose a
- *                 cost-effective model such as "gpt-3.5-turbo-0125".
+ *                 cost-effective model such as "gpt-4o-mini".
  * @param opts     optional overrides (temperature, maxTokens, etc.)
  */
 export function getLLM(

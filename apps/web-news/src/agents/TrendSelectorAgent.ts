@@ -18,8 +18,8 @@ export class TrendSelectorAgent {
   private parser = new JsonOutputParser<{ trends: TrendScore[] }>();
 
   constructor() {
-    this.llm = getLLM("TREND_MODEL", "gpt-3.5-turbo-0125", {
-      temperature: 0,
+    this.llm = getLLM("TREND_MODEL", "gpt-3.5-turbo", {
+      temperature: 0.2,
     });
 
     this.prompt = PromptTemplate.fromTemplate(`

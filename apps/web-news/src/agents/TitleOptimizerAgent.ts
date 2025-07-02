@@ -11,8 +11,8 @@ export class TitleOptimizerAgent {
   private parser = new JsonOutputParser<{ titles: string[] }>();
 
   constructor() {
-    this.llm = getLLM("TITLE_MODEL", "gpt-3.5-turbo-0125", {
-      temperature: 0.4,
+    this.llm = getLLM("TITLE_MODEL", "gpt-3.5-turbo", {
+      temperature: 0.7,
     });
 
     this.prompt = PromptTemplate.fromTemplate(`

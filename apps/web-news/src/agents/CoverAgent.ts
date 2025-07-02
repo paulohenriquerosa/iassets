@@ -28,8 +28,8 @@ export class CoverAgent {
   private chooseParser = new JsonOutputParser<{ best: number }>();
 
   constructor() {
-    this.llm = getLLM("COVER_MODEL", "gpt-3.5-turbo-0125", {
-      temperature: 0.3,
+    this.llm = getLLM("COVER_MODEL", "gpt-3.5-turbo", {
+      temperature: 0.4,
     });
 
     this.queryPrompt = PromptTemplate.fromTemplate(`

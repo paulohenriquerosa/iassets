@@ -29,7 +29,7 @@ export class WriterAgent {
 
   constructor() {
     // Centralized LLM config (cheaper default + lower maxTokens)
-    this.llm = getLLM("WRITER_MODEL", "gpt-3.5-turbo-0125", {
+    this.llm = getLLM("WRITER_MODEL", "gpt-3.5-turbo-16k", {
       temperature: 0.3,
       maxTokens: 1000,
     });

@@ -69,13 +69,17 @@ Retorne JSON válido:
       includeVectors: false,
     });
 
-    const candidates = (res.matches || [])
-      .filter((m: any) => m.score > 0.7)
+    let candidates = (res.matches || [])
+      .filter((m: any) => !!m.metadata?.slug && m.metadata.slug !== "")
       .map((m: any) => ({
         title: m.metadata.title as string,
         slug: m.metadata.slug as string,
         score: m.score as number,
       }));
+
+    // keep only those above 0.7; if none, fallback to best 5 hits
+    const strong = candidates.filter((c: { score: number }) => c.score > 0.7);
+    candidates = strong.length > 0 ? strong : candidates.slice(0, 5);
 
     if (candidates.length === 0) {
       agentLog("RelatedArticles", "no-candidates", {});

@@ -7,6 +7,7 @@ import { CoverAgent } from "@/agents/CoverAgent";
 import { NotionPublisher } from "@/agents/NotionPublisher";
 import type { FeedItem } from "@/agents/types";
 import { sendQuotaExceededAlert } from "@/lib/email";
+import { markProcessed } from "@/lib/cache";
 import { TrendSelectorAgent } from "@/agents/TrendSelectorAgent";
 import { TitleOptimizerAgent } from "@/agents/TitleOptimizerAgent";
 import { LeadAndHookAgent } from "@/agents/LeadAndHookAgent";
@@ -14,6 +15,9 @@ import { SEOEnhancerAgent } from "@/agents/SEOEnhancerAgent";
 import { EngagementCTAAgent } from "@/agents/EngagementCTAAgent";
 import { StyleGuideAgent } from "@/agents/StyleGuideAgent";
 import { RelatedArticlesAgent } from "@/agents/RelatedArticlesAgent";
+import { DuplicateDetectionAgent } from "@/agents/DuplicateDetectionAgent";
+import { ArticleIndexer } from "@/agents/ArticleIndexer";
+import { TwitterThreadAgent } from "@/agents/TwitterThreadAgent";
 
 export class CrewCoordinator {
   private feedFetcher = new FeedFetcher();
@@ -29,6 +33,9 @@ export class CrewCoordinator {
   private ctaAgent = new EngagementCTAAgent();
   private styleAgent = new StyleGuideAgent();
   private relatedAgent = new RelatedArticlesAgent();
+  private dupAgent = new DuplicateDetectionAgent();
+  private indexer = new ArticleIndexer();
+  private twitterAgent = new TwitterThreadAgent();
 
   async run(): Promise<{
     processed: number;
@@ -42,6 +49,18 @@ export class CrewCoordinator {
     let skipped = 0;
 
     for (const item of items) {
+      // duplicate detection before heavy processing
+      try {
+        const isDuplicate = await this.dupAgent.exists(item.title, item.summary || "");
+        if (isDuplicate) {
+          console.log(`[CrewCoordinator] Duplicate detected, skipping: ${item.title}`);
+          skipped++;
+          continue;
+        }
+      } catch (err) {
+        console.error("[CrewCoordinator] dup check error", err);
+      }
+
       try {
         await this.processItem(item);
         processed++;
@@ -60,6 +79,13 @@ export class CrewCoordinator {
   }
 
   async processItem(item: FeedItem): Promise<void> {
+    // Skip if already processed recently
+    const isNew = await markProcessed(item.link);
+    if (!isNew) {
+      console.log(`[CrewCoordinator] Skipping already processed: ${item.link}`);
+      return;
+    }
+
     const scraped = await this.scraper.scrape(item.link);
     const cleanText = scraped.fullText
       .replace(/!\[[^\]]*\]\([^)]*\)/g, "") // remove markdown images
@@ -111,5 +137,40 @@ export class CrewCoordinator {
       coverUrl,
       new Date(item.pubDate).toISOString()
     );
+
+    // Generate and publish Twitter thread asynchronously (non-blocking)
+    try {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "https://news.iassets.com.br";
+      const slug = article.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "")
+        .slice(0, 50);
+      const articleUrl = `${siteUrl}/${slug}`;
+
+      const tweets = await this.twitterAgent.generateThread({
+        title: article.title,
+        summary: article.summary,
+        content: article.content,
+        url: articleUrl,
+        coverUrl,
+      });
+      // fire & forget (no await to not block main flow)
+      this.twitterAgent.publishThread(tweets, coverUrl, articleUrl).catch((err) => {
+        console.error("[CrewCoordinator] twitter publish error", err);
+      });
+    } catch (err) {
+      console.error("[CrewCoordinator] twitter generate error", err);
+    }
+
+    // After successful publish, add to duplicate index
+    try {
+      await Promise.all([
+        this.dupAgent.add(item.title, item.summary || ""),
+        this.indexer.add(article.title, article.summary),
+      ]);
+    } catch (err) {
+      console.error("[CrewCoordinator] dup add error", err);
+    }
   }
 }

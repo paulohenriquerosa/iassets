@@ -18,8 +18,8 @@ export class EngagementCTAAgent {
   private parser = new StringOutputParser();
 
   constructor() {
-    this.llm = getLLM("CTA_MODEL", "gpt-3.5-turbo-0125", {
-      temperature: 0.5,
+    this.llm = getLLM("CTA_MODEL", "gpt-3.5-turbo", {
+      temperature: 0.6,
     });
 
     this.prompt = PromptTemplate.fromTemplate(`
