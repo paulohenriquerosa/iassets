@@ -156,7 +156,7 @@ export class CrewCoordinator {
       });
       // Enfileira a publicação via QStash para rodar em função separada
       if (tweets.length) {
-        const dest = `${process.env.INTERNAL_API_BASE_URL ?? process.env.NEXT_PUBLIC_SITE_URL}/api/twitter-worker`;
+        const dest = `${siteUrl}/api/twitter-worker`;
         await qstashPublishJSON({
           destination: dest,
           body: { tweets, coverUrl, uniqueId: articleUrl },
