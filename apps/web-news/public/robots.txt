@@ -78,7 +78,7 @@ Sitemap: https://news.iassets.com.br/sitemap-categories.xml
 # Portal de notícias financeiras do Brasil
 # Frequência de atualização: Tempo real para mercados
 # Categorias principais: Mercados, Criptomoedas, Economia, Internacional
-# Último update: 2025-01-17
+# Último update: 2025-05-17
 # Contato técnico: tech@iassets.com.br
 # Política de dados: https://news.iassets.com.br/privacidade
 

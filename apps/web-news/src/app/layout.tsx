@@ -71,14 +71,14 @@ export const metadata: Metadata = {
         url: siteConfig.ogImage,
         width: 1200,
         height: 630,
-        alt: "iAssets - Portal de Notícias Financeiras",
+        alt: "iAssets News - Portal de Notícias Financeiras",
         type: "image/jpeg",
       },
       {
         url: "/images/og-logo.png",
         width: 800,
         height: 600,
-        alt: "Logo iAssets",
+        alt: "Logo iAssets News",
         type: "image/png",
       },
     ],
@@ -95,7 +95,7 @@ export const metadata: Metadata = {
     images: [
       {
         url: siteConfig.twitterImage,
-        alt: "iAssets - Portal de Notícias Financeiras",
+        alt: "iAssets News - Portal de Notícias Financeiras",
       },
     ],
   },
@@ -194,6 +194,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
 
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="manifest" href="/site.webmanifest" />
 
         {/* DNS Prefetch para recursos externos */}
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
@@ -229,7 +233,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "ItemList",
               name: "Financial Categories",
-              description: "Categorias principais do portal iAssets",
+              description: "Categorias principais do portal iAssets News",
               numberOfItems: 6,
               itemListElement: [
                 {
@@ -286,7 +290,7 @@ export default function RootLayout({
                   name: "Como acompanhar o mercado financeiro em tempo real?",
                   acceptedAnswer: {
                     "@type": "Answer",
-                    text: "No iAssets você acompanha cotações, análises e notícias do mercado financeiro atualizadas em tempo real, com cobertura completa da B3, NYSE e principais mercados globais.",
+                    text: "No iAssets News você acompanha cotações, análises e notícias do mercado financeiro atualizadas em tempo real, com cobertura completa da B3, NYSE e principais mercados globais.",
                   },
                 },
                 {
@@ -341,7 +345,7 @@ export default function RootLayout({
               send_page_view: true,
               // Configurações específicas para portal de notícias financeiras
               content_group1: 'Financial News',
-              content_group2: 'iAssets Portal',
+              content_group2: 'iAssets News Portal',
               anonymize_ip: true,
               allow_google_signals: true,
               allow_ad_personalization_signals: false

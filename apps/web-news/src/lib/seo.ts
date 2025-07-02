@@ -2,8 +2,8 @@ import { Metadata } from 'next'
 
 // Configurações básicas do site
 export const siteConfig = {
-  name: 'iAssets',
-  fullName: 'iAssets - Portal de Notícias Financeiras',
+  name: 'iAssets News',
+  fullName: 'iAssets News - Portal de Notícias Financeiras',
   description: 'Portal líder em notícias financeiras do Brasil. Análises exclusivas, alertas de mercado, ferramentas profissionais e educação financeira. Mais de 500mil investidores confiam em nós.',
   url: 'https://news.iassets.com.br',
   ogImage: '/images/og-image.jpg',

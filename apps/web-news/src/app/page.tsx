@@ -14,7 +14,7 @@ import {
 import { fetchMarketData } from "@/lib/market";
 
 export const metadata: Metadata = {
-  title: "iAssets - Portal Líder em Notícias e Análises do Mercado Financeiro",
+  title: "iAssets News - Portal Líder em Notícias e Análises do Mercado Financeiro",
   description:
     "Portal #1 em notícias financeiras do Brasil. Análises exclusivas, alertas de mercado, ferramentas profissionais e educação financeira. Mais de 500mil investidores confiam em nós.",
   keywords: [

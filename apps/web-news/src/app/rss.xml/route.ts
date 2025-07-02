@@ -24,7 +24,7 @@ export async function GET() {
      xmlns:media="http://search.yahoo.com/mrss/"
      xmlns:webfeeds="http://webfeeds.org/rss/1.0">
   <channel>
-    <title>iAssets - Portal de Notícias Financeiras</title>
+    <title>iAssets News - Portal de Notícias Financeiras</title>
     <description>Portal líder em notícias financeiras do Brasil. Análises de ações, criptomoedas, fundos imobiliários e mercado de capitais. Informações precisas e atualizadas para investidores.</description>
     <link>${baseUrl}</link>
     <language>pt-BR</language>
@@ -45,9 +45,9 @@ export async function GET() {
     
     <image>
       <url>${baseUrl}/images/logo-rss.png</url>
-      <title>iAssets - Portal de Notícias Financeiras</title>
+      <title>iAssets News - Portal de Notícias Financeiras</title>
       <link>${baseUrl}</link>
-      <description>Logo do portal iAssets</description>
+      <description>Logo do portal iAssets News</description>
       <width>144</width>
       <height>144</height>
     </image>
