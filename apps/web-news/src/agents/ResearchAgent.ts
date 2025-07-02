@@ -14,7 +14,7 @@ export class ResearchAgent {
   private parser = new StringOutputParser();
 
   constructor() {
-    this.llm = getLLM("RESEARCH_MODEL", "GPT-4.1 nano", {
+    this.llm = getLLM("RESEARCH_MODEL", "gpt-4.1-nano", {
       temperature: 0.2,
     });
 

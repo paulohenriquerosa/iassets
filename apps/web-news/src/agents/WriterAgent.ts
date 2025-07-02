@@ -22,14 +22,21 @@ const CATEGORIES = [
 const category = CATEGORIES.join(", ");
 
 export class WriterAgent {
-  private llm: ChatOpenAI;
+  private llmDraft: ChatOpenAI;
+  private llmFinal: ChatOpenAI;
   private draftPrompt: PromptTemplate;
   private finalPrompt: PromptTemplate;
   private parser = new StringOutputParser();
 
   constructor() {
-    // Centralized LLM config (cheaper default + lower maxTokens)
-    this.llm = getLLM("WRITER_MODEL", "gpt-3.5-turbo-16k", {
+    // Draft: modelo 3.5-turbo-16k para textos longos, custo baixo
+    this.llmDraft = getLLM("WRITER_DRAFT_MODEL", "gpt-3.5-turbo-16k", {
+      temperature: 0.3,
+      maxTokens: 4000,
+    });
+
+    // Finalize: gpt-4o-mini para qualidade superior no texto final
+    this.llmFinal = getLLM("WRITER_FINAL_MODEL", "gpt-4o-mini", {
       temperature: 0.3,
       maxTokens: 1000,
     });
@@ -125,7 +132,7 @@ RETORNE APENAS UM JSON VÁLIDO:
   ): Promise<Article | null> {
     const chain = RunnableSequence.from([
       this.draftPrompt,
-      this.llm,
+      this.llmDraft,
       this.parser,
     ]);
 
@@ -147,7 +154,7 @@ RETORNE APENAS UM JSON VÁLIDO:
 
     const article = this.safeParse(raw);
     // token usage log (approx.)
-    await logTokenUsage("WriterAgent", "draft", this.llm, JSON.stringify(original), raw);
+    await logTokenUsage("WriterAgent", "draft", this.llmDraft, JSON.stringify(original), raw);
     agentLog("WriterAgent", "draft-output", article);
     return article;
   }
@@ -162,7 +169,7 @@ RETORNE APENAS UM JSON VÁLIDO:
   ): Promise<Article | null> {
     const chain = RunnableSequence.from([
       this.finalPrompt,
-      this.llm,
+      this.llmFinal,
       this.parser,
     ]);
 
@@ -183,7 +190,7 @@ RETORNE APENAS UM JSON VÁLIDO:
 
     const article = this.safeParse(raw);
     // token usage log (approx.)
-    await logTokenUsage("WriterAgent", "finalize", this.llm, JSON.stringify(original), raw);
+    await logTokenUsage("WriterAgent", "finalize", this.llmFinal, JSON.stringify(original), raw);
     agentLog("WriterAgent", "finalize-output", article);
     return article;
   }

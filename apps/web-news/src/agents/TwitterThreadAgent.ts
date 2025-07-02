@@ -24,7 +24,7 @@ export class TwitterThreadAgent {
 
   constructor() {
     // Slightly creative model for social media copywriting
-    this.llm = getLLM("TWITTER_MODEL", "GPT-4o-mini", {
+    this.llm = getLLM("TWITTER_MODEL", "gpt-4o-mini", {
       temperature: 0.7,
       maxTokens: 1024,
     });

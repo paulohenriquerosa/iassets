@@ -11,7 +11,7 @@ export class StyleGuideAgent {
   private parser = new StringOutputParser();
 
   constructor() {
-    this.llm = getLLM("STYLE_MODEL", "GPT-4o-mini", {
+    this.llm = getLLM("STYLE_MODEL", "gpt-4o-mini", {
       temperature: 0.2,
       maxTokens: 800,
     });
