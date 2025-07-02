@@ -12,9 +12,9 @@ const CATEGORIES = [
   "Criptomoedas",
   "Tecnologia",
   "Economia", 
-  "Política",
+  "Politica",
   "Investimentos",
-  "Finanças Pessoais",
+  "Financas Pessoais",
   "Internacional",
   "Empresas",
 ];

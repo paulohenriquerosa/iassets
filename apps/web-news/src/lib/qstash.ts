@@ -12,7 +12,7 @@ const IS_LOCAL = process.env.NODE_ENV !== "production" || process.env.QSTASH_DIS
 export async function qstashPublishJSON(opts: any) {
   try {
     if (IS_LOCAL) {
-      console.log("[QStash] SKIPPED publish (local dev)", opts.destination);
+      console.log("[QStash] SKIPPED publish (local dev)", opts.url ?? opts.destination);
       return { bodyUrl: "local", messageId: "local-dev" } as any;
     }
     return await qstashInternal.publishJSON(opts);

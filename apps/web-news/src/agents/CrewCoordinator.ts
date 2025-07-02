@@ -158,9 +158,8 @@ export class CrewCoordinator {
       if (tweets.length) {
         const dest = `${siteUrl}/api/twitter-worker`;
         await qstashPublishJSON({
-          destination: dest,
+          url: dest,
           body: { tweets, coverUrl, uniqueId: articleUrl },
-          // opcional: delay para distribuir carga
         });
       }
     } catch (err) {

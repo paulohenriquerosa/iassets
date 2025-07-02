@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   // Experimental features para melhor performance
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    disableFormattedCacheTags: true,
   },
 
   // Configurações de imagem para SEO e performance
