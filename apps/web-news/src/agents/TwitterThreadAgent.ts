@@ -7,7 +7,12 @@ import { jsonrepair } from "jsonrepair";
 import { getLLM, logTokenUsage } from "@/lib/llm";
 import { agentLog } from "@/lib/logger";
 import { TwitterApi } from "twitter-api-v2";
-import { markThreadPosted, wasThreadPosted, getTweetCountToday, incTweetCount } from "@/lib/twitter-cache";
+import {
+  markThreadPosted,
+  wasThreadPosted,
+  incTweetCount,
+} from "@/lib/twitter-cache";
+import { qstashPublishJSON } from "@/lib/qstash";
 
 interface ArticleInput {
   title: string;
@@ -23,7 +28,6 @@ export class TwitterThreadAgent {
   private parser = new StringOutputParser();
 
   constructor() {
-    // Slightly creative model for social media copywriting
     this.llm = getLLM("TWITTER_MODEL", "gpt-4o-mini", {
       temperature: 0.7,
       maxTokens: 1024,
@@ -45,10 +49,15 @@ REQUISITOS:
 
 NÃO inclua mais nada além desses tweets.
 
-DADOS DO ARTIGO:\nTítulo: {title}\nResumo: {summary}\nConteúdo (markdown):\n{content}
+DADOS DO ARTIGO:
+Título: {title}
+Resumo: {summary}
+Conteúdo (markdown):
+{content}
 `);
   }
 
+  /** Gera os dois tweets */
   async generateThread(article: ArticleInput): Promise<string[]> {
     agentLog("TwitterThreadAgent", "generate-input", article.title);
 
@@ -65,14 +74,20 @@ DADOS DO ARTIGO:\nTítulo: {title}\nResumo: {summary}\nConteúdo (markdown):\n{c
       url: article.url,
     });
 
-    await logTokenUsage("TwitterThreadAgent", "generateThread", this.llm, article.title, raw);
+    await logTokenUsage(
+      "TwitterThreadAgent",
+      "generateThread",
+      this.llm,
+      article.title,
+      raw
+    );
+
     let tweets = this.safeParse(raw);
 
-    // fallback: garantir que haja exatamente 2 tweets
+    // Garante exatamente 2 tweets
     if (tweets.length < 2) {
       tweets.push(`Leia o artigo completo aqui: ${article.url}`);
-    }
-    if (tweets.length > 2) {
+    } else if (tweets.length > 2) {
       tweets = [tweets[0], tweets[tweets.length - 1]];
     }
 
@@ -85,27 +100,46 @@ DADOS DO ARTIGO:\nTítulo: {title}\nResumo: {summary}\nConteúdo (markdown):\n{c
     return tweets;
   }
 
-  async publishThread(tweets: string[], coverUrl?: string, uniqueId?: string): Promise<void> {
-    if (!tweets.length) return;
+  /**
+   * Publica a thread no Twitter, re-enfileirando o que faltar em caso de rate-limit
+   * @param tweets Array de 1º e 2º tweet (ou restantes, se requeue)
+   * @param coverUrl URL da imagem (opcional)
+   * @param uniqueId identificador único da thread
+   * @param replyToId (opcional) ID do tweet anterior para encadear
+   */
+  async publishThread(
+    tweets: string[],
+    coverUrl?: string,
+    uniqueId?: string,
+    replyToId?: string
+  ): Promise<void> {
+    if (tweets.length === 0) return;
 
-    // Avoid duplicates: hash of first tweet
     const identifier = uniqueId ?? tweets[0];
-    const already = await wasThreadPosted(identifier);
-    if (already) {
+    if (await wasThreadPosted(identifier)) {
       console.log("[TwitterThreadAgent] Thread already posted, skipping");
       return;
     }
 
-    // Env vars validation
     const {
       TWITTER_APP_KEY,
       TWITTER_APP_SECRET,
       TWITTER_ACCESS_TOKEN,
       TWITTER_ACCESS_SECRET,
+      VERCEL_URL,
+      NEXT_PUBLIC_SITE_URL,
+      INTERNAL_API_BASE_URL,
     } = process.env;
 
-    if (!TWITTER_APP_KEY || !TWITTER_APP_SECRET || !TWITTER_ACCESS_TOKEN || !TWITTER_ACCESS_SECRET) {
-      console.warn("[TwitterThreadAgent] Twitter credentials missing, cannot publish thread.");
+    if (
+      !TWITTER_APP_KEY ||
+      !TWITTER_APP_SECRET ||
+      !TWITTER_ACCESS_TOKEN ||
+      !TWITTER_ACCESS_SECRET
+    ) {
+      console.warn(
+        "[TwitterThreadAgent] Missing Twitter credentials – cannot publish."
+      );
       return;
     }
 
@@ -116,64 +150,91 @@ DADOS DO ARTIGO:\nTítulo: {title}\nResumo: {summary}\nConteúdo (markdown):\n{c
       accessSecret: TWITTER_ACCESS_SECRET,
     }).readWrite;
 
+    // Upload de imagem no primeiro tweet
     let mediaId: string | undefined;
     if (coverUrl) {
       try {
         const res = await fetch(coverUrl);
-        const buffer = Buffer.from(await res.arrayBuffer());
-        // Detect mime-type from response header or fallback
-        const mimeType = res.headers.get("content-type") || "image/jpeg";
-        mediaId = await client.v1.uploadMedia(buffer, { mimeType });
+        const buf = Buffer.from(await res.arrayBuffer());
+        const mime = res.headers.get("content-type") || "image/jpeg";
+        mediaId = await client.v1.uploadMedia(buf, { mimeType: mime });
       } catch (err) {
-        console.error("[TwitterThreadAgent] media upload fail", err);
+        console.error("[TwitterThreadAgent] Media upload failed", err);
       }
     }
 
-    // Daily quota check
-    const dailyLimit = Number(process.env.TWEET_DAILY_LIMIT ?? 50);
-    const sentToday = await getTweetCountToday();
-    if (sentToday + tweets.length > dailyLimit) {
-      console.warn(`[TwitterThreadAgent] Daily tweet limit reached (${sentToday}/${dailyLimit}), skipping thread.`);
-      return;
-    }
-
     const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    const baseUrl =
+      INTERNAL_API_BASE_URL ||
+      NEXT_PUBLIC_SITE_URL ||
+      (VERCEL_URL ? `https://${VERCEL_URL}` : undefined);
 
-    let replyToId: string | undefined;
     for (let i = 0; i < tweets.length; i++) {
-      const status = tweets[i].slice(0, 280); // enforce max length
-      let tryAgain = true;
-      while (tryAgain) {
+      const status = tweets[i].slice(0, 280);
+
+      while (true) {
         try {
-          const response = await client.v2.tweet(status, {
-            media: i === 0 && mediaId ? { media_ids: [mediaId] } : undefined,
-            reply: replyToId ? { in_reply_to_tweet_id: replyToId } : undefined,
+          const resp = await client.v2.tweet(status, {
+            media:
+              i === 0 && mediaId
+                ? { media_ids: [mediaId] }
+                : undefined,
+            reply: replyToId
+              ? { in_reply_to_tweet_id: replyToId }
+              : undefined,
           });
-          replyToId = response.data.id;
+          // Atualiza replyToId para o próximo tweet
+          replyToId = resp.data.id;
           await incTweetCount();
-          // throttling: 1.2 s between tweets to avoid burst limit
-          await sleep(1200);
-          tryAgain = false;
+          await sleep(1200); // throttle leve
+          break;
         } catch (err: any) {
           if (err.code === 429 && err.rateLimit?.reset) {
-            const wait = err.rateLimit.reset * 1000 - Date.now() + 1000;
-            console.warn(`[TwitterThreadAgent] Rate-limited. Waiting ${Math.ceil(wait / 1000)}s`);
-            await sleep(wait);
-            // loop to retry same tweet
+            // Rate-limit: requeue tudo o que faltar
+            const resetMs = err.rateLimit.reset * 1000;
+            const remaining = tweets.slice(i);
+            if (!baseUrl) {
+              console.error(
+                "[TwitterThreadAgent] Cannot requeue – missing base URL"
+              );
+              return;
+            }
+            await qstashPublishJSON({
+              url: `${baseUrl}/api/twitter-worker`,
+              body: {
+                tweets: remaining,
+                coverUrl,
+                uniqueId: identifier,
+                replyToId,
+              },
+              notBefore: new Date(resetMs + 1000).toISOString(),
+            });
+            console.log(
+              "[TwitterThreadAgent] Rate-limited: requeued remaining tweets"
+            );
+            return;
           } else {
-            console.error(`[TwitterThreadAgent] Failed to send tweet #${i + 1}`, err);
-            tryAgain = false;
+            console.error(
+              `[TwitterThreadAgent] Failed to send tweet #${i + 1}`,
+              err
+            );
+            break;
           }
         }
       }
     }
 
+    // Marca a thread como postada só depois de tudo enviado
     await markThreadPosted(identifier);
   }
 
+  /** Parser seguro da resposta do LLM */
   private safeParse(raw: string): string[] {
     try {
-      const clean = raw.replace(/```json\s*/gi, "").replace(/```/g, "").trim();
+      const clean = raw
+        .replace(/```json\s*/gi, "")
+        .replace(/```/g, "")
+        .trim();
       const jsonMatch = clean.match(/\[[\s\S]*\]/);
       if (jsonMatch) {
         try {
@@ -182,8 +243,6 @@ DADOS DO ARTIGO:\nTítulo: {title}\nResumo: {summary}\nConteúdo (markdown):\n{c
           return JSON.parse(jsonrepair(jsonMatch[0]));
         }
       }
-
-      // Fallback: assume cada linha é um tweet
       const lines = clean
         .split(/\n+/)
         .map((l) => l.trim())
@@ -191,11 +250,10 @@ DADOS DO ARTIGO:\nTítulo: {title}\nResumo: {summary}\nConteúdo (markdown):\n{c
         .map((l) => l.replace(/^"?tweet[12]"?\s*[:=-]\s*/i, ""))
         .filter((l) => l && l !== "{" && l !== "}");
       if (lines.length) return lines;
-
       throw new Error("no-tweets-found");
     } catch (e) {
       console.error("[TwitterThreadAgent] safeParse fail", e);
       return [];
     }
   }
-} 
+}
