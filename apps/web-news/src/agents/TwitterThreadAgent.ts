@@ -207,7 +207,7 @@ Conteúdo (markdown):
                 uniqueId: identifier,
                 replyToId,
               },
-              notBefore: new Date(resetMs + 1000).toISOString(),
+              notBefore: resetMs + 1000,
             });
             console.log(
               "[TwitterThreadAgent] Rate-limited: requeued remaining tweets"
