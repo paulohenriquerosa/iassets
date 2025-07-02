@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { FooterWithTracking } from "@/components/footer-with-tracking";
 import { siteConfig, organizationSchema, websiteSchema } from "@/lib/seo";
+import React, { Suspense } from "react";
 import PageTracker from "@/components/PageTracker";
 
 export const metadata: Metadata = {
@@ -311,7 +312,10 @@ export default function RootLayout({
 
         <div className="min-h-screen flex flex-col">
           <Header />
-          <PageTracker />
+          {/* Wrap PageTracker in Suspense to satisfy useSearchParams CSR requirement */}
+          <Suspense fallback={null}>
+            <PageTracker />
+          </Suspense>
           <main className="flex-grow" role="main" id="main-content">
             {children}
           </main>
