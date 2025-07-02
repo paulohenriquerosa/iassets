@@ -38,7 +38,7 @@ export class WriterAgent {
     // Finalize: gpt-4o-mini para qualidade superior no texto final
     this.llmFinal = getLLM("WRITER_FINAL_MODEL", "gpt-4o-mini", {
       temperature: 0.3,
-      maxTokens: 1000,
+      maxTokens: 3000,
     });
 
     this.draftPrompt = PromptTemplate.fromTemplate(`
@@ -73,7 +73,7 @@ Escreva um artigo jornalístico completo EM PORTUGUÊS em Markdown seguindo:
 5. Use listas e tabelas quando útil
 6. Finalize com análise ou perspectiva futura
 
-Retorne apenas JSON válido:
+RETORNE APENAS UM JSON VÁLIDO seguindo o formato:
 {{
  "title": "Título sucinto e analítico (≤60)",
  "summary": "Resumo executivo",
@@ -113,7 +113,7 @@ REQUISITOS DE SAÍDA:
 - Escolha a **categoria** dentre: ${category}.
 - Gere até 5 **tags**, priorizando keywords do SEO JSON.
 
-RETORNE APENAS UM JSON VÁLIDO:
+RETORNE APENAS UM JSON VÁLIDO seguindo o formato:
 {{
   "title": "Título final (≤60 chars)",
   "summary": "Resumo executivo (máx. 160 chars)",
@@ -199,13 +199,22 @@ RETORNE APENAS UM JSON VÁLIDO:
     try {
       const clean = raw.replace(/```json\s*/gi, "").replace(/```/g, "").trim();
       const jsonMatch = clean.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error("no-object");
+      let jsonStr: string | null = jsonMatch ? jsonMatch[0] : null;
+
+      // fallback: tenta recortar do primeiro '{' ao último '}'
+      if (!jsonStr && clean.includes("{")) {
+        const first = clean.indexOf("{");
+        const last = clean.lastIndexOf("}");
+        if (last > first) jsonStr = clean.substring(first, last + 1);
+      }
+
+      if (!jsonStr) throw new Error("no-json-found");
 
       try {
-        return JSON.parse(jsonMatch[0]);
+        return JSON.parse(jsonStr);
       } catch {
         // tenta reparar
-        return JSON.parse(jsonrepair(jsonMatch[0]));
+        return JSON.parse(jsonrepair(jsonStr));
       }
     } catch (e) {
       console.error("[WriterAgent] safeParse fail", e);

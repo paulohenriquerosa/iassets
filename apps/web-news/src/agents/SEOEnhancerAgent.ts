@@ -34,7 +34,7 @@ Artigo em Markdown:
   3. 3 sugestões de links internos (URLs padrão do portal).
   4. Pontos onde é válido repetir a palavra-chave (sem forçar).
 
-Retorne apenas JSON válido:
+RETORNE APENAS UM JSON VÁLIDO seguindo o formato:
 {{
   "metaDescription": "...",
   "keywords": ["key1", "key2", "key3", "key4", "key5"],

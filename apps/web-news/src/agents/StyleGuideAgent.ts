@@ -13,7 +13,7 @@ export class StyleGuideAgent {
   constructor() {
     this.llm = getLLM("STYLE_MODEL", "gpt-4o-mini", {
       temperature: 0.2,
-      maxTokens: 800,
+      maxTokens: 3000,
     });
 
     this.prompt = PromptTemplate.fromTemplate(`
@@ -41,7 +41,10 @@ Retorne apenas o Markdown revisado.
 
     try {
       const result = await chain.invoke({ content });
-      const out = (result || "").trim();
+      const out = (result || "")
+        .replace(/```markdown\s*/gi, "")
+        .replace(/```/g, "")
+        .trim();
       agentLog("StyleGuide", "output", out.slice(0,200));
       return out;
     } catch (err) {

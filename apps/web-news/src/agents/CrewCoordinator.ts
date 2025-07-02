@@ -12,7 +12,6 @@ import { TrendSelectorAgent } from "@/agents/TrendSelectorAgent";
 import { TitleOptimizerAgent } from "@/agents/TitleOptimizerAgent";
 import { LeadAndHookAgent } from "@/agents/LeadAndHookAgent";
 import { SEOEnhancerAgent } from "@/agents/SEOEnhancerAgent";
-import { EngagementCTAAgent } from "@/agents/EngagementCTAAgent";
 import { StyleGuideAgent } from "@/agents/StyleGuideAgent";
 import { RelatedArticlesAgent } from "@/agents/RelatedArticlesAgent";
 import { DuplicateDetectionAgent } from "@/agents/DuplicateDetectionAgent";
@@ -30,7 +29,6 @@ export class CrewCoordinator {
   private optimizer = new TitleOptimizerAgent();
   private leadAgent = new LeadAndHookAgent();
   private seoAgent = new SEOEnhancerAgent();
-  private ctaAgent = new EngagementCTAAgent();
   private styleAgent = new StyleGuideAgent();
   private relatedAgent = new RelatedArticlesAgent();
   private dupAgent = new DuplicateDetectionAgent();
@@ -114,7 +112,7 @@ export class CrewCoordinator {
 
     const seoJson = await this.seoAgent.enhance(draftArticle.content) || {};
 
-    const ctaJson = await this.ctaAgent.suggest(draftArticle.content) || [];
+    const ctaJson: object[] = []; // CTA desativado
 
     const article = await this.writer.finalize(
       { title: bestTitle, summary: item.summary, lead: leadText },

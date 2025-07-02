@@ -35,9 +35,15 @@ Objetivo: Criar APENAS DOIS tweets em português sobre o artigo.
 
 REQUISITOS:
 1. Cada tweet ≤ 280 caracteres (URL conta como 23).
-2. Tweet 1: resumo conciso e instigante + menção de imagem de capa.
-3. Tweet 2: chamada para ação e **somente** o link {url} no final.
-4. Retorne APENAS JSON válido com EXATAMENTE dois elementos: ["tweet1", "tweet2"].
+2. Tweet 1: informativo e completo, trazendo os dados principais (o que aconteceu, por que importa, números-chave, estatísticas). O leitor não deve precisar do link para entender o assunto.
+3. Tweet 2: convite para saber mais + **somente** o link {url} no final. Ex.: "Quer se aprofundar nos impactos do IOF? Veja aqui: {url}"
+4. Formato de saída (escolha UM dos dois):
+   a) JSON: ["tweet1", "tweet2"]
+   b) Texto simples em duas linhas:
+      tweet1: <texto>
+      tweet2: <texto>
+
+NÃO inclua mais nada além desses tweets.
 
 DADOS DO ARTIGO:\nTítulo: {title}\nResumo: {summary}\nConteúdo (markdown):\n{content}
 `);
@@ -169,12 +175,24 @@ DADOS DO ARTIGO:\nTítulo: {title}\nResumo: {summary}\nConteúdo (markdown):\n{c
     try {
       const clean = raw.replace(/```json\s*/gi, "").replace(/```/g, "").trim();
       const jsonMatch = clean.match(/\[[\s\S]*\]/);
-      if (!jsonMatch) throw new Error("no-array");
-      try {
-        return JSON.parse(jsonMatch[0]);
-      } catch {
-        return JSON.parse(jsonrepair(jsonMatch[0]));
+      if (jsonMatch) {
+        try {
+          return JSON.parse(jsonMatch[0]);
+        } catch {
+          return JSON.parse(jsonrepair(jsonMatch[0]));
+        }
       }
+
+      // Fallback: assume cada linha é um tweet
+      const lines = clean
+        .split(/\n+/)
+        .map((l) => l.trim())
+        .filter(Boolean)
+        .map((l) => l.replace(/^"?tweet[12]"?\s*[:=-]\s*/i, ""))
+        .filter((l) => l && l !== "{" && l !== "}");
+      if (lines.length) return lines;
+
+      throw new Error("no-tweets-found");
     } catch (e) {
       console.error("[TwitterThreadAgent] safeParse fail", e);
       return [];

@@ -31,7 +31,7 @@ Dada esta lista de notícias recentes extraídas do feed:
 E considerando dados de tendências de busca (Google Trends), redes sociais e volume de menções em portais financeiros,
 classifique cada item numa escala de 1 a 5 (5 = maior potencial de engajamento).
 
-Retorne APENAS JSON válido:
+RETORNE APENAS UM JSON VÁLIDO seguindo o formato:
 {{
   "trends": [
     {{ "title": "...", "score": 1 }}
