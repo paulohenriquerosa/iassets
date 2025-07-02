@@ -192,6 +192,8 @@ Conteúdo (markdown):
           if (err.code === 429 && err.rateLimit?.reset) {
             // Rate-limit: requeue tudo o que faltar
             const resetMs = err.rateLimit.reset * 1000;
+            const delaySec = Math.ceil((resetMs - Date.now()) / 1000) + 1;
+
             const remaining = tweets.slice(i);
             if (!baseUrl) {
               console.error(
@@ -207,7 +209,7 @@ Conteúdo (markdown):
                 uniqueId: identifier,
                 replyToId,
               },
-              notBefore: resetMs + 1000,
+              notBefore: delaySec,
             });
             console.log(
               "[TwitterThreadAgent] Rate-limited: requeued remaining tweets"
