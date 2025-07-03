@@ -1,5 +1,4 @@
 import { getPostBySlug, getAllPosts, getPostsByCategory } from "@/lib/notion";
-import dynamic from "next/dynamic";
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -24,17 +23,13 @@ import { NewsletterWithTracking } from "@/components/newsletter-with-tracking";
 import { RelatedArticlesAgent } from "@/agents/RelatedArticlesAgent";
 import { unstable_cache } from "next/cache";
 import { formatSmartDate } from "@/lib/utils";
+import NotionContentClient from "@/components/NotionContentClient";
 
 interface PostPageProps {
   params: Promise<{
     slug: string;
   }>;
 }
-
-const NotionContent = dynamic(
-  () => import("@/components/notion-renderer").then((m) => m.NotionContent),
-  { ssr: false, loading: () => null }
-);
 
 // Gerar metadata dinâmica para SEO
 export async function generateMetadata({
@@ -448,7 +443,7 @@ export default async function PostPage({ params }: PostPageProps) {
                   {/* Conteúdo do post */}
                   <div className="mb-8">
                     <div className="prose prose-lg max-w-none prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-strong:text-gray-900 dark:prose-strong:text-gray-100">
-                      <NotionContent recordMap={post.content} />
+                      <NotionContentClient recordMap={post.content} />
                     </div>
                   </div>
 
