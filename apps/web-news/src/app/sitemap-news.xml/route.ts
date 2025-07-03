@@ -6,6 +6,15 @@ const baseUrl = 'https://news.iassets.com.br';
 // Revalidar a cada 15 minutos para notícias recentes
 export const revalidate = 900;
 
+function xmlEscape(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 export async function GET() {
   try {
     const posts = await getAllPosts();
@@ -35,7 +44,7 @@ ${recentPosts
     
     return `
   <url>
-    <loc>${url}</loc>
+    <loc>${xmlEscape(url)}</loc>
     <lastmod>${postDate.toISOString()}</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
@@ -47,11 +56,11 @@ ${recentPosts
       <news:publication_date>${postDate.toISOString()}</news:publication_date>
       <news:title><![CDATA[${post.title}]]></news:title>
       <news:keywords><![CDATA[${generateNewsKeywords(category, post.title)}]]></news:keywords>
-      <news:stock_tickers>${extractStockTickers(post.title, post.summary)}</news:stock_tickers>
+      <news:stock_tickers><![CDATA[${extractStockTickers(post.title, post.summary)}]]></news:stock_tickers>
     </news:news>
     ${post.coverImage ? `
     <image:image>
-      <image:loc>${post.coverImage}</image:loc>
+      <image:loc>${xmlEscape(post.coverImage)}</image:loc>
       <image:title><![CDATA[${post.title}]]></image:title>
       <image:caption><![CDATA[${post.summary || post.title}]]></image:caption>
     </image:image>` : ''}

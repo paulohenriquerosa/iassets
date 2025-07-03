@@ -6,6 +6,15 @@ const baseUrl = 'https://news.iassets.com.br';
 // Revalidar a cada 2 horas
 export const revalidate = 7200;
 
+function xmlEscape(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 export async function GET() {
   try {
     const categories = await getAllCategories();
@@ -39,20 +48,21 @@ export async function GET() {
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${categoryData
   .map((category) => {
+    const loc = xmlEscape(baseUrl + category.url);
     return `
   <url>
-    <loc>${baseUrl}${category.url}</loc>
+    <loc>${loc}</loc>
     <lastmod>${category.lastModified}</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="pt-br" href="${baseUrl}${category.url}" />
+    <xhtml:link rel="alternate" hreflang="pt-br" href="${loc}" />
   </url>`
   })
   .join('')}
   
   <!-- Páginas relacionadas a categorias -->
   <url>
-    <loc>${baseUrl}/categorias</loc>
+    <loc>${xmlEscape(baseUrl + '/categorias')}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
@@ -60,7 +70,7 @@ ${categoryData
   
   <!-- Tags populares -->
   <url>
-    <loc>${baseUrl}/tags</loc>
+    <loc>${xmlEscape(baseUrl + '/tags')}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
@@ -68,7 +78,7 @@ ${categoryData
   
   <!-- Arquivo de categorias -->
   <url>
-    <loc>${baseUrl}/arquivo</loc>
+    <loc>${xmlEscape(baseUrl + '/arquivo')}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
