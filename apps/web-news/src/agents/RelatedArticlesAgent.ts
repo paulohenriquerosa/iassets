@@ -48,7 +48,7 @@ Cada item de candidates tem:
   - "score": similaridade (0–1)
 
 Selecione até 3 artigos que sejam **realmente relevantes** para linkar dentro do texto.
-Retorne JSON válido:
+RETORNE APENAS UM JSON VÁLIDO seguindo o formato:
 {{
   "related": [
     {{ "title": "...", "slug": "..." }}
