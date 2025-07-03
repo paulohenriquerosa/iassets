@@ -31,6 +31,16 @@ interface PostPageProps {
   }>;
 }
 
+// Helper to sanitize tag names to ASCII-safe format (must match the logic in lib/notion.ts)
+const sanitizeTag = (tag: string): string =>
+  tag
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9-_]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
 // Gerar metadata dinâmica para SEO
 export async function generateMetadata({
   params,
@@ -264,7 +274,7 @@ export default async function PostPage({ params }: PostPageProps) {
           "@type": "ListItem",
           position: 2,
           name: post.category || "Notícias",
-          item: `https://iassets.com.br/categorias/${post.category?.toLowerCase().replace(/\s+/g, "-") || "noticias"}`,
+          item: `https://iassets.com.br/categorias/${sanitizeTag(post.category || "noticias")}`,
         },
         {
           "@type": "ListItem",
@@ -321,7 +331,7 @@ export default async function PostPage({ params }: PostPageProps) {
                 </Link>
                 <ChevronRight className="w-3 h-3" />
                 <Link
-                  href={`/categorias/${post.category?.toLowerCase().replace(/\s+/g, "-") || "noticias"}`}
+                  href={`/categorias/${sanitizeTag(post.category || "noticias")}`}
                   className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
                 >
                   {post.category || "Notícias"}
