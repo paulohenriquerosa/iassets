@@ -10,7 +10,7 @@ export class NotionPublisher {
   constructor() {
     this.notion = new NotionClient({ auth: process.env.NOTION_TOKEN! });
     this.databaseId = process.env.NOTION_DATABASE_ID!;
-    this.SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "https://example.com";
+    this.SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "https://news.iassets.com.br";
   }
 
   async publish(article: Article, coverUrl: string, isoDate?: string): Promise<void> {
@@ -21,10 +21,49 @@ export class NotionPublisher {
       .slice(0, 50);
 
     const escaped = article.content.replace(/\$/g, "\\$");
+
+    // 1. Convert internal relative links to absolute URLs
     const normalized = escaped.replace(/\]\(\/(.*?)\)/g, (_m, slug) => `](${this.SITE_URL}/${slug})`);
+
+    // 2. Convert single-line image URLs to markdown image syntax so Martian treats them as images.
     const withImgMd = normalized.replace(/^(https?:\S+)$/gim, (_m, url) => `![](${url})`);
 
-    const blocks = markdownToBlocks(withImgMd) as BlockObjectRequest[];
+    // 3. Sanitize all markdown links (including image sources) to ensure they are valid absolute URLs that Notion accepts.
+    const sanitized = withImgMd.replace(/(!?\[[^\]]*\])\(([^)]+)\)/g, (_full, prefix, url) => {
+      let cleanUrl = url.trim();
+
+      // Remove surrounding angle brackets often used in markdown links, e.g. <https://example.com>
+      if (cleanUrl.startsWith("<") && cleanUrl.endsWith(">")) {
+        cleanUrl = cleanUrl.slice(1, -1);
+      }
+
+      // Remove trailing punctuation that is not part of the URL
+      cleanUrl = cleanUrl.replace(/[).,!?:;]+$/g, "");
+
+      // Convert relative URLs to absolute
+      if (cleanUrl.startsWith("/")) {
+        cleanUrl = `${this.SITE_URL}${cleanUrl}`;
+      }
+
+      // Ensure protocol – if none is present prepend https://
+      if (!/^(https?:|mailto:|tel:)/i.test(cleanUrl)) {
+        cleanUrl = `https://${cleanUrl}`;
+      }
+
+      // Validate using WHATWG URL; fall back to returning just the text (removing the link) if invalid
+      try {
+        const u = new URL(cleanUrl);
+        // Notion only allows http/https/mailto/tel. If somehow other scheme appears, drop link.
+        if (!/^(http:|https:|mailto:|tel:)/i.test(u.protocol)) throw new Error("Unsupported protocol");
+        return `${prefix}(${u.toString()})`;
+      } catch {
+        // Strip link formatting – return just the text or image alt text.
+        const text = prefix.replace(/^!?\[/, "").replace(/\]$/, "");
+        return text;
+      }
+    });
+
+    const blocks = markdownToBlocks(sanitized) as BlockObjectRequest[];
 
     await this.notion.pages.create({
       parent: { database_id: this.databaseId },
