@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lhci": "lhci autorun"
   },
   "dependencies": {
     "@langchain/core": "^0.3.61",
@@ -52,10 +53,12 @@
     "resend": "^4.6.0",
     "tailwind-merge": "^2.5.2",
     "twitter-api-v2": "^1.24.0",
-    "unsplash-js": "^7.0.19"
+    "unsplash-js": "^7.0.19",
+    "web-vitals": "^5.0.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@lhci/cli": "^0.15.1",
     "@tailwindcss/postcss": "^4",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^20",

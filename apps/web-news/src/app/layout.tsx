@@ -8,6 +8,7 @@ import { FooterWithTracking } from "@/components/footer-with-tracking";
 import { siteConfig, organizationSchema, websiteSchema } from "@/lib/seo";
 import React, { Suspense } from "react";
 import PageTracker from "@/components/PageTracker";
+import WebVitalsTracker from "@/components/WebVitalsTracker";
 import CookieBanner from "@/components/cookie-banner";
 
 export const metadata: Metadata = {
@@ -211,6 +212,15 @@ export default function RootLayout({
 
         {/* Pingback para WordPress compatibility */}
         <link rel="pingback" href={`${siteConfig.url}/xmlrpc.php`} />
+
+        {/* Google Analytics script */}
+        {/* The remote script is loaded in <head> for early availability, actual configuration waits for cookie consent */}
+        { }
+        <Script
+          id="gtag-src"
+          src="https://www.googletagmanager.com/gtag/js?id=G-FBPGE2KV71"
+          strategy="beforeInteractive"
+        />
       </head>
       <body className="antialiased">
         {/* Dados estruturados globais aprimorados */}
@@ -320,6 +330,7 @@ export default function RootLayout({
           {/* Wrap PageTracker in Suspense to satisfy useSearchParams CSR requirement */}
           <Suspense fallback={null}>
             <PageTracker />
+            <WebVitalsTracker />
           </Suspense>
           <main className="flex-grow" role="main" id="main-content">
             {children}
@@ -332,41 +343,7 @@ export default function RootLayout({
           <CookieBanner />
         </div>
 
-        {/* Analytics e Scripts otimizados */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-FBPGE2KV71"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            (function(){
-              function initGA(){
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);} window.gtag = gtag;
-                gtag('js', new Date());
-                gtag('config', 'G-FBPGE2KV71', {
-                  page_title: document.title,
-                  page_location: window.location.href,
-                  custom_map: {'custom_parameter': 'value'},
-                  send_page_view: true,
-                  content_group1: 'Financial News',
-                  content_group2: 'iAssets News Portal',
-                  anonymize_ip: true,
-                  allow_google_signals: true,
-                  allow_ad_personalization_signals: false
-                });
-                // Eventos customizados
-                window.trackFinancialEvent = function(action, category, label, value){
-                  gtag('event', action, {event_category: category, event_label: label, value});
-                };
-                // Page view inicial
-                gtag('event', 'page_view', {page_title: document.title, page_location: window.location.href, content_group1: 'Financial News'});
-              }
-              if(document.cookie.includes('cookie_consent=all')){ initGA(); }
-              else{ window.addEventListener('cookie-consent-accepted', initGA); }
-            })();
-          `}
-        </Script>
+        {/* Analytics config gated by cookie consent */}
 
         {/* Microsoft Clarity */}
         <Script id="microsoft-clarity" strategy="afterInteractive">
