@@ -86,6 +86,16 @@ function extractProperty(
   }
 }
 
+// Helper to ensure tags contain only ASCII-safe characters.
+const sanitizeTag = (tag: string): string =>
+  tag
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Remove diacritics
+    .replace(/[^a-z0-9-_]/g, "-") // Replace any non-allowed chars with '-'
+    .replace(/-+/g, "-") // Collapse consecutive dashes
+    .replace(/^-+|-+$/g, "");
+
 export async function getAllPosts(): Promise<Post[]> {
   return unstable_cache(
     async () => {
@@ -221,10 +231,10 @@ export async function getPostBySlug(
         content,
       };
     },
-    [`post-${slug}`, "posts", "blog"],
+    [`post-${sanitizeTag(slug)}`, "posts", "blog"],
     {
       revalidate: 3600, // Revalidar a cada 1 hora
-      tags: [`post-${slug}`, "posts", "blog"],
+      tags: [`post-${sanitizeTag(slug)}`, "posts", "blog"],
     },
   )();
 }
@@ -337,10 +347,10 @@ export async function getPostsByCategory(
         };
       });
     },
-    [`posts-category-${category}`, "posts", "blog"],
+    [`posts-category-${sanitizeTag(category)}`, "posts", "blog"],
     {
       revalidate: 3600, // Revalidar a cada 1 hora
-      tags: [`posts-category-${category}`, "posts", "blog"],
+      tags: [`posts-category-${sanitizeTag(category)}`, "posts", "blog"],
     },
   )();
 }

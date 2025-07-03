@@ -1,10 +1,21 @@
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 
+// Helper to sanitize tag names to ASCII-safe format (must match the logic in lib/notion.ts)
+const sanitizeTag = (tag: string): string =>
+  tag
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9-_]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
 export async function POST(request: NextRequest) {
   const secret = request.nextUrl.searchParams.get('secret');
   const path = request.nextUrl.searchParams.get('path');
-  const tag = request.nextUrl.searchParams.get('tag');
+  const rawTag = request.nextUrl.searchParams.get('tag');
+  const tag = rawTag ? sanitizeTag(rawTag) : null;
 
   // Verificar se o secret está correto
   if (secret !== process.env.REVALIDATE_SECRET) {
