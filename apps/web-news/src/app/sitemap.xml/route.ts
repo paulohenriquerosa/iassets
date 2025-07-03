@@ -24,46 +24,16 @@ const staticPages: SitemapUrl[] = [
     priority: 1.0,
   },
   {
-    url: '/mercados',
+    url: '/categorias',
     lastModified: new Date().toISOString(),
     changeFrequency: 'hourly',
-    priority: 0.9,
-  },
-  {
-    url: '/criptomoedas',
-    lastModified: new Date().toISOString(),
-    changeFrequency: 'hourly',
-    priority: 0.9,
-  },
-  {
-    url: '/economia',
-    lastModified: new Date().toISOString(),
-    changeFrequency: 'hourly',
-    priority: 0.9,
-  },
-  {
-    url: '/internacional',
-    lastModified: new Date().toISOString(),
-    changeFrequency: 'daily',
     priority: 0.8,
   },
   {
-    url: '/analises',
+    url: '/equipe',
     lastModified: new Date().toISOString(),
-    changeFrequency: 'daily',
-    priority: 0.8,
-  },
-  {
-    url: '/educacao',
-    lastModified: new Date().toISOString(),
-    changeFrequency: 'weekly',
-    priority: 0.7,
-  },
-  {
-    url: '/ferramentas',
-    lastModified: new Date().toISOString(),
-    changeFrequency: 'weekly',
-    priority: 0.7,
+    changeFrequency: 'monthly',
+    priority: 0.6,
   },
   {
     url: '/sobre',
@@ -89,10 +59,50 @@ const staticPages: SitemapUrl[] = [
     changeFrequency: 'yearly',
     priority: 0.3,
   },
+  {
+    url: '/busca',
+    lastModified: new Date().toISOString(),
+    changeFrequency: 'daily',
+    priority: 0.6,
+  },
+  {
+    url: '/newsletter',
+    lastModified: new Date().toISOString(),
+    changeFrequency: 'weekly',
+    priority: 0.6,
+  },
+  {
+    url: '/cookies',
+    lastModified: new Date().toISOString(),
+    changeFrequency: 'yearly',
+    priority: 0.3,
+  },
+  {
+    url: '/rss.xml',
+    lastModified: new Date().toISOString(),
+    changeFrequency: 'hourly',
+    priority: 0.4,
+  },
+  {
+    url: '/feed.json',
+    lastModified: new Date().toISOString(),
+    changeFrequency: 'hourly',
+    priority: 0.4,
+  },
 ];
 
 // Revalidar a cada 30 minutos para notícias financeiras
 export const revalidate = 1800;
+
+// Helper to escape XML special chars
+function xmlEscape(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
 
 export async function GET() {
   try {
@@ -150,7 +160,7 @@ ${allUrls
     
     let urlXml = `
   <url>
-    <loc>${baseUrl}${url}</loc>
+    <loc>${xmlEscape(baseUrl + url)}</loc>
     <lastmod>${lastModified}</lastmod>
     <changefreq>${changeFrequency}</changefreq>
     <priority>${priority}</priority>`;
@@ -165,7 +175,7 @@ ${allUrls
       </news:publication>
       <news:publication_date>${publicationDate}</news:publication_date>
       <news:title><![CDATA[${title}]]></news:title>
-      <news:keywords>notícias financeiras, ${category.toLowerCase()}, mercado financeiro, investimentos</news:keywords>
+      <news:keywords><![CDATA[notícias financeiras, ${category.toLowerCase()}, mercado financeiro, investimentos]]></news:keywords>
     </news:news>`;
     }
 
@@ -174,7 +184,7 @@ ${allUrls
       images.forEach((imageUrl: string) => {
         urlXml += `
     <image:image>
-      <image:loc>${imageUrl}</image:loc>
+      <image:loc>${xmlEscape(imageUrl)}</image:loc>
       <image:title><![CDATA[${title || 'iAssets - Notícias Financeiras'}]]></image:title>
     </image:image>`;
       });
@@ -182,7 +192,7 @@ ${allUrls
 
     urlXml += `
   </url>`;
-    
+
     return urlXml;
   })
   .join('')}
@@ -198,4 +208,4 @@ ${allUrls
     console.error('Error generating sitemap:', error);
     return new NextResponse('Error generating sitemap', { status: 500 });
   }
-} 
+}

@@ -8,6 +8,7 @@ import { FooterWithTracking } from "@/components/footer-with-tracking";
 import { siteConfig, organizationSchema, websiteSchema } from "@/lib/seo";
 import React, { Suspense } from "react";
 import PageTracker from "@/components/PageTracker";
+import CookieBanner from "@/components/cookie-banner";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -326,6 +327,9 @@ export default function RootLayout({
 
           {/* Footer com tracking integrado */}
           <FooterWithTracking />
+
+          {/* Cookie consent banner */}
+          <CookieBanner />
         </div>
 
         {/* Analytics e Scripts otimizados */}
@@ -335,68 +339,72 @@ export default function RootLayout({
         />
         <Script id="google-analytics" strategy="afterInteractive">
           {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-FBPGE2KV71', {
-              page_title: document.title,
-              page_location: window.location.href,
-              custom_map: {'custom_parameter': 'value'},
-              send_page_view: true,
-              // Configurações específicas para portal de notícias financeiras
-              content_group1: 'Financial News',
-              content_group2: 'iAssets News Portal',
-              anonymize_ip: true,
-              allow_google_signals: true,
-              allow_ad_personalization_signals: false
-            });
-            
-            // Eventos customizados para portal financeiro
-            function trackFinancialEvent(action, category, label, value) {
-              gtag('event', action, {
-                event_category: category,
-                event_label: label,
-                value: value
-              });
-            }
-            
-            // Disponibilizar função globalmente
-            window.trackFinancialEvent = trackFinancialEvent;
-            
-            // Rastrear leitura de artigos
-            gtag('event', 'page_view', {
-              page_title: document.title,
-              page_location: window.location.href,
-              content_group1: 'Financial News'
-            });
+            (function(){
+              function initGA(){
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);} window.gtag = gtag;
+                gtag('js', new Date());
+                gtag('config', 'G-FBPGE2KV71', {
+                  page_title: document.title,
+                  page_location: window.location.href,
+                  custom_map: {'custom_parameter': 'value'},
+                  send_page_view: true,
+                  content_group1: 'Financial News',
+                  content_group2: 'iAssets News Portal',
+                  anonymize_ip: true,
+                  allow_google_signals: true,
+                  allow_ad_personalization_signals: false
+                });
+                // Eventos customizados
+                window.trackFinancialEvent = function(action, category, label, value){
+                  gtag('event', action, {event_category: category, event_label: label, value});
+                };
+                // Page view inicial
+                gtag('event', 'page_view', {page_title: document.title, page_location: window.location.href, content_group1: 'Financial News'});
+              }
+              if(document.cookie.includes('cookie_consent=all')){ initGA(); }
+              else{ window.addEventListener('cookie-consent-accepted', initGA); }
+            })();
           `}
         </Script>
 
         {/* Microsoft Clarity */}
         <Script id="microsoft-clarity" strategy="afterInteractive">
           {`
-            (function(c,l,a,r,i,t,y){
-                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "CLARITY_PROJECT_ID");
+            (function(){
+              function loadClarity(){
+                (function(c,l,a,r,i,t,y){
+                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+                })(window, document, "clarity", "script", "CLARITY_PROJECT_ID");
+              }
+              if(document.cookie.includes('cookie_consent=all')){ loadClarity(); }
+              else { window.addEventListener('cookie-consent-accepted', loadClarity); }
+            })();
           `}
         </Script>
 
         {/* Sistema de Analytics Financeiro Avançado */}
         <Script id="financial-analytics-init" strategy="afterInteractive">
           {`
-            // Inicializar sistema de analytics financeiro
-            if (typeof window !== 'undefined') {
-              // Aguardar carregamento completo e inicializar analytics avançado
-              window.addEventListener('load', function() {
-                // Importar e inicializar dinamicamente
-                import('/src/lib/analytics.js').then(module => {
-                  module.FinancialAnalytics.init();
-                  module.FinancialAnalytics.trackPagePerformance();
-                }).catch(err => console.log('Analytics loading...'));
-              });
-            }
+            (function(){
+              function loadFinAnalytics(){
+                if(typeof window==='undefined') return;
+                import('/src/lib/analytics.js').then(m=>{
+                  m.FinancialAnalytics.init();
+                  m.FinancialAnalytics.trackPagePerformance();
+                }).catch(()=>{});
+              }
+              if(document.cookie.includes('cookie_consent=all')){
+                window.addEventListener('load', loadFinAnalytics);
+              } else {
+                window.addEventListener('cookie-consent-accepted', function(){
+                  window.removeEventListener('cookie-consent-accepted', arguments.callee);
+                  window.addEventListener('load', loadFinAnalytics);
+                });
+              }
+            })();
           `}
         </Script>
 
