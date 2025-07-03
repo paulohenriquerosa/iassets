@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 
 import { NotionRenderer } from "react-notion-x";
 import { ExtendedRecordMap } from "notion-types";
@@ -25,18 +26,19 @@ interface NotionImageProps {
 }
 
 // Componente wrapper customizado para imagens do Notion
-const NotionImage = ({ src, alt, className, style, ...props }: NotionImageProps) => {
-  // Usar img tag nativa para evitar problemas com width/height obrigatórios do Next.js Image
-   
+const NotionImage = ({ src, alt, className, style }: NotionImageProps) => {
   return (
-    <img
-      src={src}
-      alt={alt || ""}
-      className={className}
-      style={style}
-      loading="lazy"
-      {...props}
-    />
+    <div className={className} style={{ position: "relative", ...style }}>
+      <Image
+        src={src}
+        alt={alt || ""}
+        fill
+        sizes="(max-width:768px) 100vw, 800px"
+        loading="lazy"
+        decoding="async"
+        style={{ objectFit: "contain" }}
+        />
+    </div>
   );
 };
 

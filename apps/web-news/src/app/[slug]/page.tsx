@@ -1,5 +1,5 @@
 import { getPostBySlug, getAllPosts, getPostsByCategory } from "@/lib/notion";
-import { NotionContent } from "@/components/notion-renderer";
+import dynamic from "next/dynamic";
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -31,7 +31,10 @@ interface PostPageProps {
   }>;
 }
 
-
+const NotionContent = dynamic(
+  () => import("@/components/notion-renderer").then((m) => m.NotionContent),
+  { ssr: false, loading: () => null }
+);
 
 // Gerar metadata dinâmica para SEO
 export async function generateMetadata({

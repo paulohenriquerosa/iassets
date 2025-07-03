@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Script from "next/script";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { Analytics } from "@vercel/analytics/next";
@@ -10,6 +11,9 @@ import React, { Suspense } from "react";
 import PageTracker from "@/components/PageTracker";
 import WebVitalsTracker from "@/components/WebVitalsTracker";
 import CookieBanner from "@/components/cookie-banner";
+import { criticalCss } from "@/lib/critical-css";
+
+const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -184,15 +188,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" dir="ltr">
+    <html lang="pt-BR" dir="ltr" className={inter.variable}>
       <head>
-        {/* Preconnect para performance */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
+        {/* Critical CSS inline */}
+        <style
+          id="critical-css"
+          dangerouslySetInnerHTML={{ __html: criticalCss }}
         />
+
+        {/* Preconnect para performance */}
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
 
@@ -202,13 +206,17 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
 
         {/* DNS Prefetch para recursos externos */}
-        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="//www.google-analytics.com" />
         <link rel="dns-prefetch" href="//connect.facebook.net" />
         <link rel="dns-prefetch" href="//platform.twitter.com" />
 
         <meta name="google-adsense-account" content="ca-pub-2303827165043763"></meta>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2303827165043763" crossOrigin="anonymous"></script>
+        {/* Google AdSense carregado preguiçosamente */}
+        <Script
+          id="adsense"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2303827165043763"
+          strategy="lazyOnload"
+          crossOrigin="anonymous"
+        />
 
         {/* Pingback para WordPress compatibility */}
         <link rel="pingback" href={`${siteConfig.url}/xmlrpc.php`} />
@@ -219,10 +227,10 @@ export default function RootLayout({
         <Script
           id="gtag-src"
           src="https://www.googletagmanager.com/gtag/js?id=G-FBPGE2KV71"
-          strategy="beforeInteractive"
+          strategy="lazyOnload"
         />
       </head>
-      <body className="antialiased">
+      <body className={`${inter.className} antialiased`}>
         {/* Dados estruturados globais aprimorados */}
         <script
           type="application/ld+json"

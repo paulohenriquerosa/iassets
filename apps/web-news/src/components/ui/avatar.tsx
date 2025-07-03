@@ -1,5 +1,6 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import Image, { ImageProps, StaticImageData } from "next/image"
 
 function Avatar({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
@@ -13,10 +14,21 @@ function Avatar({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   )
 }
 
-function AvatarImage({ className, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) {
+type AvatarImageProps = Omit<ImageProps, "src" | "alt" | "width" | "height"> & {
+  src: string | StaticImageData;
+  alt?: string;
+};
+
+function AvatarImage({ className, src, alt = "", ...props }: AvatarImageProps) {
   return (
-    <img
+    <Image
+      alt={alt}
+      src={src}
       className={cn("aspect-square h-full w-full", className)}
+      fill
+      sizes="40px"
+      loading="lazy"
+      decoding="async"
       {...props}
     />
   )
