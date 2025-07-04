@@ -52,7 +52,7 @@ export function Breadcrumbs({ items, className = '' }: BreadcrumbsProps) {
         itemType="https://schema.org/BreadcrumbList"
       >
         {breadcrumbItems.map((item, index) => (
-          <div key={item.href} className="flex items-center" itemScope itemType="https://schema.org/ListItem">
+          <div key={item.href} className="flex items-center" itemScope itemType="https://schema.org/ListItem" itemProp="itemListElement">
             {index === 0 ? (
               <Link 
                 href={item.href}

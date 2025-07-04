@@ -11,8 +11,6 @@ import {
   MessageCircle,
   Tag,
   TrendingUp,
-  ChevronRight,
-  Home,
 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -24,22 +22,13 @@ import { RelatedArticlesAgent } from "@/agents/RelatedArticlesAgent";
 import { unstable_cache } from "next/cache";
 import { formatSmartDate } from "@/lib/utils";
 import NotionContentClient from "@/components/NotionContentClient";
+import { ArticleBreadcrumbs } from "@/components/seo/breadcrumbs";
 
 interface PostPageProps {
   params: Promise<{
     slug: string;
   }>;
 }
-
-// Helper to sanitize tag names to ASCII-safe format (must match the logic in lib/notion.ts)
-const sanitizeTag = (tag: string): string =>
-  tag
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9-_]/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '');
 
 // Gerar metadata dinâmica para SEO
 export async function generateMetadata({
@@ -260,31 +249,6 @@ export default async function PostPage({ params }: PostPageProps) {
       isAccessibleForFree: true,
     };
 
-    const breadcrumbData = {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Início",
-          item: "https://iassets.com.br",
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: post.category || "Notícias",
-          item: `https://iassets.com.br/categorias/${sanitizeTag(post.category || "noticias")}`,
-        },
-        {
-          "@type": "ListItem",
-          position: 3,
-          name: post.title,
-          item: `https://iassets.com.br/${post.slug}`,
-        },
-      ],
-    };
-
     return (
       <>
         {/* Tracking do artigo */}
@@ -301,46 +265,16 @@ export default async function PostPage({ params }: PostPageProps) {
             __html: JSON.stringify(articleStructuredData),
           }}
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(breadcrumbData),
-          }}
-        />
 
         <div className="min-h-screen bg-white dark:bg-gray-900">
           {/* Breadcrumb */}
           <div className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
-              <nav
-                className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"
-                aria-label="Breadcrumb"
-              >
-                <Link
-                  href="/"
-                  className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-                >
-                  <Home className="w-3 h-3" />
-                </Link>
-                <ChevronRight className="w-3 h-3" />
-                <Link
-                  href="/categorias"
-                  className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-                >
-                  Categorias
-                </Link>
-                <ChevronRight className="w-3 h-3" />
-                <Link
-                  href={`/categorias/${sanitizeTag(post.category || "noticias")}`}
-                  className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-                >
-                  {post.category || "Notícias"}
-                </Link>
-                <ChevronRight className="w-3 h-3" />
-                <span className="text-gray-900 dark:text-gray-100 font-medium truncate">
-                  {post.title}
-                </span>
-              </nav>
+              <ArticleBreadcrumbs
+                category={post.category}
+                title={post.title}
+                className="text-sm text-gray-600 dark:text-gray-400"
+              />
             </div>
           </div>
 
