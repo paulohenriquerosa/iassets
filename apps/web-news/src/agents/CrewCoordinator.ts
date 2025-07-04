@@ -169,7 +169,10 @@ export class CrewCoordinator {
       return text; // remove link, mantém texto
     });
 
-    const coverUrl = await this.cover.select(article);
+    const { url: coverUrl, alt: altText } = await this.cover.select(article);
+    if (altText) {
+      article.content = `<!-- alt: ${altText} -->\n` + article.content;
+    }
     await this.publisher.publish(
       article,
       coverUrl,

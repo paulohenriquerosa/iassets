@@ -20,7 +20,7 @@ export class PageScraper {
       }
 
       console.log(`[PageScraper] Downloading ${link}`);
-      const { data: html } = await axios.get<string>(link, {
+      const { data: html } = await axios.get(link, {
         headers: { "User-Agent": this.userAgent },
         timeout: 15000,
         maxRedirects: 3,

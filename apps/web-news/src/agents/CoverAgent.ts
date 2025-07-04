@@ -57,17 +57,18 @@ Retorne APENAS JSON válido:
 `);
   }
 
-  async select(article: { title: string; summary: string; tags: string[] }): Promise<string> {
+  async select(article: { title: string; summary: string; tags: string[] }): Promise<{ url: string; alt: string }> {
     const queries = await this.generateQueries(article);
     const candidates = await this.searchImages(queries);
 
     if (candidates.length === 0) {
       console.warn("[CoverAgent] No images found, returning default");
-      return this.defaultCover();
+      return { url: this.defaultCover(), alt: article.title };
     }
 
-    const best = await this.rank(article, candidates);
-    return best ?? this.defaultCover();
+    const bestUrl = (await this.rank(article, candidates)) || this.defaultCover();
+    const alt = article.title; // simple alt fallback
+    return { url: bestUrl, alt };
   }
 
   private async generateQueries(article: { title: string; summary: string; tags: string[] }): Promise<string[]> {

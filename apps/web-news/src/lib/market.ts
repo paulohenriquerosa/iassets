@@ -22,29 +22,54 @@ const lookup: Record<string, string> = {
   NASDAQ: "^IXIC",
 };
 
+// Headers for RapidAPI Yahoo Finance fallback
+const RAPID_HOST = "yahoo-finance15.p.rapidapi.com";
+
 export async function fetchMarketData(): Promise<MarketTickerItem[]> {
   return unstable_cache(async () => {
-    const query = Object.values(lookup).map(encodeURIComponent).join("%2C");
+    const symbolsList = Object.values(lookup).join(",");
     let results: any[] = [];
+
+    // 1) Tentativa original (query1.finance.yahoo)
     try {
+      const q = encodeURIComponent(symbolsList);
       const res = await fetch(
-        `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${query}`,
+        `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${q}`,
         {
           headers: { "User-Agent": "Mozilla/5.0 (iAssets News Ticker)" },
           next: { revalidate: 300 },
         },
       );
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      results = data.quoteResponse.result as any[];
-    } catch {
-      // fallback empty results
-      results = [];
+      if (res.ok) {
+        const data = await res.json();
+        results = data.quoteResponse.result as any[];
+      }
+    } catch {}
+
+    // 2) Fallback RapidAPI Yahoo Finance se não obtivemos dados
+    if (results.length === 0 && process.env.RAPIDAPI_YH_KEY) {
+      try {
+        const url = `https://${RAPID_HOST}/market/v2/get-quotes?symbols=${encodeURIComponent(symbolsList)}&region=US`;
+        const res = await fetch(url, {
+          headers: {
+            "X-RapidAPI-Key": process.env.RAPIDAPI_YH_KEY!,
+            "X-RapidAPI-Host": RAPID_HOST,
+          },
+          next: { revalidate: 300 },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          results = data.quoteResponse?.result ?? [];
+        }
+      } catch (err) {
+        console.error("[market] RapidAPI fetch error", (err as any).message);
+      }
     }
+
     return Object.entries(lookup).map(([label, ysymbol]) => {
       const r = results.find((q) => q.symbol === ysymbol);
-      const price = r?.regularMarketPrice ?? 0;
-      const changePerc = r?.regularMarketChangePercent ?? 0;
+      const price = typeof r?.regularMarketPrice === "number" ? r.regularMarketPrice : 0;
+      const changePerc = typeof r?.regularMarketChangePercent === "number" ? r.regularMarketChangePercent : 0;
 
       let currency: string | undefined;
       if (label === "USD/BRL" || label === "EUR/BRL") currency = "BRL";

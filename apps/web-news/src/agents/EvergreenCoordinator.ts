@@ -1,4 +1,3 @@
- 
 import { TrendAggregatorAgent } from "@/agents/TrendAggregatorAgent";
 import { EvergreenStrategistAgent } from "@/agents/EvergreenStrategistAgent";
 import { TopicResearchAgent } from "@/agents/TopicResearchAgent";
@@ -79,7 +78,10 @@ export class EvergreenCoordinator {
         }
 
         // 8. Capa
-        const coverUrl = await this.cover.select(article);
+        const { url: coverUrl, alt: altText } = await this.cover.select(article);
+        if (altText) {
+          article.content = `<!-- alt: ${altText} -->\n` + article.content;
+        }
 
         // 9. Publicação
         await this.publisher.publish(article, coverUrl, new Date().toISOString());

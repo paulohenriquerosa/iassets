@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
+import { WikipediaQueryRun } from "@langchain/community/tools/wikipedia_query_run";
 import type { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
@@ -21,6 +22,7 @@ export class TopicResearchAgent {
   private readonly prompt: PromptTemplate;
   private readonly parser = new JsonOutputParser<ResearchResult>();
   private readonly searchTool: TavilySearchResults;
+  private readonly wiki: WikipediaQueryRun;
 
   constructor() {
     this.llm = getLLM("TOPIC_RESEARCH_MODEL", "gpt-3.5-turbo", { temperature: 0.3 });
@@ -30,6 +32,7 @@ export class TopicResearchAgent {
       throw new Error("Missing TAVILY_API_KEY env var for TopicResearchAgent");
     }
     this.searchTool = new TavilySearchResults({ apiKey });
+    this.wiki = new WikipediaQueryRun();
 
     this.prompt = PromptTemplate.fromTemplate(`
 Você é um PESQUISADOR DE CONTEÚDO FINANCEIRO.
@@ -62,8 +65,18 @@ RETORNE EXCLUSIVAMENTE UM JSON VÁLIDO seguindo o formato:
 
     // 1. Tavily search
     const tavilyResults = await this.tavilySearch(topic.keyword);
-    const resultsStr = tavilyResults
-      .map((r, i) => `${i + 1}. ${r.title} (${r.link}) - ${r.snippet}`)
+
+    // 1b. Wikipedia fallback/summary
+    let wikiStr = "";
+    try {
+      wikiStr = await this.wiki.call(topic.keyword);
+    } catch {}
+
+    const resultsStr = [
+      ...tavilyResults.map((r, i) => `${i + 1}. ${r.title} (${r.link}) - ${r.snippet}`),
+      wikiStr ? `Wikipedia: ${wikiStr.slice(0, 400)}` : "",
+    ]
+      .filter(Boolean)
       .join("\n");
 
     // 2. LLM synthesis

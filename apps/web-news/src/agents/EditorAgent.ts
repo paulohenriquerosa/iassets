@@ -54,6 +54,14 @@ Retorne APENAS o Markdown revisado (sem trechos de código, sem JSON). Se não h
         .replace(/```/g, "")
         .trim();
       agentLog("EditorAgent", "output", out.slice(0, 200));
+
+      // Quick groundedness heuristic: penalize if too many "may", "might", "could"
+      const hedges = (out.match(/\b(may|might|could|possibly)\b/gi) || []).length;
+      const score = 1 - Math.min(hedges / 20, 1); // simple 0-1 scale
+      if (score < 0.6) {
+        console.warn("[EditorAgent] Low groundedness heuristic score", score.toFixed(2));
+      }
+
       return out;
     } catch (err) {
       console.error("[EditorAgent] LLM error", err);

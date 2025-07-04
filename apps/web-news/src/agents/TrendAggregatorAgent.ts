@@ -60,7 +60,7 @@ export class TrendAggregatorAgent {
       this.mergeBuckets(buckets, twitterResults);
     }
 
-    // 3) Reddit (opcional / simples web-scrape)
+    // 3) Reddit via manual fetch JSON
     const redditResults = await this.fetchRedditHot();
     this.mergeBuckets(buckets, redditResults);
 
@@ -104,7 +104,7 @@ export class TrendAggregatorAgent {
   private async fetchGoogleTrends(): Promise<TrendItem[]> {
     try {
       const url = "https://trends.google.com/trends/api/realtimetrends?hl=pt-BR&tz=-180&geo=BR&cat=b"; // b = business
-      const { data } = await axios.get<string>(url, {
+      const { data } = await axios.get(url, {
         headers: { "User-Agent": "Mozilla/5.0" },
         timeout: 10000,
       });
@@ -146,22 +146,18 @@ export class TrendAggregatorAgent {
   }
 
   /**
-   * Reddit hot posts de r/investing (sem API, apenas HTML fetch + regex)
+   * Reddit via manual fetch JSON
    */
   private async fetchRedditHot(): Promise<TrendItem[]> {
-    try {
-      const url = "https://www.reddit.com/r/investing/hot.json?limit=25";
-      const { data } = await axios.get(url, { timeout: 10000, headers: { "User-Agent": "Mozilla/5.0" } });
-      const items: TrendItem[] = (data.data?.children ?? []).map((c: any) => ({
-        keyword: c.data?.title ?? "",
-        weight: 1,
-        sources: ["reddit"],
-      })).filter((i: TrendItem) => i.keyword);
-      return items;
-    } catch (err) {
-      console.error("[TrendAggregator] Reddit error", (err as any).message);
-      return [];
-    }
+    // JSON feed
+    const url = "https://www.reddit.com/r/investing/hot.json?limit=25";
+    const { data } = await axios.get(url, { timeout: 10000, headers: { "User-Agent": "Mozilla/5.0" } });
+    const items: TrendItem[] = (data.data?.children ?? []).map((c: any) => ({
+      keyword: c.data?.title ?? "",
+      weight: 1,
+      sources: ["reddit"],
+    })).filter((i: TrendItem) => i.keyword);
+    return items;
   }
 
   /** Tavily fallback – busca termos trending */

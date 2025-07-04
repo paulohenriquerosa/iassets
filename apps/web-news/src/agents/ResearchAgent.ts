@@ -5,6 +5,8 @@ import { RunnableSequence } from "@langchain/core/runnables";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { getLLM } from "@/lib/llm";
 import { getJson, setJson } from "@/lib/cache";
+import { MarketDataAgent } from "@/agents/MarketDataAgent";
+import { WolframCalculator } from "@/agents/WolframCalculator";
 
 import type { ResearchResult } from "@/agents/types";
 
@@ -12,6 +14,8 @@ export class ResearchAgent {
   private llm: ChatOpenAI;
   private prompt: PromptTemplate;
   private parser = new StringOutputParser();
+  private market = new MarketDataAgent();
+  private calc = new WolframCalculator();
 
   constructor() {
     this.llm = getLLM("RESEARCH_MODEL", "gpt-4.1-nano", {
@@ -29,7 +33,13 @@ Resumo: {summary}
 CONTEÚDO COMPLETO:
 {fullText}
 
+NOTÍCIAS DE MERCADO RELEVANTES:
+{marketNews}
+
 TAREFA: Analise profundamente a notícia, busque fatos complementares, dados de mercado, estatísticas e citações externas relevantes.
+
+FATOS COMPUTADOS PELO WOLFRAM:
+{wolframFacts}
 
 RETORNE APENAS UM JSON VÁLIDO seguindo o formato:
 {{
@@ -53,6 +63,30 @@ RETORNE APENAS UM JSON VÁLIDO seguindo o formato:
       return cached;
     }
 
+    // Tenta extrair ticker do título (regex simples)
+    const tickerMatch = input.title ? input.title.match(/\b[A-Z]{3,5}\b/) : null;
+    const ticker = tickerMatch ? tickerMatch[0] : "";
+    let marketNews = "";
+    if (ticker) {
+      const newsArr = await this.market.fetchNews(ticker);
+      marketNews = newsArr.join("; ");
+    }
+
+    // Heurísticas simples para cálculos
+    const wolframFactsArr: string[] = [];
+    try {
+      if (/infla[cç][aã]o/i.test(input.title)) {
+        const ans = await this.calc.ask("Brazil inflation rate last 12 months");
+        if (ans) wolframFactsArr.push(`Inflação 12m: ${ans}`);
+      }
+      if (/PIB|GDP/i.test(input.title)) {
+        const ans = await this.calc.ask("Brazil GDP 2023");
+        if (ans) wolframFactsArr.push(`PIB 2023: ${ans}`);
+      }
+    } catch {}
+
+    const wolframFacts = wolframFactsArr.join("; ");
+
     const chain = RunnableSequence.from([
       this.prompt,
       this.llm,
@@ -60,7 +94,14 @@ RETORNE APENAS UM JSON VÁLIDO seguindo o formato:
     ]);
 
     try {
-      const raw = await chain.invoke(input);
+      const raw = await chain.invoke({
+        title: input.title,
+        link: input.link,
+        summary: input.summary,
+        fullText: input.fullText,
+        marketNews,
+        wolframFacts,
+      });
       const parsed = this.safeParse(raw);
       if (parsed) {
         // Cache for 7 days
