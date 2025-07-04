@@ -108,15 +108,32 @@ RETORNE EXCLUSIVAMENTE UM JSON VÁLIDO seguindo o formato:
   /* ----------------------------------------- */
   private async tavilySearch(query: string): Promise<SearchResult[]> {
     try {
-      const res = await this.searchTool.call(query);
-      // res = array of {title, url, content}
-      return res.map((r: any) => ({
-        title: r.title,
-        link: r.url,
-        snippet: r.content,
+      const raw = await this.searchTool.call(query);
+
+      // A. Attempt to parse JSON string responses
+      let data: any = raw;
+      if (typeof raw === "string") {
+        try {
+          data = JSON.parse(raw);
+        } catch {
+          // If parsing fails, keep original value
+        }
+      }
+
+      // B. Normalise to an array of results
+      const resultsArr: any[] = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.results)
+          ? data.results
+          : [];
+
+      return resultsArr.map((r: any) => ({
+        title: r.title ?? r?.url ?? "",
+        link: r.url ?? r?.link ?? "",
+        snippet: r.content ?? r?.snippet ?? "",
       }));
     } catch (err) {
-      console.error("[TopicResearchAgent] tavilySearch error", (err as any).message);
+      console.error("[TopicResearchAgent] tavilySearch error", (err as any)?.message ?? err);
       return [];
     }
   }
