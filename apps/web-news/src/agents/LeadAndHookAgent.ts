@@ -16,7 +16,7 @@ export class LeadAndHookAgent {
     });
 
     this.prompt = PromptTemplate.fromTemplate(`
-Você é um JORNALISTA FINANCEIRO EXPERIENTE.
+Você é um JORNALISTA FINANCEIRO SÊNIOR.
 
 Notícia: "{title}"
 Resumo executivo: "{summary}"
@@ -39,7 +39,7 @@ Retorne apenas o texto do lead.
     ]);
 
     try {
-      const lead = await chain.invoke({ title, summary });
+      const lead = await chain.invoke({ title, summary});
       const cleanLead = (lead || "").trim();
       agentLog("LeadAndHook", "output", cleanLead);
       return cleanLead;

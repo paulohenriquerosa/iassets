@@ -29,6 +29,7 @@
     "critters": "^0.0.25",
     "date-fns": "^3.6.0",
     "fast-xml-parser": "^5.2.5",
+    "googleapis": "^150.0.1",
     "jsdom": "^26.1.0",
     "jsonrepair": "^3.12.0",
     "katex": "^0.16.22",

@@ -111,4 +111,100 @@ RETORNE APENAS UM JSON VÁLIDO seguindo o formato:
     const res = await this.openai.embeddings.create({ model: "text-embedding-3-small", input: text });
     return res.data[0].embedding as number[];
   }
+
+  /**
+   * Insere links markdown para até 3 artigos relacionados (internos) diretamente no texto.
+   * A estratégia:
+   * 1. Gera embedding do conteúdo completo.
+   * 2. Consulta o índice e obtém topK matches (já ordenado por similaridade).
+   * 3. Ordena os candidatos pela data (mais recentes primeiro).
+   * 4. Para cada candidato, tenta encontrar a primeira ocorrência de uma palavra-chave (primeira palavra
+   *    relevante do título) dentro do texto e substitui por link Markdown.
+   */
+  async insertLinks(content: string, maxLinks = 3): Promise<{ content: string; used: RelatedArticle[] }> {
+    // 0. Sanity check
+    if (!content || content.length < 50) {
+      return { content, used: [] };
+    }
+
+    // 1. Embed full content (truncate a 8000 caracteres para não explodir custo)
+    const embedding = await this.embed(content.slice(0, 8000));
+
+    // 2. Query vector DB
+    // retorna também metadata.date
+    const res: any = await this.index.query({
+      vector: embedding,
+      topK: 15,
+      includeMetadata: true,
+      includeVectors: false,
+    });
+
+    const candidates = (res.matches || [])
+      .filter((m: any) => !!m.metadata?.slug)
+      .map((m: any) => ({
+        title: m.metadata.title as string,
+        slug: m.metadata.slug as string,
+        date: m.metadata.date as string,
+        score: m.score as number,
+      }))
+      // desc score first then date recent
+      .sort((a: any, b: any) => {
+        const scoreDiff = b.score - a.score;
+        if (Math.abs(scoreDiff) > 0.05) return scoreDiff;
+        // tie-break by date (newer first)
+        return new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime();
+      });
+
+    const used: RelatedArticle[] = [];
+    let modified = content;
+
+    for (const cand of candidates) {
+      if (used.length >= maxLinks) break;
+
+      const anchor = this.findAnchorPhrase(cand.title, modified);
+      if (!anchor) continue;
+
+      // evite linkar mesmo slug duas vezes
+      if (used.some((u) => u.slug === cand.slug)) continue;
+
+      const escaped = anchor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // escape regex
+      const regex = new RegExp(escaped, "i");
+      modified = modified.replace(regex, `[${anchor}](/${cand.slug})`);
+      used.push({ title: cand.title, slug: cand.slug });
+    }
+
+    return { content: modified, used };
+  }
+
+  /**
+   * Tenta encontrar no texto uma frase de até 8 palavras derivada do título.
+   * Retorna a frase exata encontrada (case original) ou null.
+   */
+  private findAnchorPhrase(title: string, content: string): string | null {
+    const tokens = title
+      .split(/\s+/)
+      .map((t) => t.replace(/[^\p{L}\p{N}]/gu, ""))
+      .filter(Boolean);
+
+    // Limite de 8 palavras para anchor.
+    const maxLen = Math.min(8, tokens.length);
+    const contentLower = content.toLowerCase();
+
+    // Tenta do mais longo (8) para o mais curto (1 palavra >=4 letras)
+    for (let len = maxLen; len >= 1; len--) {
+      for (let i = 0; i <= tokens.length - len; i++) {
+        const phraseTokens = tokens.slice(i, i + len);
+        const phrase = phraseTokens.join(" ");
+        if (phraseTokens.join("").length < 4) continue; // evita âncoras insignificantes
+
+        if (contentLower.includes(phrase.toLowerCase())) {
+          // Recupera a frase com mesma capitalização do texto original
+          const regex = new RegExp(phrase, "i");
+          const match = content.match(regex);
+          if (match) return match[0];
+        }
+      }
+    }
+    return null;
+  }
 } 

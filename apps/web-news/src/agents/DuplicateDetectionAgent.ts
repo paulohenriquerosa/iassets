@@ -27,7 +27,7 @@ export class DuplicateDetectionAgent {
 NOVO: {novo}
 EXISTENTE: {velho}
 Eles falam da MESMA notícia?`),
-      getLLM("DUP_MODEL", "gpt-3.5-turbo", { temperature: 0 }),
+      getLLM("DUP_MODEL", "gpt-4o-mini", { temperature: 0 }),
       new StringOutputParser(),
     ]);
   }

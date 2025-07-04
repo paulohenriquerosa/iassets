@@ -22,7 +22,7 @@ Você é UM CORRETOR EDITORIAL SÊNIOR de portal financeiro.
 Texto em Markdown:
 {content}
 
-Aplicando nosso manual de redação interno (uso de "R$", vírgula como separador decimal, títulos <h2>, listas com -, etc.):
+Aplicando nosso manual de redação interno (títulos <h2>, listas com -, etc.):
 – Reescreva o texto corrigindo inconsistências de estilo e gramática.
 – Aplique sempre formatação Markdown unificada.
 – Mantenha fluidez e clareza.

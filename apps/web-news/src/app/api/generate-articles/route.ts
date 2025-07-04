@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { FeedFetcher } from "@/agents/FeedFetcher";
 import { qstashPublishJSON } from "@/lib/qstash";
 import { DuplicateDetectionAgent } from "@/agents/DuplicateDetectionAgent";
+import { TrendSelectorAgent } from "@/agents/TrendSelectorAgent";
 import { CrewCoordinator } from "@/agents/CrewCoordinator";
 
 export const runtime = "nodejs";
@@ -15,14 +16,19 @@ export async function GET() {
     const itemsRaw = await fetcher.fetch();
 
     const dupAgent = new DuplicateDetectionAgent();
-    const items: typeof itemsRaw = [];
+    const deduped: typeof itemsRaw = [];
     for (const it of itemsRaw) {
       const dup = await dupAgent.exists(it.title, it.summary || "");
-      if (!dup) items.push(it);
+      if (!dup) deduped.push(it);
     }
 
+    // 1️⃣ Seleciona tendências de maior potencial
+    const selector = new TrendSelectorAgent();
+    const topK = Number(process.env.TREND_TOP_K ?? 3);
+    const items = await selector.select(deduped, topK);
+
     if (items.length === 0) {
-      return NextResponse.json({ enqueued: 0, skipped: "duplicates" });
+      return NextResponse.json({ enqueued: 0, skipped: "no_trends" });
     }
 
     if (IS_LOCAL) {

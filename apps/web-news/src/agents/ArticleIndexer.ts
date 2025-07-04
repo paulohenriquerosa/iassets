@@ -24,7 +24,7 @@ export class ArticleIndexer {
       .slice(0, 50);
   }
 
-  async add(title: string, summary: string): Promise<string> {
+  async add(title: string, summary: string, isoDate?: string): Promise<string> {
     const slug = this.slugify(title);
     const text = `${title}. ${summary}`;
 
@@ -37,7 +37,7 @@ export class ArticleIndexer {
       {
         id: slug,
         vector,
-        metadata: { title, slug, summary },
+        metadata: { title, slug, summary, date: isoDate || new Date().toISOString() },
       },
     ]);
 

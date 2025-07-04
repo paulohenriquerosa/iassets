@@ -8,6 +8,10 @@ import { FeedItem } from "@/agents/types";
 const FEED_URLS: string[] = (process.env.FEED_URLS?.split("|") ?? [
   "https://investnews.com.br/feed-news/",
   "https://br.cointelegraph.com/rss",
+  "https://www.infomoney.com.br/feed/",
+  "https://g1.globo.com/rss/g1/economia/",
+  "https://g1.globo.com/dynamo/mundo/rss2.xml",
+  "https://g1.globo.com/rss/g1/"
 ]).filter(Boolean);
 
 const MAX_ITEMS = Number(process.env.MAX_ITEMS ?? 5);

@@ -130,6 +130,33 @@ export class CrewCoordinator {
       article.content = polished;
     }
 
+    // Inserir links internos para artigos relacionados com base na semântica
+    try {
+      const linkRes = await this.relatedAgent.insertLinks(article.content);
+      article.content = linkRes.content;
+    } catch (err) {
+      console.error("[CrewCoordinator] linkify error", err);
+    }
+
+    // Remover links externos (apenas manter texto) para evitar URLs de outros sites
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "https://news.iassets.com.br";
+    const siteHost = (() => {
+      try {
+        return new URL(siteUrl).hostname.replace(/^www\./, "");
+      } catch {
+        return "";
+      }
+    })();
+
+    article.content = article.content.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/gi, (_match, text, link) => {
+      try {
+        const u = new URL(link);
+        const host = u.hostname.replace(/^www\./, "");
+        if (host.endsWith(siteHost)) return _match; // interno OK
+      } catch {}
+      return text; // remove link, mantém texto
+    });
+
     const coverUrl = await this.cover.select(article);
     await this.publisher.publish(
       article,
@@ -139,7 +166,6 @@ export class CrewCoordinator {
 
     // Generate and publish Twitter thread asynchronously (non-blocking)
     try {
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "https://news.iassets.com.br";
       const slug = article.title
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
@@ -170,7 +196,7 @@ export class CrewCoordinator {
     try {
       await Promise.all([
         this.dupAgent.add(item.title, item.summary || ""),
-        this.indexer.add(article.title, article.summary),
+        this.indexer.add(article.title, article.summary, item.pubDate),
       ]);
     } catch (err) {
       console.error("[CrewCoordinator] dup add error", err);

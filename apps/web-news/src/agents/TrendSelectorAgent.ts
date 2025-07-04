@@ -28,7 +28,7 @@ Você é um ANALISTA DE TENDÊNCIAS DE MÍDIA.
 Dada esta lista de notícias recentes extraídas do feed:
 {items}
 
-E considerando dados de tendências de busca (Google Trends), redes sociais e volume de menções em portais financeiros,
+E considerando dados de tendências de busca (Google Trends), redes sociais e volume de menções em portais financeiros, e notícias recentes,
 classifique cada item numa escala de 1 a 5 (5 = maior potencial de engajamento).
 
 RETORNE APENAS UM JSON VÁLIDO seguindo o formato:
