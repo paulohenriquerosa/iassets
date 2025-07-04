@@ -73,6 +73,14 @@ NOTION_TOKEN=seu_token_notion_aqui
 NOTION_DATABASE_ID=id_do_database_notion
 ```
 
+### Novas Variáveis de Ambiente (IA Evergreen)
+```env
+# Chave para Tavily Search API (substitui Google CSE)
+TAVILY_API_KEY=seu_token_tavily
+# Opcional: token Bearer do Twitter para puxar trending topics
+TWITTER_BEARER_TOKEN=xxxx
+```
+
 ## 📱 Responsividade
 
 Breakpoints otimizados:

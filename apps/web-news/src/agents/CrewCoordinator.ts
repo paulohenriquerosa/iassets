@@ -18,6 +18,7 @@ import { DuplicateDetectionAgent } from "@/agents/DuplicateDetectionAgent";
 import { ArticleIndexer } from "@/agents/ArticleIndexer";
 import { TwitterThreadAgent } from "@/agents/TwitterThreadAgent";
 import { qstashPublishJSON } from "@/lib/qstash";
+import { SponsoredContentDetector } from "@/agents/SponsoredContentDetector";
 
 export class CrewCoordinator {
   private feedFetcher = new FeedFetcher();
@@ -35,6 +36,7 @@ export class CrewCoordinator {
   private dupAgent = new DuplicateDetectionAgent();
   private indexer = new ArticleIndexer();
   private twitterAgent = new TwitterThreadAgent();
+  private sponsorDetector = new SponsoredContentDetector();
 
   async run(): Promise<{
     processed: number;
@@ -90,6 +92,16 @@ export class CrewCoordinator {
       .replace(/!\[[^\]]*\]\([^)]*\)/g, "") // remove markdown images
       .replace(/<img[^>]*>/gi, "") // remove html images
       .replace(/https?:\/\/\S+/g, ""); // remove raw URLs
+
+    // Detect and skip sponsored/promotional content (heuristic + AI)
+    if (await this.sponsorDetector.detect({
+      title: item.title,
+      summary: item.summary,
+      fullText: cleanText,
+    })) {
+      console.log(`[CrewCoordinator] Sponsored content detected, skipping: ${item.title}`);
+      return;
+    }
 
     const research = await this.researcher.research({
       title: item.title,

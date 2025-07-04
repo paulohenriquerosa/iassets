@@ -3,6 +3,10 @@
     {
       "path": "/api/generate-articles",
       "schedule": "1 * * * *"
+    },
+    {
+      "path": "/api/generate-evergreen",
+      "schedule": "10 2 * * *"
     }
   ]
 }
