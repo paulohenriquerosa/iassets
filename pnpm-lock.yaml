@@ -198,9 +198,6 @@ importers:
       next:
         specifier: 15.3.4
         version: 15.3.4(@playwright/test@1.53.2)(react-dom@19.1.0)(react@19.1.0)
-      next-themes:
-        specifier: ^0.3.0
-        version: 0.3.0(react-dom@19.1.0)(react@19.1.0)
       node-fetch:
         specifier: ^3.3.2
         version: 3.3.2
@@ -243,9 +240,6 @@ importers:
       web-vitals:
         specifier: ^5.0.3
         version: 5.0.3
-      zod:
-        specifier: ^3.25.74
-        version: 3.25.74
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3

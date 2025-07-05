@@ -19,6 +19,7 @@ import { ArticleIndexer } from "@/agents/ArticleIndexer";
 import { TwitterThreadAgent } from "@/agents/TwitterThreadAgent";
 import { qstashPublishJSON } from "@/lib/qstash";
 import { SponsoredContentDetector } from "@/agents/SponsoredContentDetector";
+import { FactCheckAgent } from "@/agents/FactCheckAgent";
 
 export class CrewCoordinator {
   private feedFetcher = new FeedFetcher();
@@ -37,6 +38,7 @@ export class CrewCoordinator {
   private indexer = new ArticleIndexer();
   private twitterAgent = new TwitterThreadAgent();
   private sponsorDetector = new SponsoredContentDetector();
+  private factChecker = new FactCheckAgent();
 
   async run(): Promise<{
     processed: number;
@@ -116,6 +118,7 @@ export class CrewCoordinator {
 
     const leadText = await this.leadAgent.createLead(bestTitle, item.summary);
     const related = await this.relatedAgent.recommend(bestTitle, item.summary);
+
     const draftArticle = await this.writer.draft(
       { title: bestTitle, summary: item.summary, lead: leadText },
       scraped,
@@ -124,10 +127,9 @@ export class CrewCoordinator {
     if (!draftArticle) throw new Error("Writer draft failed");
 
     const seoJson = await this.seoAgent.enhance(draftArticle.content) || {};
-
     const ctaJson: object[] = []; // CTA desativado
 
-    const article = await this.writer.finalize(
+    let article = await this.writer.finalize(
       { title: bestTitle, summary: item.summary, lead: leadText },
       scraped,
       research,
@@ -136,6 +138,19 @@ export class CrewCoordinator {
       related
     );
     if (!article) throw new Error("Writer finalize failed");
+
+    // Fact-checking & corrections
+    try {
+      const factRes = await this.factChecker.verify(article, research);
+      if (factRes?.corrected) {
+        article = factRes.corrected;
+        if (factRes.issues.length) {
+          console.log(`[CrewCoordinator] FactCheck issues:`, factRes.issues.join(" | "));
+        }
+      }
+    } catch (err) {
+      console.error("[CrewCoordinator] factcheck error", err);
+    }
 
     const polished = await this.styleAgent.polish(article.content);
     if (polished) {
