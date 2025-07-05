@@ -5,6 +5,8 @@ import {
   getPostsByCategory,
 } from "@/lib/notion";
 import { CategorySection } from "@/components/sections/category-section";
+import { LatestNewsSection } from "@/components/LatestNewsSection";
+import { NewsletterCTA } from "@/components/NewsletterCTA";
 import {
   HomePageClient,
   MarketTicker,
@@ -45,9 +47,12 @@ export default async function HomePage() {
   // Posts para sidebar (mais lidos/recentes)
   const sidebarPosts = allPosts.slice(1, 5);
 
+  // Últimas notícias (exclui featured + sidebar)
+  const latestPosts = allPosts.slice(5, 13);
+
   // Buscar posts por categoria dinamicamente
   const categoryPostsPromises = categories.map((category) =>
-    getPostsByCategory(category, 4),
+    getPostsByCategory(category, 7),
   );
 
   const categoryPosts = await Promise.all(categoryPostsPromises);
@@ -72,6 +77,12 @@ export default async function HomePage() {
               <Sidebar posts={sidebarPosts} />
             </div>
           )}
+
+          {/* Últimas Notícias */}
+          <LatestNewsSection posts={latestPosts} />
+
+          {/* CTA Newsletter */}
+          <NewsletterCTA />
 
           {/* Dynamic Category Sections */}
           <div className="space-y-12 sm:space-y-14">

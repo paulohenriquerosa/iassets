@@ -7,11 +7,11 @@ import { NotionRenderer } from "react-notion-x";
 import { ExtendedRecordMap } from "notion-types";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useTheme } from "next-themes";
+// import { useTheme } from "next-themes"; // Removido para manter modo claro fixo
 
 // Importar os estilos CSS do react-notion-x
 import "react-notion-x/src/styles.css";
-import "prismjs/themes/prism-tomorrow.css";
+import "prismjs/themes/prism.css";
 import "katex/dist/katex.min.css";
 // Importar nossos estilos customizados
 import "@/styles/notion.css";
@@ -133,14 +133,12 @@ interface NotionContentProps {
 }
 
 export function NotionContent({ recordMap }: NotionContentProps) {
-  const { theme } = useTheme();
-
   return (
     <div className="notion-content">
       <NotionRenderer
         recordMap={recordMap}
         fullPage={false}
-        darkMode={theme === "dark"}
+        darkMode={true}
         showCollectionViewDropdown={false}
         linkTableTitleProperties={false}
         isLinkCollectionToUrlProperty={false}

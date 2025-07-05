@@ -159,7 +159,7 @@ export function Sidebar({ posts }: SidebarProps) {
   };
 
   return (
-    <div className="lg:col-span-1">
+    <div className="lg:col-span-1 lg:sticky lg:top-24">
       <Card className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 h-full flex flex-col">
         <CardHeader className="pb-4 sm:pb-6">
           <CardTitle className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">

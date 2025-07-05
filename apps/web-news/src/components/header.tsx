@@ -109,21 +109,9 @@ export function Header() {
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1">
-            {navItems.map((item) => (
-              <div key={item.label}>
-                <Link
-                  href={item.href}
-                  className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  onClick={() =>
-                    handleNavClick(item.label, item.href, "main")
-                  }
-                >
-                  {item.label}
-                </Link>
-              </div>
-            ))}
+          {/* Desktop Navigation - (removido categorias dinâmicas) */}
+          <nav className="hidden lg:flex items-center gap-4">
+            {/* Espaço reservado para links estáticos futuros */}
           </nav>
 
           {/* Right Section */}
@@ -156,6 +144,24 @@ export function Header() {
           </div>
         </div>
       </div>
+
+      {/* Category Bar (desktop) */}
+      {navItems.length > 0 && (
+        <div className="hidden lg:block border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-x-auto">
+          <div className="container mx-auto px-4 flex gap-2 py-2">
+            {navItems.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-gray-100 px-3 py-1 whitespace-nowrap rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                onClick={() => handleNavClick(item.label, item.href, "main")}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (

@@ -69,7 +69,7 @@ RETORNE APENAS UM JSON VÁLIDO seguindo o formato:
    * Seleciona até topK itens com score >= minScore.
    * Se não houver itens suficientes, retorna somente os que atendem ao critério (pode ser lista vazia).
    */
-  async select(feedItems: FeedItem[], topK: number = 3): Promise<FeedItem[]> {
+  async select(feedItems: FeedItem[], topK: number = 10): Promise<FeedItem[]> {
     if (feedItems.length === 0) return [];
 
     /* -------------------------------------------------- */

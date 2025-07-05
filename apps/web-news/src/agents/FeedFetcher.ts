@@ -13,6 +13,11 @@ const FEED_URLS: string[] = (process.env.FEED_URLS?.split("|") ?? [
   "https://www.infomoney.com.br/feed/",
   "https://g1.globo.com/rss/g1/economia/",
   "https://g1.globo.com/dynamo/mundo/rss2.xml",
+  "https://exame.com/invest/feed/",
+  "https://admin.cnnbrasil.com.br/feed/",
+  "https://einvestidor.estadao.com.br/feed/",
+  "https://www.moneytimes.com.br/feed/",
+  "https://blog.toroinvestimentos.com.br/feed/"
 ]).filter(Boolean);
 
 const MAX_ITEMS = Number(process.env.MAX_ITEMS ?? 5);

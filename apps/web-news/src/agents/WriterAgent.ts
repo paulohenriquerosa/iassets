@@ -100,6 +100,11 @@ Fatos relacionados (JSON): {relatedFacts}
 Estatísticas (JSON): {statistics}
 Citações externas (JSON): {externalQuotes}
 
+CONFERÊNCIA DE FATOS:
+- Verifique coerência temporal: cargos atuais, números atualizados, datas.
+- Corrija títulos ou cargos (ex.: se Donald Trump é PRESIDENTE no texto, não use "ex-presidente").
+- Utilize 'relatedFacts' e 'statistics' para validar afirmações.
+
 SEO E ENGAJAMENTO:
 SEO (meta + keywords + links internos) em JSON: {seoJson}
 CTAs recomendados em JSON: {ctaJson}
