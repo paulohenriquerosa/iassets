@@ -138,7 +138,7 @@ export function NotionContent({ recordMap }: NotionContentProps) {
       <NotionRenderer
         recordMap={recordMap}
         fullPage={false}
-        darkMode={true}
+        darkMode={false}
         showCollectionViewDropdown={false}
         linkTableTitleProperties={false}
         isLinkCollectionToUrlProperty={false}
