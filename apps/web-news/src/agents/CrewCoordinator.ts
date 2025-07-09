@@ -127,14 +127,12 @@ export class CrewCoordinator {
     if (!draftArticle) throw new Error("Writer draft failed");
 
     const seoJson = await this.seoAgent.enhance(draftArticle.content) || {};
-    const ctaJson: object[] = []; // CTA desativado
 
     let article = await this.writer.finalize(
       { title: bestTitle, summary: item.summary, lead: leadText },
       scraped,
       research,
       seoJson,
-      ctaJson,
       related
     );
     if (!article) throw new Error("Writer finalize failed");

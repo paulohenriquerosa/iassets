@@ -107,14 +107,12 @@ CONFERÊNCIA DE FATOS:
 
 SEO E ENGAJAMENTO:
 SEO (meta + keywords + links internos) em JSON: {seoJson}
-CTAs recomendados em JSON: {ctaJson}
 Artigos relacionados em JSON: {relatedArticlesJson}
 
 REQUISITOS DE SAÍDA:
 - O lead (primeiro parágrafo) deve ser **ou** o "Lead pronto" **ou** um novo.
 - Use **## Subtítulo** para cada seção.
 - Insira a **meta description** como comentário HTML no topo: \`<!-- meta: ... -->\`.
-- Inclua CTAs no final.
 - Escolha a **categoria** dentre: ${category}.
 - Gere até 5 **tags**, priorizando keywords do SEO JSON.
 
@@ -169,7 +167,6 @@ RETORNE APENAS UM JSON VÁLIDO seguindo o formato:
     scraped: ScrapedContent,
     research: ResearchResult,
     seoJson: object,
-    ctaJson: object,
     relatedArticlesJson: object
   ): Promise<Article | null> {
     const chain = RunnableSequence.from([
@@ -178,7 +175,7 @@ RETORNE APENAS UM JSON VÁLIDO seguindo o formato:
       this.parser,
     ]);
 
-    agentLog("WriterAgent", "finalize-input", { seoJson, ctaJson, relatedArticlesJson });
+    agentLog("WriterAgent", "finalize-input", { seoJson, relatedArticlesJson });
 
     const raw = await chain.invoke({
       title: original.title,
@@ -189,7 +186,6 @@ RETORNE APENAS UM JSON VÁLIDO seguindo o formato:
       statistics: JSON.stringify(research.statistics ?? []),
       externalQuotes: JSON.stringify(research.externalQuotes ?? []),
       seoJson: JSON.stringify(seoJson),
-      ctaJson: JSON.stringify(ctaJson),
       relatedArticlesJson: JSON.stringify(relatedArticlesJson),
     });
 
