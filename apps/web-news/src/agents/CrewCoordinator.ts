@@ -16,8 +16,6 @@ import { StyleGuideAgent } from "@/agents/StyleGuideAgent";
 import { RelatedArticlesAgent } from "@/agents/RelatedArticlesAgent";
 import { DuplicateDetectionAgent } from "@/agents/DuplicateDetectionAgent";
 import { ArticleIndexer } from "@/agents/ArticleIndexer";
-import { TwitterThreadAgent } from "@/agents/TwitterThreadAgent";
-import { qstashPublishJSON } from "@/lib/qstash";
 import { SponsoredContentDetector } from "@/agents/SponsoredContentDetector";
 import { FactCheckAgent } from "@/agents/FactCheckAgent";
 
@@ -36,7 +34,6 @@ export class CrewCoordinator {
   private relatedAgent = new RelatedArticlesAgent();
   private dupAgent = new DuplicateDetectionAgent();
   private indexer = new ArticleIndexer();
-  private twitterAgent = new TwitterThreadAgent();
   private sponsorDetector = new SponsoredContentDetector();
   private factChecker = new FactCheckAgent();
 
@@ -191,34 +188,6 @@ export class CrewCoordinator {
       coverUrl,
       new Date(item.pubDate).toISOString()
     );
-
-    // Generate and publish Twitter thread asynchronously (non-blocking)
-    try {
-      const slug = article.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "")
-        .slice(0, 50);
-      const articleUrl = `${siteUrl}/${slug}`;
-
-      const tweets = await this.twitterAgent.generateThread({
-        title: article.title,
-        summary: article.summary,
-        content: article.content,
-        url: articleUrl,
-        coverUrl,
-      });
-      // Enfileira a publicação via QStash para rodar em função separada
-      if (tweets.length) {
-        const dest = `${siteUrl}/api/twitter-worker`;
-        await qstashPublishJSON({
-          url: dest,
-          body: { tweets, coverUrl, uniqueId: articleUrl },
-        });
-      }
-    } catch (err) {
-      console.error("[CrewCoordinator] twitter generate error", err);
-    }
 
     // After successful publish, add to duplicate index
     try {
